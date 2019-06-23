@@ -9,10 +9,6 @@ const state = {
     },
     INIT_PROFILE(state,params = {}){
         state.profile = params;
-    },
-    LOGINOUT(state){
-        state.account = {};
-        state.profile = {};
     }
   }
   

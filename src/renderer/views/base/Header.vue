@@ -11,13 +11,10 @@
     </div>
     <div class="tab-setting">
       <div class="user-info">
-        <img class="user-header" :src="getUserInfo.avatarUrl || avatarUrl">
+        <img class="user-header" :src="getUserInfo.avatarUrl || '~@/assets/logo.jpg'">
         <div class="user-name font">
-			<userInfo v-if="getUserInfo.userId" :userId="getUserInfo.userId">
-				<span >{{getUserInfo.nickname}}</span>
-			</userInfo>
-			  <span  v-else @click="showLogin">未登录</span>
-		  
+          <span v-if="getUserInfo.userId">{{getUserInfo.nickname}}</span>
+          <span v-else  @click="showLogin">未登录</span>
         </div>
       </div>
       <span class="font">开通会员</span>
@@ -54,7 +51,6 @@
 
 <script>
 import util from '../../assets/js/util';
-import userInfo from './auth/userinfo'
 import { mapMutations, mapGetters, mapState } from 'vuex'
 export default {
   data() {
@@ -64,8 +60,7 @@ export default {
 		  phone:"13698006449",
 		  password:"tab822520"
 	  },
-	  loading:false,
-	  avatarUrl:require('@/assets/logo.jpg')
+	  loading:false
     };
   },
   computed:{
@@ -105,9 +100,6 @@ export default {
 	login(){
 
 	}
-  },
-  components:{
-	userInfo  
   },
   mounted() {
 	if(util.getLocalStorage('account')){
@@ -167,8 +159,7 @@ export default {
     font-size: 14px;
 
     .font {
-	  cursor: pointer;
-	  font-size: 13px;
+      cursor: pointer;
       color: #dcd9d9;
       &:hover {
         color: #fff;
