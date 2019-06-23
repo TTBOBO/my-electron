@@ -4,6 +4,7 @@ import request from './api';
 axios.defaults.timeout = 8000;
 axios.defaults.baseURL = "http://localhost:3000"; //http://123.207.114.48:86
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
+axios.defaults.withCredentials=true
 /**
  * 请求配置
  */
@@ -23,7 +24,6 @@ axios.interceptors.request.use(
      */
 axios.interceptors.response.use(
     response => {
-        console.log(response)
         if (response.data.code == 400) {
             // Vue.$Message.error('操作失败')
             return response.data;
