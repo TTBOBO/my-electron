@@ -59,7 +59,6 @@ export default {
 }
 </script>
 <style lang="scss">
-@import "../../../assets/css/base.scss";
 .tab-menu {
   width: 200px;
   background: #fdfbfb;

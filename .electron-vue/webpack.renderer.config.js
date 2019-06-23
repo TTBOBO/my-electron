@@ -36,7 +36,7 @@ let rendererConfig = {
         use: ['vue-style-loader', 'css-loader', {
           loader: 'sass-loader',
           options: {
-            data: '@import "./src/renderer/globals";'
+            data: '@import "./src/renderer/globals.scss";'
           }
         }]
       },
@@ -72,8 +72,8 @@ let rendererConfig = {
           options: {
             extractCSS: process.env.NODE_ENV === 'production',
             loaders: {
-              sass: 'vue-style-loader!css-loader!sass-loader?indentedSyntax=1&data=@import "../src/renderer/globals"',
-              scss: 'vue-style-loader!css-loader!sass-loader?data=@import "../src/renderer/globals";',
+              sass: 'vue-style-loader!css-loader!sass-loader?indentedSyntax=1&data=@import "./src/renderer/globals"',
+              scss: 'vue-style-loader!css-loader!sass-loader?data=@import "./src/renderer/globals";',
               less: 'vue-style-loader!css-loader!less-loader'
             }
           }
@@ -139,7 +139,8 @@ let rendererConfig = {
   resolve: {
     alias: {
       '@': path.join(__dirname, '../src/renderer'),
-      'vue$': 'vue/dist/vue.esm.js'
+      'vue$': 'vue/dist/vue.esm.js',
+      'util': '../src/renderer/assets/js/util.js'
     },
     extensions: ['.js', '.vue', '.json', '.css', '.node']
   },

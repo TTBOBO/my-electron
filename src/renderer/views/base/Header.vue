@@ -2,19 +2,20 @@
   <div class="tab-header">
     <div class="logo-info">
       <!-- <img class="tab-logo"
-           src="~@/assets/logo.png" /> -->
+      src="~@/assets/logo.png" />-->
       <span class="tab-name">
         网易云音乐
         <!-- 网易云音乐 -->
       </span>
-      <input class="search"
-             placeholder="搜索音乐，视频，歌词，电台" />
+      <input class="search" placeholder="搜索音乐，视频，歌词，电台">
     </div>
     <div class="tab-setting">
       <div class="user-info">
-        <img class="user-header"
-             src="~@/assets/logo.jpg" />
-        <div class="user-name font">昔日</div>
+        <img class="user-header" :src="getUserInfo.avatarUrl || '~@/assets/logo.jpg'">
+        <div class="user-name font">
+          <span v-if="getUserInfo.userId">{{getUserInfo.nickname}}</span>
+          <span v-else  @click="showLogin">未登录</span>
+        </div>
       </div>
       <span class="font">开通会员</span>
       <i class="el-icon-chat-line-round font"></i>
@@ -26,28 +27,90 @@
         <i class="el-icon-close font"></i>
       </div>
     </div>
+    <el-dialog title :visible.sync="loginStatus" width="300px">
+      <el-form
+        :model="ruleForm"
+        status-icon
+        ref="ruleForm"
+        label-width="0"
+        class=""
+      >
+        <el-form-item label="" prop="pass">
+          <el-input type="text" v-model="ruleForm.phone" autocomplete="off" placeholder="请输入手机号"></el-input>
+        </el-form-item>
+        <el-form-item label="" prop="checkPass">
+          <el-input type="password" v-model="ruleForm.password" autocomplete="off" placeholder="请输入密码"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button class="login-btn" @click="submitForm()" :loading='loading'>登录</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import util from '../../assets/js/util';
+import { mapMutations, mapGetters, mapState } from 'vuex'
 export default {
-  data () {
+  data() {
     return {
-
-    }
+	  loginStatus: false,
+	  ruleForm:{
+		  phone:"13698006449",
+		  password:"tab822520"
+	  },
+	  loading:false
+    };
   },
-  mounted () {
-    // app.on('ready', () => {
-    //   globalShortcut.register('CommandOrControl+Y', () => {
-    //     console.log('Y')
-    //   })
-    // })
+  computed:{
+	...mapGetters(['getUserInfo']),  
+  },
+  methods: {
+	...mapMutations(['INIT_ACCOUNT','INIT_PROFILE']),
+    showLogin() {
+      this.loginStatus = true;
+    },
+    async submitForm(){
+		let valid = await  this.$refs['ruleForm'].validate();
+		if (!valid) return;
+		this.loading = true;
+		try {
+			 let res = await this.$ajaxPost('login',this.ruleForm);
+			 console.log(res);
+			 let {account,profile} = res;
+			
+			this.INIT_ACCOUNT(account);
+			this.INIT_PROFILE(profile);
+			util.setLocalStorage('account',JSON.stringify(account));
+			util.setLocalStorage('profile',JSON.stringify(profile));
+			this.loading = false;
+			this.loginStatus = false;
+		} catch (error) {
+			console.log(error)
+			this.$message({
+				message: error.message,
+				type: 'error'
+			});
+			this.loading = false;
+		}
+		
+		
+	},
+	login(){
+
+	}
+  },
+  mounted() {
+	if(util.getLocalStorage('account')){
+		this.INIT_ACCOUNT(JSON.parse(util.getLocalStorage('account')));
+		this.INIT_PROFILE(JSON.parse(util.getLocalStorage('profile')));
+	}
   }
-}
+};
 </script>
 
 <style lang="scss">
-@import "../../../assets/css/base.scss";
 .tab-header {
   background: $base-color;
   height: 50px;
@@ -124,6 +187,18 @@ export default {
       width: 80px;
       display: flex;
     }
+	
   }
+  .login-btn{
+		background: $base-color;
+		color: #fff;
+		border:none;
+		width: 100%;
+		&:hover,&:focus{
+			background: $base-hcolor;
+			color: #fff;
+			border:none;
+		}
+	}
 }
 </style>

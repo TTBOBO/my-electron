@@ -6,7 +6,13 @@
 
 <script>
   export default {
-    name: 'my-electron'
+    name: 'my-electron',
+    methods:{
+
+    },
+    mounted(){
+      
+    }
   }
 </script>
 
