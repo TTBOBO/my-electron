@@ -18,14 +18,14 @@
     </div>
     <div class="play-progress">
       <span class="start-time">
-        00:00
+        {{currentTime | filterTime}}
       </span>
       <el-slider class="progress-con"
                  v-model="progressVal"
                  :show-tooltip="true"
-                 :max="300"></el-slider>
+                 :max="100"></el-slider>
       <span class="end-time">
-        03:00
+        {{duration | filterTime}}
       </span>
     </div>
     <div class="volume-con">
@@ -33,15 +33,19 @@
       <el-slider class="volume-progress"
                  v-model="volumeVal"
                  :show-tooltip="true"
-                 :max="300"></el-slider>
+                 :min="0"
+                 :max="100"></el-slider>
     </div>
     <div class="play-tool">
-      <span class="iconfont icon-xunhuan"></span>
+      <span class="iconfont"
+            :class="getModeStaus"
+            @click="changeMode"></span>
       <span>词</span>
       <span class="iconfont icon-wj-bflb"></span>
     </div>
     <audio ref="audio"
-           :src="Music.playList[Music.currentIndex]"></audio>
+           :src="Music.playList[Music.currentIndex]"
+           :loop="getMode === 1"></audio>
   </div>
 </template>
 
@@ -51,24 +55,66 @@ export default {
   data () {
     return {
       progressVal: 0,
-      volumeVal: 0,
-      index: 0
+      volumeVal: 50,
+      index: 0,
+      duration: '',
+      currentTime: ''
     }
   },
   computed: {
-    ...mapGetters(['getAudioEl']),
+    ...mapGetters(['getAudioEl', 'getMode']),
     ...mapState(['Music']),
     getAudioPlayStatus () {
-      console.log(this.$refs.audio && this.$refs.audio.paused)
       return this.$refs.audio && this.$refs.audio.paused
+    },
+    getModeStaus () {
+      return {
+        'icon-xunhuan': this.getMode === 0,
+        'icon-danquxunhuan': this.getMode === 1,
+        'icon-suijibofang': this.getMode === 2
+      }
+    }
+  },
+  filters: {
+    filterTime (val) {
+      if (!val) return '00:00';
+      val = Math.ceil(val);
+      let minute = Math.floor(val / 60);
+      let second = Math.floor(val % 60)
+      return `${minute < 10 ? '0' + minute : minute}:${second < 10 ? '0' + second : second}`;
     }
   },
   methods: {
-    ...mapMutations(['INIT_AUDIO_EL', 'SET_AUDIO_PLAYING', 'SET_CURRENT_INDEX']),
+    ...mapMutations(['INIT_AUDIO_EL', 'SET_AUDIO_PLAYING', 'SET_CURRENT_INDEX', 'SET_MODE']),
+    changeMode () {
+      this.SET_MODE();
+    },
+    initMusicInfo () {
+      this.duration = this.getAudioEl.duration;
+      // this.getAudioEl.currentTime = 190;
+
+      this.currentTime = this.getAudioEl.currentTime;
+      this.getAudioEl.ontimeupdate = this.timeChange
+    },
+    timeChange () {
+      this.currentTime = this.getAudioEl.currentTime;
+      this.progressVal = (this.currentTime / this.duration) * 100
+      if (this.progressVal == 100) {
+        this.SET_AUDIO_PLAYING();
+        this.getMode === 2 ? this.setCurrentIndex(this.getRandom()) : this.next();
+      }
+    },
+    getRandom () {
+      let res = Math.ceil(Math.random() * (this.Music.playList.length - 1));
+      if (res === this.Music.currentIndex) {
+        return this.getRandom()
+      }
+      return res;
+    },
     play () {
       this.$nextTick(() => {
-        this.$refs.audio[this.$refs.audio.paused ? 'play' : 'pause']()
         this.SET_AUDIO_PLAYING()
+        this.$refs.audio[this.$refs.audio.paused ? 'play' : 'pause']()
       })
     },
     prev () {
@@ -80,26 +126,43 @@ export default {
     setCount (status = 'prev') {
       let index = this.Music.currentIndex
       let len = this.Music.playList.length
-      index = status === 'prev' ? index -= 1 : index += 1
-      if (index < 0) {
-        index = len - 1
-      } else if (index > len - 1) {
-        index = 0
+      if (this.getMode === 2) {
+        index = this.getRandom();
+      } else {
+        index = status === 'prev' ? index -= 1 : index += 1;
+        if (index < 0) {
+          index = len - 1
+        } else if (index > len - 1) {
+          index = 0
+        }
       }
+
+      this.setCurrentIndex(index);
+    },
+    setCurrentIndex (index) {
       this.SET_CURRENT_INDEX(index)
       if (!this.$refs.audio.paused) {
         this.SET_AUDIO_PLAYING()
-        this.$nextTick(() => {
-          setTimeout(() => {
-            this.play()
-          }, 200)
-        })
       }
+      this.$nextTick(() => {
+        setTimeout(() => {
+          this.play()
+        }, 100)
+      })
     }
   },
   mounted () {
-    this.INIT_AUDIO_EL(this.$refs.audio)
-    console.log(this.Music)
+    this.INIT_AUDIO_EL(this.$refs.audio);
+    this.$nextTick(() => {
+      // this.getAudioEl.currentTime = 190;
+      this.getAudioEl.oncanplay = this.initMusicInfo
+    })
+    this.getAudioEl.volume = this.volumeVal / 100;  //设置音量大小
+  },
+  watch: {
+    volumeVal (newV) {
+      this.getAudioEl.volume = newV / 100;
+    }
   }
 }
 </script>

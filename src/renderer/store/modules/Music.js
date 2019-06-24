@@ -1,6 +1,6 @@
 const state = {
   audioEl: null, // 播放器
-  mode: 0, // 默认循环
+  mode: 0, // 0默认循环  1 单曲循环  2随机
   playing: false,
   playList: ['https://music.163.com/song/media/outer/url?id=34057974.mp3',
     'https://music.163.com/song/media/outer/url?id=450424527.mp3',
@@ -21,6 +21,10 @@ const mutations = {
   },
   SET_CURRENT_INDEX(state, index) {
     state.currentIndex = index
+  },
+  SET_MODE(state) {
+    state.mode = state.mode + 1 > 2 ? 0 : state.mode + 1;
+    console.log(state.mode);
   }
 }
 
@@ -35,7 +39,8 @@ const actions = {
 
 const getters = {
   getAudioEl: state => state.audioEl,
-  getPlayStatus: state => state.playing
+  getPlayStatus: state => state.playing,
+  getMode: state => state.mode
 }
 
 export default {
