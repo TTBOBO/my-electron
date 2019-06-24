@@ -60,8 +60,10 @@ export default {
     //   console.log(this.getAudioEl.currentTime)
     // },
     initPlay () {
-      this.currentLyric = new Lyric(this.musicStr, ({ lineNum, txt }) => {
-        console.log(lineNum, txt)
+      this.currentLyric = new Lyric(this.musicStr, (params) => {
+        const { lineNum, txt } = params
+        console.log(params)
+        // console.log(lineNum, txt)
         this.currentLineNum = lineNum
         if (lineNum > 5) {
           let lineEl = this.$refs.lyricLine[lineNum - 5]
@@ -71,8 +73,7 @@ export default {
         }
         this.playingLyric = txt
       });
-
-      console.log(this.currentLyric)
+      // this.currentLyric.seek(this.getAudioEl.currentTime*1000)
     }
   },
   created () {

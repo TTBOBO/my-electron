@@ -23,7 +23,9 @@
       <el-slider class="progress-con"
                  v-model="progressVal"
                  :show-tooltip="true"
-                 :max="100"></el-slider>
+                 :min="0"
+                 @change="changePro"
+                 :max="duration"></el-slider>
       <span class="end-time">
         {{duration | filterTime}}
       </span>
@@ -57,7 +59,7 @@ export default {
       progressVal: 0,
       volumeVal: 50,
       index: 0,
-      duration: '',
+      duration: 0,
       currentTime: ''
     }
   },
@@ -98,8 +100,8 @@ export default {
     },
     timeChange () {
       this.currentTime = this.getAudioEl.currentTime;
-      this.progressVal = (this.currentTime / this.duration) * 100
-      if (this.progressVal == 100) {
+      this.progressVal = this.currentTime;
+      if (this.progressVal == this.duration) {
         this.SET_AUDIO_PLAYING();
         this.getMode === 2 ? this.setCurrentIndex(this.getRandom()) : this.next();
       }
@@ -149,6 +151,9 @@ export default {
           this.play()
         }, 100)
       })
+    },
+    changePro (val) {
+      this.getAudioEl.currentTime = val;
     }
   },
   mounted () {
@@ -162,7 +167,10 @@ export default {
   watch: {
     volumeVal (newV) {
       this.getAudioEl.volume = newV / 100;
-    }
+    },
+    // progressVal (newV) {
+    //   // this.getAudioEl.currentTime = newV;
+    // }
   }
 }
 </script>

@@ -9,7 +9,8 @@ const state = {
   ],
   orderList: [],
   currentIndex: 0,
-  historyList: []
+  historyList: [],
+  currentLyric: null
 }
 
 const mutations = {
