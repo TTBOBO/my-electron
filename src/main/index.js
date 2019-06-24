@@ -1,4 +1,8 @@
-import { app, BrowserWindow } from 'electron'
+import {
+  app,
+  BrowserWindow,
+  ipcMain
+} from 'electron'
 
 /**
  * Set `__static` path to static files in production
@@ -9,18 +13,22 @@ if (process.env.NODE_ENV !== 'development') {
 }
 
 let mainWindow
-const winURL = process.env.NODE_ENV === 'development'
-  ? `http://localhost:9080`
-  : `file://${__dirname}/index.html`
+const winURL = process.env.NODE_ENV === 'development' ?
+  `http://localhost:9080` :
+  `file://${__dirname}/index.html`
 
-function createWindow () {
+function createWindow() {
   /**
    * Initial window options
    */
   mainWindow = new BrowserWindow({
+    minWidth: 1200,
     height: 563,
     useContentSize: true,
-    width: 1000
+    width: 1200,
+    darkTheme: true,
+    frame: false,
+    titleBarStyle: 'hidden'
   })
 
   mainWindow.loadURL(winURL)
@@ -28,6 +36,12 @@ function createWindow () {
   mainWindow.on('closed', () => {
     mainWindow = null
   })
+
+  mainWindow.on('miniSize', () => {
+    mainWindow.minimize();
+  })
+
+
 }
 
 app.on('ready', createWindow)
@@ -43,7 +57,11 @@ app.on('activate', () => {
     createWindow()
   }
 })
-
+ipcMain.on('miniSize', () => mainWindow.minimize());
+ipcMain.on('maxSize', () => {
+  mainWindow[mainWindow.isMaximized() ? 'unmaximize' : 'maximize']()
+});
+ipcMain.on('close', () => mainWindow.minimize());
 /**
  * Auto Updater
  *
