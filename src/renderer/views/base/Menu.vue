@@ -80,6 +80,7 @@ export default {
         line-height: 32px;
       }
       .menu-group-item {
+        cursor: pointer;
         height: 32px;
         font-size: 13px;
         padding-left: 20px;

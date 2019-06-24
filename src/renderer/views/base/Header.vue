@@ -109,7 +109,6 @@ export default {
       this.loading = true;
       try {
         let res = await this.$ajaxPost('login', this.ruleForm);
-        console.log(res);
         let { account, profile } = res;
 
         this.INIT_ACCOUNT(account);
@@ -137,7 +136,6 @@ export default {
     userInfo
   },
   mounted () {
-    console.log(this.$electron);
     if (util.getLocalStorage('account')) {
       this.INIT_ACCOUNT(JSON.parse(util.getLocalStorage('account')));
       this.INIT_PROFILE(JSON.parse(util.getLocalStorage('profile')));
