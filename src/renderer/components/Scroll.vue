@@ -86,5 +86,6 @@ export default {
   height: 100%;
   overflow: hidden;
   position: relative;
+  z-index: 5;
 }
 </style>
