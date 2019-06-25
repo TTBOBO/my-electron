@@ -60,7 +60,7 @@ export default {
       volumeVal: 50,
       index: 0,
       duration: 0,
-      currentTime: ''
+      currentTime: 0
     }
   },
   computed: {
@@ -93,18 +93,23 @@ export default {
     },
     initMusicInfo () {
       this.duration = this.getAudioEl.duration;
-      // this.getAudioEl.currentTime = 190;
-
       this.currentTime = this.getAudioEl.currentTime;
       this.getAudioEl.ontimeupdate = this.timeChange
     },
     timeChange () {
       this.currentTime = this.getAudioEl.currentTime;
+      if (!this.currentTime) {
+        if (this.getMode === 1) {
+          this.$EventBus.$emit('loop');
+        }
+
+      }
       this.progressVal = this.currentTime;
       if (this.progressVal == this.duration) {
         this.SET_AUDIO_PLAYING();
         this.getMode === 2 ? this.setCurrentIndex(this.getRandom()) : this.next();
       }
+
     },
     getRandom () {
       let res = Math.ceil(Math.random() * (this.Music.playList.length - 1));
@@ -154,6 +159,7 @@ export default {
     },
     changePro (val) {
       this.getAudioEl.currentTime = val;
+      this.$EventBus.$emit('changePro', val);
     }
   },
   mounted () {
@@ -167,10 +173,7 @@ export default {
   watch: {
     volumeVal (newV) {
       this.getAudioEl.volume = newV / 100;
-    },
-    // progressVal (newV) {
-    //   // this.getAudioEl.currentTime = newV;
-    // }
+    }
   }
 }
 </script>
