@@ -38,6 +38,7 @@ export default {
   },
   methods: {
     loop (time) {
+      console.log(2222)
       this.$refs.lyricList.scrollTo(0, 0, 1000);
       this.currentLyric.seek(0 * 1000)
     },
@@ -54,7 +55,6 @@ export default {
         }
         this.playingLyric = txt
       });
-      console.log(this.currentLyric)
     }
   },
   computed: {
@@ -82,6 +82,7 @@ export default {
     },
     getCurrentIndex (newV) {
       this.currentLyric.stop();  //停止歌词
+      this.currentLineNum = '';  //清除选中状态
       this.$refs.lyricList.scrollTo(0, 0, 0);
       this.initPlay();
     }
