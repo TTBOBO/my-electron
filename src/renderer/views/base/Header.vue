@@ -74,6 +74,7 @@
 <script>
 import util from '../../assets/js/util';
 import { mapMutations, mapGetters, mapState } from 'vuex'
+import userInfo from './auth/userinfo';
 export default {
   data () {
     return {

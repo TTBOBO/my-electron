@@ -45,7 +45,7 @@ function createWindow() {
   })
 
   const tray = new Tray(
-    '/Users/Administrator/Desktop/electron/my-electron/build/icons/256x256.png'
+    'C:/Users/TAB000/Desktop/my-electron/build/icons/256x256.png'
   )
   console.log(process.platform === 'darwin')
   const contextMenu = Menu.buildFromTemplate([{

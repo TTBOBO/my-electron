@@ -2,7 +2,7 @@ import axios from 'axios';
 import request from './api';
 
 axios.defaults.timeout = 8000;
-axios.defaults.baseURL = "http://localhost:3000"; //http://123.207.114.48:86
+axios.defaults.baseURL = "http://t3yp9p.natappfree.cc"; //http://123.207.114.48:86
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
 /**
  * 请求配置
