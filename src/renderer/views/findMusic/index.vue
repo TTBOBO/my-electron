@@ -9,8 +9,7 @@
 </template>
 
 <script>
-const electron = require('electron')
-// console.log(electron)
+
 export default {
   data () {
     return {}
@@ -37,6 +36,7 @@ export default {
     // dialog.showOpenDialog({ properties: ['openFile', 'openDirectory', 'multiSelections'] })
     console.log(this.$electron.remote.BrowserView.getAllViews())
     this.onload();
+
   }
 }
 </script>

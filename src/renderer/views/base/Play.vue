@@ -53,6 +53,8 @@
 
 <script>
 import { mapMutations, mapGetters, mapState } from 'vuex'
+const electron = require('electron')
+const { ipcRenderer } = electron;
 export default {
   data () {
     return {
@@ -160,6 +162,17 @@ export default {
     changePro (val) {
       this.getAudioEl.currentTime = val;
       this.$EventBus.$emit('changePro', val);
+    },
+    ipcEvent () {
+      ipcRenderer.on('playPrev', () => {
+        this.prev();
+      })
+      ipcRenderer.on('playNext', () => {
+        this.next();
+      })
+      ipcRenderer.on('togglePlay', () => {
+        this.play();
+      })
     }
   },
   mounted () {
@@ -169,6 +182,7 @@ export default {
       this.getAudioEl.oncanplay = this.initMusicInfo
     })
     this.getAudioEl.volume = this.volumeVal / 100;  //设置音量大小
+    this.ipcEvent();
   },
   watch: {
     volumeVal (newV) {

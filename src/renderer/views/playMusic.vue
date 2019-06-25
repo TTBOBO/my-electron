@@ -21,6 +21,7 @@
 import Lyric from 'lyric-parser';
 import Scroll from '@/components/Scroll.vue';
 import { mapMutations, mapGetters, mapState } from 'vuex'
+
 export default {
   data () {
     return {
