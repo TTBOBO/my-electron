@@ -6,6 +6,7 @@
            :key="index">
         <span class="menu-group-name">{{item.name}}</span>
         <div class="menu-group-item"
+             @click="handler(_child)"
              :class="{active:_index===1 && index === 0}"
              v-for="(_child,_index) in item.group"
              :key="_index">
@@ -24,7 +25,8 @@ export default {
       menuConf: [{
         name: '推荐',
         group: [{
-          name: '发现音乐'
+          name: '发现音乐',
+          path: "/findMusic"
         }, {
           name: '私人FM'
         }, {
@@ -55,6 +57,13 @@ export default {
         }]
       }]
     }
+  },
+  methods: {
+    handler ({ path }) {
+      if (path) {
+        this.$router.push({ path })
+      }
+    }
   }
 }
 </script>
@@ -80,6 +89,7 @@ export default {
         line-height: 32px;
       }
       .menu-group-item {
+        cursor: pointer;
         height: 32px;
         font-size: 13px;
         padding-left: 20px;

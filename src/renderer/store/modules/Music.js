@@ -1,30 +1,37 @@
 const state = {
   audioEl: null, // 播放器
-  mode: 0, // 默认循环
+  mode: 0, // 0默认循环  1 单曲循环  2随机
   playing: false,
-  playList: ['https://music.163.com/song/media/outer/url?id=450424527.mp3',
+  playList: ['https://music.163.com/song/media/outer/url?id=34057974.mp3',
+    'https://music.163.com/song/media/outer/url?id=472219602.mp3',
+    // 'https://music.163.com/song/media/outer/url?id=19150932.mp3',
+    // 'https://music.163.com/song/media/outer/url?id=450424527.mp3',19150932
     // 'https://music.163.com/song/media/outer/url?id=557581284.mp3',
-    'https://music.163.com/song/media/outer/url?id=452986458.mp3'
+    // 'https://music.163.com/song/media/outer/url?id=452986458.mp3'
   ],
   orderList: [],
-  currentIndex: 0,
-  historyList: []
+  currentIndex: 1,
+  historyList: [],
+  currentLyric: null
 }
 
 const mutations = {
-  INIT_AUDIO_EL (state, params) {
+  INIT_AUDIO_EL(state, params) {
     state.audioEl = params
   },
-  SET_AUDIO_PLAYING (state) {
+  SET_AUDIO_PLAYING(state) {
     state.playing = !state.playing
   },
-  SET_CURRENT_INDEX (state, index) {
+  SET_CURRENT_INDEX(state, index) {
     state.currentIndex = index
+  },
+  SET_MODE(state) {
+    state.mode = state.mode + 1 > 2 ? 0 : state.mode + 1;
   }
 }
 
 const actions = {
-  init_audio_el ({
+  init_audio_el({
     commit
   }) {
     // do something async
@@ -33,7 +40,10 @@ const actions = {
 }
 
 const getters = {
-  getAudioEl: state => state.audioEl
+  getAudioEl: state => state.audioEl,
+  getPlayStatus: state => state.playing,
+  getMode: state => state.mode,
+  getCurrentIndex: state => state.currentIndex
 }
 
 export default {

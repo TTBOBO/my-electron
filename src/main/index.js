@@ -1,34 +1,96 @@
-import { app, BrowserWindow } from 'electron'
+import {
+  app,
+  BrowserWindow,
+  ipcMain,
+  Tray,
+  Menu,
+  ipcRenderer
+} from 'electron'
 
 /**
  * Set `__static` path to static files in production
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
  */
 if (process.env.NODE_ENV !== 'development') {
-  global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
+  global.__static = require('path')
+    .join(__dirname, '/static')
+    .replace(/\\/g, '\\\\')
 }
 
 let mainWindow
-const winURL = process.env.NODE_ENV === 'development'
-  ? `http://localhost:9080`
-  : `file://${__dirname}/index.html`
+const winURL =
+  process.env.NODE_ENV === 'development' ?
+  `http://localhost:9080` :
+  `file://${__dirname}/index.html`
 
-function createWindow () {
+function createWindow() {
   /**
    * Initial window options
    */
+  // new tray('../renderer/assets/logo.png').on('right-click', () => {
+  //   console.log(112313)
+  // })
+  // tray.on('right-click', () => {
+  //   console.log(111)
+  // })
+  // console.log()
   mainWindow = new BrowserWindow({
+    minWidth: 1200,
     height: 563,
     useContentSize: true,
-    width: 1000
+    width: 1200,
+    darkTheme: true,
+    frame: false,
+    titleBarStyle: 'hidden'
   })
 
+  const tray = new Tray(
+    '/Users/Administrator/Desktop/electron/my-electron/build/icons/256x256.png'
+  )
+  console.log(process.platform === 'darwin')
+  const contextMenu = Menu.buildFromTemplate([{
+      label: '上一首',
+      click() {
+        mainWindow.send('playPrev')
+      }
+    },
+    {
+      label: '播放/暂停',
+      click() {
+        mainWindow.send('togglePlay')
+      }
+    }, {
+      label: '下一首',
+      click() {
+        mainWindow.send('playNext')
+      }
+    }
+  ])
+  tray.setToolTip('This is my application.')
+  tray.setTitle('标题')
+  tray.setContextMenu(contextMenu)
+  tray.on('right-click', () => {
+    console.log(1111)
+  })
+
+  tray.on('drop-file', () => {
+    console.log(2222)
+  })
   mainWindow.loadURL(winURL)
 
   mainWindow.on('closed', () => {
     mainWindow = null
   })
+
+  mainWindow.on('miniSize', () => {
+    mainWindow.minimize()
+  })
+
+  // const ret = globalShortcut.register('CommandOrControl+X', () => { //注册快捷键
+  //   mainWindow.minimize()
+  // })
 }
+// console.log(process.versions.electron)
 
 app.on('ready', createWindow)
 
@@ -44,6 +106,17 @@ app.on('activate', () => {
   }
 })
 
+app.on('blur', () => {
+  console.log(12313)
+})
+ipcMain.on('miniSize', () => mainWindow.minimize())
+ipcMain.on('maxSize', () => {
+  mainWindow[mainWindow.isMaximized() ? 'unmaximize' : 'maximize']()
+})
+ipcMain.on('close', () => mainWindow.minimize())
+// ipcMain.on('playPrev', (event) => {
+//   event.reply('playPrevMusic')
+// })
 /**
  * Auto Updater
  *

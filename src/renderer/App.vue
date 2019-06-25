@@ -5,19 +5,20 @@
 </template>
 
 <script>
-  export default {
-    name: 'my-electron',
-    methods:{
+export default {
+  name: 'my-electron',
+  methods: {
 
-    },
-    mounted(){
-      
-    }
+  },
+  mounted () {
+
   }
+}
 </script>
 
 <style>
-@import url("//at.alicdn.com/t/font_1254014_l857l6ary3.css");
+@import url("https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css");
+@import url("//at.alicdn.com/t/font_1254014_qzj9mlc4n3s.css");
 html,
 body,
 #app {
