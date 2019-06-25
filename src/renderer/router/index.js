@@ -13,6 +13,10 @@ export default new Router({
         path: '/play',
         name: 'main',
         component: require('@/views/playMusic.vue').default,
+      }, {
+        path: '/findMusic',
+        name: 'findMusic',
+        component: require('@/views/findMusic/index.vue').default,
       }]
     },
     {
