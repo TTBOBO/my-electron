@@ -17,6 +17,10 @@ export default new Router({
         path: '/findMusic',
         name: 'findMusic',
         component: require('@/views/findMusic/index.vue').default,
+      }, {
+        path: '/playList',
+        name: 'playList',
+        component: require('@/views/findMusic/playList.vue').default,
       }]
     },
     {

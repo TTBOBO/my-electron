@@ -92,7 +92,7 @@ export default {
     ...mapGetters(['getUserInfo']),
   },
   methods: {
-    ...mapMutations(['INIT_ACCOUNT', 'INIT_PROFILE']),
+    ...mapMutations(['INIT_ACCOUNT', 'INIT_PROFILE', 'SET_PLAYLIST']),
     sendStatus (type) {
       if (type === 'maxSize') {
         this.isFull = !this.isFull;
@@ -117,6 +117,7 @@ export default {
         util.setLocalStorage('profile', JSON.stringify(profile));
         this.loading = false;
         this.loginStatus = false;
+        // this.getSubcount();
       } catch (error) {
         console.log(error)
         this.$message({
@@ -125,8 +126,14 @@ export default {
         });
         this.loading = false;
       }
-
-
+    },
+    async getSubcount () {
+      let subcountData = await this.$ajaxPost('subcount');
+      console.log(subcountData);
+    },
+    async getPlayList () {
+      let playListData = await this.$ajaxPost('playlist', { uid: this.getUserInfo.userId });
+      this.SET_PLAYLIST(playListData.playlist);
     },
     login () {
 
@@ -140,6 +147,8 @@ export default {
       this.INIT_ACCOUNT(JSON.parse(util.getLocalStorage('account')));
       this.INIT_PROFILE(JSON.parse(util.getLocalStorage('profile')));
     }
+    this.getSubcount();
+    this.getPlayList();
   }
 };
 </script>

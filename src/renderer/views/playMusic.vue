@@ -38,7 +38,6 @@ export default {
   },
   methods: {
     loop (time) {
-      console.log(2222)
       this.$refs.lyricList.scrollTo(0, 0, 1000);
       this.currentLyric.seek(0 * 1000)
     },
