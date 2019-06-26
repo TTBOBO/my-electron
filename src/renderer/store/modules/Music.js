@@ -21,6 +21,7 @@ const mutations = {
     state.audioEl = params
   },
   SET_AUDIO_PLAYING(state) {
+    console.log(state.playing)
     state.playing = !state.playing
   },
   SET_CURRENT_INDEX(state, index) {

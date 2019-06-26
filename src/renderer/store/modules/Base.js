@@ -15,6 +15,8 @@ const mutations = {
   LOGINOUT(state) {
     state.account = {};
     state.profile = {};
+    state.creatPlayList = [];
+    state.collecPlayLit = [];
   },
   SET_PLAYLIST(state, list = []) {
     list.forEach((item) => {

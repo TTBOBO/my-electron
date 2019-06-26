@@ -69,7 +69,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['getPlayList', 'getCurrentPlaylist', 'getCurrentPlayMusic']),
+    ...mapGetters(['getPlayList', 'getCurrentPlaylist', 'getCurrentPlayMusic','getUserInfo']),
     ...mapState(['Music']),
   },
   methods: {
@@ -91,6 +91,9 @@ export default {
       }
     }
   },
+  created(){
+    this.defaultData = JSON.parse(JSON.stringify(this.menuConf))
+  },
   watch: {
     getPlayList: {
       handler (newV) {
@@ -98,6 +101,11 @@ export default {
         this.menuConf[3].group.push(...newV.collecPlayLit);
       },
       immediate: true
+    },
+    getUserInfo(newV){
+      if(!newV.userId){
+        this.menuConf = this.defaultData;
+      }
     }
   }
 }

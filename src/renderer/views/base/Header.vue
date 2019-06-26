@@ -117,7 +117,8 @@ export default {
         util.setLocalStorage('profile', JSON.stringify(profile));
         this.loading = false;
         this.loginStatus = false;
-        // this.getSubcount();
+        this.getSubcount();
+        this.getPlayList()
       } catch (error) {
         console.log(error)
         this.$message({
@@ -147,8 +148,9 @@ export default {
       this.INIT_ACCOUNT(JSON.parse(util.getLocalStorage('account')));
       this.INIT_PROFILE(JSON.parse(util.getLocalStorage('profile')));
     }
+    
     this.getSubcount();
-    this.getPlayList();
+    this.getPlayList()
   }
 };
 </script>

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import request from './api';
 
-axios.defaults.timeout = 8000;
+axios.defaults.timeout = 2000;
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = "http://hu4897.natappfree.cc/";
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';

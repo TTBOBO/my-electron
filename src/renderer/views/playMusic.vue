@@ -1,16 +1,21 @@
 <template>
-  <div class="music-container">
+  <div class="music-container" v-loading="loading">
     <div class="msk"></div>
     <div class="msk2"></div>
     <Scroll ref="lyricList">
       <div class="lyric">
-        <p ref="lyricLine"
-           v-for="(line,index) in currentLyric.lines"
-           :class="{active:currentLineNum === index}"
-           :key="index">
-          {{line.txt}}
-          <!-- <br /> {{line.txt}} -->
-        </p>
+        <template v-if="currentLyric.lines">
+          <p ref="lyricLine"
+            v-for="(line,index) in currentLyric.lines"
+            :class="{active:currentLineNum === index}"
+            :key="index">
+            {{line.txt}}
+            <!-- <br /> {{line.txt}} -->
+          </p>
+        </template>
+        <div class="no-lyric">
+          暂无歌词
+        </div>
       </div>
     </Scroll>
 
@@ -34,19 +39,33 @@ export default {
       ],
       currentLineNum: '',
       currentLyric: {},
+      loading:false
     }
   },
   methods: {
+    ...mapMutations(['SET_AUDIO_PLAYING']),
     loop (time) {
+      if(!this.currentLyric.lines) return;
       this.$refs.lyricList.scrollTo(0, 0, 1000);
       this.currentLyric.seek(0 * 1000)
     },
     changePro (time) {
+      // console.log(time)
+      if(!this.currentLyric.lines) return;
       this.currentLyric.seek(time * 1000)
+      
+      // if(this.currentLineNum < 5){
+      //    this.$refs.lyricList.scrollTo(0, 0, 1000);
+      // }else{
+      //   let lineEl = this.$refs.lyricLine[lineNum - 5]
+      //   this.$refs.lyricList.scrollToElement(lineEl, 1000)// 滚动到元素
+      // }
     },
     initPlay (lyric) {
+      console.log(333)
       //this.musicStr[this.getCurrentIndex]
       this.currentLyric = new Lyric(lyric, (params) => {
+        console.log(params)
         const { lineNum, txt } = params;
         this.currentLineNum = lineNum
         if (lineNum > 5) {
@@ -55,7 +74,20 @@ export default {
         }
         this.playingLyric = txt
       });
-    }
+    },
+    async getMusicLyric(){
+      this.loading = true;
+      let res = await this.$ajaxGet('lyric', { id: this.getCurrentPlayMusic.id })
+      if (res.code === 200 && res.lrc) {
+        this.initPlay(res.lrc.lyric);
+      }else{
+        this.currentLyric = {};  //清空
+      }
+      this.loading = false;
+    },
+    // timeChange(time){
+    //   console.log(time);
+    // }
   },
   props: {
     // id: {
@@ -71,31 +103,54 @@ export default {
       'getCurrentPlayMusic'
     ])
   },
+  
   async mounted () {
     this.$nextTick(async () => {
       this.$EventBus.$on('loop', this.loop);
       this.$EventBus.$on('changePro', this.changePro);  //设置歌曲进度
-      let res = await this.$ajaxGet('lyric', { id: this.getCurrentPlayMusic.id })
-      console.log(res);
-      if (res.code === 200 && res.lrc.lyric) {
-        this.initPlay(res.lrc.lyric);
-      }
+      // if(){
 
+      // }
+      
+      // console.log(this.time)
+      if(!this.currentLyric.lines) return;
+      this.currentLyric.seek(time * 1000)
+      await this.getMusicLyric();
+      if(this.getPlayStatus) {
+        this.currentLyric.togglePlay(); 
+      }
     })
   },
-  created () { },
+  destroyed(){
+    this.currentLyric.stop();  //停止歌词
+    this.currentLyric = {};
+    
+  },
+  created () {
+    // this.$EventBus.$on('timeChange',(time) => {
+    //     this.time = time;
+    //   })
+  },
   components: {
     Scroll
   },
   watch: {
-    getPlayStatus (newV) {
+    getPlayStatus(newV){
+      // console.log(this.currentLyric)
+      if(!this.currentLyric.lines) return;
       this.currentLyric.togglePlay();  //播放暂停歌词
+      console.log(1111)
     },
     getCurrentIndex (newV) {
-      this.currentLyric.stop();  //停止歌词
-      this.currentLineNum = '';  //清除选中状态
+      if(this.currentLyric.lines) {
+        console.log(2222)
+        this.currentLyric.stop();  //停止歌词
+        this.currentLineNum = '';  //清除选中状态
+        this.currentLyric = {}
+      }
+      
       this.$refs.lyricList.scrollTo(0, 0, 0);
-      this.initPlay();
+      this.getMusicLyric();
     }
   }
 }
@@ -133,6 +188,8 @@ export default {
     margin: 0 auto;
     text-align: center;
     width: 420px;
+    height: 100%;
+    
     p {
       color: #989898;
       word-wrap: break-word;
@@ -147,6 +204,12 @@ export default {
       color: #fff;
       font-size: 14px;
       transition: color 0.3s linear;
+    }
+    .no-lyric{
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
   }
 }

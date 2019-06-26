@@ -110,6 +110,7 @@ export default {
     },
     timeChange () {
       this.currentTime = this.getAudioEl.currentTime;
+      this.$EventBus.$emit('timeChange',this.currentTime); //告诉歌词那边当前播放时间
       if (!this.currentTime) {
         if (this.getMode === 1) {
           this.$EventBus.$emit('loop');
