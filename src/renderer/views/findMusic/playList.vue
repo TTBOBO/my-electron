@@ -16,7 +16,8 @@
           <span>{{getCurretList.createTime | time}}创建</span>
         </p>
         <div class="play-tool">
-          <div class="btn">播放全部</div>
+          <div class="btn"
+               @click="playAll">播放全部</div>
           <div class="btn btn-dis">收藏</div>
           <div class="btn">分享</div>
           <div class="btn">下载</div>
@@ -62,24 +63,28 @@
         </tbody>
       </table>
     </div>
+    <div class="music-ly"
+         v-if="showLyStatus">
+      <PlayMusic></PlayMusic>
+    </div>
   </div>
 </template>
 
 <script>
 import { mapMutations, mapGetters, mapState } from 'vuex';
 import util from '@/assets/js/util'
+import PlayMusic from '../playMusic'
 export default {
   data () {
     return {
       currentPlayList: this.getCurretList || {},
-      playlist: {
-        // tracks: []
-      },
-      activeName: "歌曲列表"
+      playlist: {},
+      activeName: "歌曲列表",
+      showLyStatus: false
     }
   },
   computed: {
-    ...mapGetters(['getPlayList', 'getUserInfo']),
+    ...mapGetters(['getPlayList', 'getUserInfo', 'getCurrentIndex']),
     getCurretList () {
       const { id, type } = this.$route.query;
       this.currentPlayList = this.getPlayList[type == 1 ? 'creatPlayList' : 'collecPlayLit'].filter(item => item.id == id)[0] || {};
@@ -96,23 +101,43 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['SET_PLAY_LIST']),
     async initPlaylistDetail () {
       let { playlist, code, privileges } = await this.$ajaxGet('playlistDetail', { id: this.getCurretList.id });
       if (code == 200) {
         this.playlist = playlist;
-        console.log(this.playlist.tracks)
       }
     },
     handleClick (params) {
       // console.log(params);
+    },
+    playAll () {
+      this.SET_PLAY_LIST(this.playlist.tracks);
+    },
+    showLy () {
+      console.log(this.getCurrentIndex)
+      if (this.getCurrentIndex === null) {
+        console.log(111)
+        return false;
+      }
+      this.showLyStatus = !this.showLyStatus;
     }
+  },
+  mounted () {
+    this.$EventBus.$on('showLy', this.showLy);
   },
   created () {
 
   },
+  components: {
+    PlayMusic
+  },
   watch: {
-    getCurretList (newV, oldV) {
-      this.initPlaylistDetail();
+    getCurretList: {
+      handler (newV, oldV) {
+        this.initPlaylistDetail();
+      },
+      immediate: true
     }
   }
 }
@@ -123,6 +148,7 @@ export default {
   display: flex;
   flex-flow: column;
   height: 100%;
+  position: relative;
   .play-top {
     padding: 20px 25px;
     display: flex;
@@ -226,6 +252,13 @@ export default {
       color: #b6b6b6;
       margin-left: 5px;
     }
+  }
+  .music-ly {
+    position: absolute;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
   }
 }
 </style>

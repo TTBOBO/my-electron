@@ -44,8 +44,9 @@ export default {
     changePro (time) {
       this.currentLyric.seek(time * 1000)
     },
-    initPlay () {
-      this.currentLyric = new Lyric(this.musicStr[this.getCurrentIndex], (params) => {
+    initPlay (lyric) {
+      //this.musicStr[this.getCurrentIndex]
+      this.currentLyric = new Lyric(lyric, (params) => {
         const { lineNum, txt } = params;
         this.currentLineNum = lineNum
         if (lineNum > 5) {
@@ -56,19 +57,30 @@ export default {
       });
     }
   },
+  props: {
+    // id: {
+    //   type: Number,
+    // }
+  },
   computed: {
     ...mapGetters([
       'getPlayStatus',
       'getAudioEl',
       'getMode',
-      'getCurrentIndex'
+      'getCurrentIndex',
+      'getCurrentPlayMusic'
     ])
   },
-  mounted () {
-    this.$nextTick(() => {
+  async mounted () {
+    this.$nextTick(async () => {
       this.$EventBus.$on('loop', this.loop);
       this.$EventBus.$on('changePro', this.changePro);  //设置歌曲进度
-      this.initPlay();
+      let res = await this.$ajaxGet('lyric', { id: this.getCurrentPlayMusic.id })
+      console.log(res);
+      if (res.code === 200 && res.lrc.lyric) {
+        this.initPlay(res.lrc.lyric);
+      }
+
     })
   },
   created () { },
@@ -94,6 +106,7 @@ export default {
   width: 100%;
   height: 100%;
   position: relative;
+  background: #fff;
   .msk {
     left: 0;
     right: 0;

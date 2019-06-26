@@ -9,5 +9,6 @@ const REQUEST = {
   subcount: "/user/subcount", //获取用户信息 , 歌单，收藏，mv, dj 数量
   playlist: '/user/playlist', //用户歌单
   playlistDetail: "/playlist/detail", //歌单详情
+  lyric: '/lyric', //歌词
 }
 export default REQUEST;

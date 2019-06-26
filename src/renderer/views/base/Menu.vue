@@ -15,12 +15,14 @@
         </div>
       </div>
     </div>
-    <div class="music-con">
-      <img src=""
+    <div class="music-con"
+         v-if="Music.currentIndex !== null && getCurrentPlaylist.length">
+      <img :src="getCurrentPlayMusic.al.picUrl"
            alt=""
            class="music-pic">
       <div class="music-name">
-        <span>121313</span>
+        <p>{{getCurrentPlayMusic.name}}</p>
+        <p>{{getCurrentPlayMusic.al.name}}</p>
       </div>
       <div class="music-icon">
         <i class="iconfont icon-aixin1"></i>
@@ -67,7 +69,8 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['getPlayList'])
+    ...mapGetters(['getPlayList', 'getCurrentPlaylist', 'getCurrentPlayMusic']),
+    ...mapState(['Music']),
   },
   methods: {
     handler ({ path, name, id }, { label }) {
@@ -157,17 +160,33 @@ export default {
     display: flex;
     flex-flow: row;
     justify-content: space-around;
+    background: #fff;
     .music-pic {
       width: 50px;
       height: 50px;
       object-fit: cover;
     }
     .music-name {
+      font-size: 12px;
+      flex: 1;
+      padding: 9px 10px;
+      display: flex;
+      overflow: hidden;
+      flex-flow: column;
+      justify-content: space-between;
+
+      p {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
     }
     .music-icon {
       display: flex;
       flex-flow: column;
       justify-content: space-between;
+      margin-right: 5px;
+      padding: 5px 0;
     }
   }
 }

@@ -42,11 +42,13 @@
       <span class="iconfont"
             :class="getModeStaus"
             @click="changeMode"></span>
-      <span>词</span>
+      <span @click="showLy">词</span>
       <span class="iconfont icon-wj-bflb"></span>
     </div>
+
+    <!-- v-if="getCurrentPlaylist[Music.currentIndex]" -->
     <audio ref="audio"
-           :src="Music.playList[Music.currentIndex]"
+           :src="getMusicUrl"
            :loop="getMode === 1"></audio>
   </div>
 </template>
@@ -62,11 +64,11 @@ export default {
       volumeVal: 50,
       index: 0,
       duration: 0,
-      currentTime: 0
+      currentTime: 0,
     }
   },
   computed: {
-    ...mapGetters(['getAudioEl', 'getMode']),
+    ...mapGetters(['getAudioEl', 'getMode', 'getCurrentPlaylist']),
     ...mapState(['Music']),
     getAudioPlayStatus () {
       return this.$refs.audio && this.$refs.audio.paused
@@ -77,6 +79,11 @@ export default {
         'icon-danquxunhuan': this.getMode === 1,
         'icon-suijibofang': this.getMode === 2
       }
+    },
+    getMusicUrl () {
+      console.log(this.getCurrentPlaylist, this.Music.currentIndex)
+      if (!this.getCurrentPlaylist[this.Music.currentIndex]) return "";
+      return `https://music.163.com/song/media/outer/url?id=${this.getCurrentPlaylist[this.Music.currentIndex].id}.mp3`
     }
   },
   filters: {
@@ -86,10 +93,13 @@ export default {
       let minute = Math.floor(val / 60);
       let second = Math.floor(val % 60)
       return `${minute < 10 ? '0' + minute : minute}:${second < 10 ? '0' + second : second}`;
-    }
+    },
   },
   methods: {
     ...mapMutations(['INIT_AUDIO_EL', 'SET_AUDIO_PLAYING', 'SET_CURRENT_INDEX', 'SET_MODE']),
+    showLy () {
+      this.$EventBus.$emit('showLy');
+    },
     changeMode () {
       this.SET_MODE();
     },
@@ -114,7 +124,7 @@ export default {
 
     },
     getRandom () {
-      let res = Math.ceil(Math.random() * (this.Music.playList.length - 1));
+      let res = Math.ceil(Math.random() * (this.getCurrentPlaylist.length - 1));
       if (res === this.Music.currentIndex) {
         return this.getRandom()
       }
@@ -134,7 +144,7 @@ export default {
     },
     setCount (status = 'prev') {
       let index = this.Music.currentIndex
-      let len = this.Music.playList.length
+      let len = this.getCurrentPlaylist.length
       if (this.getMode === 2) {
         index = this.getRandom();
       } else {
@@ -176,17 +186,26 @@ export default {
     }
   },
   mounted () {
-    this.INIT_AUDIO_EL(this.$refs.audio);
-    this.$nextTick(() => {
-      // this.getAudioEl.currentTime = 190;
-      this.getAudioEl.oncanplay = this.initMusicInfo
-    })
-    this.getAudioEl.volume = this.volumeVal / 100;  //设置音量大小
-    this.ipcEvent();
+
   },
   watch: {
     volumeVal (newV) {
       this.getAudioEl.volume = newV / 100;
+    },
+    getMusicUrl (newV) {
+      if (newV) {
+        if (!this.getAudioEl) {
+          this.play();  //默认播放
+          this.INIT_AUDIO_EL(this.$refs.audio);//第一次的时候 初始化 播放器
+        }
+        this.$nextTick(() => {
+          this.getAudioEl.oncanplay = this.initMusicInfo
+        })
+
+        this.getAudioEl.volume = this.volumeVal / 100;  //设置音量大小
+        this.ipcEvent();
+        // 
+      }
     }
   }
 }
