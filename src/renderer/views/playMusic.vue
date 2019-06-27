@@ -13,7 +13,7 @@
             <!-- <br /> {{line.txt}} -->
           </p>
         </template>
-        <div class="no-lyric">
+        <div class="no-lyric" v-else>
           暂无歌词
         </div>
       </div>
@@ -62,7 +62,6 @@ export default {
       // }
     },
     initPlay (lyric) {
-      console.log(333)
       //this.musicStr[this.getCurrentIndex]
       this.currentLyric = new Lyric(lyric, (params) => {
         console.log(params)
@@ -74,6 +73,15 @@ export default {
         }
         this.playingLyric = txt
       });
+     
+      if(this.getPlayStatus) {
+        this.currentLyric.togglePlay(); 
+         console.log('初始化歌词',this.getPlayStatus)
+      }
+      this.$nextTick(() => {
+        this.currentLyric.seek(this.getAudioEl.currentTime * 1000)
+      })
+      
     },
     async getMusicLyric(){
       this.loading = true;
@@ -106,47 +114,59 @@ export default {
   
   async mounted () {
     this.$nextTick(async () => {
+      await this.getMusicLyric();
+      console.log(this.getAudioEl.currentTime)
+      this.currentLyric.seek && this.currentLyric.seek(this.getAudioEl.currentTime * 1000)
+
       this.$EventBus.$on('loop', this.loop);
       this.$EventBus.$on('changePro', this.changePro);  //设置歌曲进度
-      // if(){
-
+      this.$EventBus.$on('play', () => {
+        if(!this.currentLyric.lines) return;
+        this.currentLyric.togglePlay();  //播放暂停歌词
+        console.log(this.getPlayStatus ? '开启' :'暂停')
+      });
+      // console.log(this.time)
+      // if(this.currentLyric.lines) {
+      //   this.currentLyric.seek(time * 1000)
       // }
       
-      // console.log(this.time)
-      if(!this.currentLyric.lines) return;
-      this.currentLyric.seek(time * 1000)
-      await this.getMusicLyric();
-      if(this.getPlayStatus) {
-        this.currentLyric.togglePlay(); 
-      }
+      
     })
   },
   destroyed(){
-    this.currentLyric.stop();  //停止歌词
+    if(this.currentLyric.stop){
+      this.currentLyric.stop();  //停止歌词
+    }
     this.currentLyric = {};
-    
+    // this.$EventBus.off('timeChange');
+    this.$EventBus.$off('loop')
+    this.$EventBus.$off('changePro')
   },
-  created () {
-    // this.$EventBus.$on('timeChange',(time) => {
-    //     this.time = time;
-    //   })
+  async created () {
+    
+    // this.$EventBus.$once('timeChange',async (time) => {
+    //   this.time = time;
+    //   this.currentLyric.seek && this.currentLyric.seek(this.time * 1000)
+    // })
   },
   components: {
     Scroll
   },
   watch: {
-    getPlayStatus(newV){
-      // console.log(this.currentLyric)
-      if(!this.currentLyric.lines) return;
-      this.currentLyric.togglePlay();  //播放暂停歌词
-      console.log(1111)
-    },
+    // getPlayStatus(newV){
+    //   // console.log(this.currentLyric)
+    //   if(!this.currentLyric.lines) return;
+    //   this.currentLyric.togglePlay();  //播放暂停歌词
+    //   console.log(newV ? '开启' :'暂停')
+    // },
     getCurrentIndex (newV) {
+      console.log(newV)
       if(this.currentLyric.lines) {
         console.log(2222)
         this.currentLyric.stop();  //停止歌词
         this.currentLineNum = '';  //清除选中状态
-        this.currentLyric = {}
+        this.currentLyric = {};
+        // this.time = "";
       }
       
       this.$refs.lyricList.scrollTo(0, 0, 0);
@@ -188,7 +208,7 @@ export default {
     margin: 0 auto;
     text-align: center;
     width: 420px;
-    height: 100%;
+    // height: 100%;
     
     p {
       color: #989898;

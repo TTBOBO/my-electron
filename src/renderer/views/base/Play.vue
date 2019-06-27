@@ -134,6 +134,7 @@ export default {
     play () {
       this.$nextTick(() => {
         this.SET_AUDIO_PLAYING()
+        this.$EventBus.$emit('play');
         this.$refs.audio[this.$refs.audio.paused ? 'play' : 'pause']()
       })
     },
