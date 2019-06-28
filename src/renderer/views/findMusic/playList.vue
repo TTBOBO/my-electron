@@ -1,7 +1,8 @@
 <template>
   <div class="playlist">
     <div class="play-top">
-      <img :src="getCurretList.coverImgUrl"
+      <img v-if="currentPlayMusic.al"
+           :src="currentPlayMusic.al.picUrl"
            alt=""
            class="paly-img" />
       <div>
@@ -28,42 +29,56 @@
       </div>
     </div>
     <div class="play-bottom">
-      <table cellspacing="0">
-        <thead>
-          <th></th>
-          <th>操作</th>
-          <th>音乐标题</th>
-          <th>歌手</th>
-          <th>专辑</th>
-        </thead>
-        <tbody>
-          <tr v-for="(item,index) in playlist.tracks"
-              :key="item.id"
-              @dblclick="handleClick(item.id)">
-            <td class="indexTd">{{String(index+1).padStart(2,0)}}</td>
-            <td class="secTd">
-              <i class="iconfont icon-aixin1"></i>
-              <i class="iconfont icon-xiazai"></i>
-            </td>
-            <td class="musicName">
-              <div class="musicName">
-                <span class="music-title pointer">{{item.name}}</span>
-                <span v-if="item.alia.length>0"
-                      style="color:gray">({{item.alia[0]}})</span>
-              </div>
-            </td>
-            <td class="musicActName">
-              <div>{{item.ar[0].name}}</div>
-            </td>
-            <!-- <td>{{item.al.name}}</td> -->
-            <td class="musicAlName">
-              <div>{{item.al.name}}</div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <el-tabs v-model="activeName"
+               type="card">
+        <el-tab-pane label="歌曲列表"
+                     name="歌曲列表">
+          <table cellspacing="0">
+            <thead>
+              <th></th>
+              <th>操作</th>
+              <th>音乐标题</th>
+              <th>歌手</th>
+              <th>专辑</th>
+            </thead>
+            <tbody>
+              <tr v-for="(item,index) in playlist.tracks"
+                  :key="item.id"
+                  @dblclick="handleClick(item.id)">
+                <td class="indexTd">{{String(index+1).padStart(2,0)}}</td>
+                <td class="secTd">
+                  <i class="iconfont icon-aixin1"></i>
+                  <i class="iconfont icon-xiazai"></i>
+                </td>
+                <td class="musicName">
+                  <div class="musicName">
+                    <span class="music-title pointer"
+                          :class="{'paly-status':item.name == currentPlayMusic.name}"
+                          @click="palyMusic(item.name)">{{item.name}}</span>
+                    <span v-if="item.alia.length>0"
+                          style="color:gray">({{item.alia[0]}})</span>
+                  </div>
+                </td>
+                <td class="musicActName">
+                  <div>{{item.ar[0].name}}</div>
+                </td>
+                <!-- <td>{{item.al.name}}</td> -->
+                <td class="musicAlName">
+                  <div>{{item.al.name}}</div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </el-tab-pane>
+        <el-tab-pane label="评论"
+                     name="评论">评论</el-tab-pane>
+        <el-tab-pane label="收藏"
+                     name="收藏">收藏</el-tab-pane>
+      </el-tabs>
     </div>
-    <div class="music-ly"
+    <!-- -->
+    <div class="music-ly animated"
+         :class="{tada:showLyStatus,fadeInDown:!showLyStatus}"
          v-if="showLyStatus">
       <PlayMusic></PlayMusic>
     </div>
@@ -80,11 +95,12 @@ export default {
       currentPlayList: this.getCurretList || {},
       playlist: {},
       activeName: "歌曲列表",
-      showLyStatus: false
+      showLyStatus: false,
+      currentPlayMusic: {}, //当前播放的音乐
     }
   },
   computed: {
-    ...mapGetters(['getPlayList', 'getUserInfo', 'getCurrentIndex']),
+    ...mapGetters(['getPlayList', 'getUserInfo', 'getCurrentIndex', 'getCurrentPlaylist']),
     getCurretList () {
       const { id, type } = this.$route.query;
       this.currentPlayList = this.getPlayList[type == 1 ? 'creatPlayList' : 'collecPlayLit'].filter(item => item.id == id)[0] || {};
@@ -93,7 +109,7 @@ export default {
     getTitle () {
       if (!this.getCurretList.name) return '';
       return this.getCurretList.name.replace(this.getUserInfo.nickname, '我')
-    }
+    },
   },
   filters: {
     time (val) {
@@ -101,11 +117,12 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['SET_PLAY_LIST']),
+    ...mapMutations(['SET_PLAY_LIST', 'SET_CURRENT_INDEX']),
     async initPlaylistDetail () {
       let { playlist, code, privileges } = await this.$ajaxGet('playlistDetail', { id: this.getCurretList.id });
       if (code == 200) {
         this.playlist = playlist;
+        // this.SET_PLAY_LIST(this.playlist.tracks);
       }
     },
     handleClick (params) {
@@ -113,22 +130,26 @@ export default {
     },
     playAll () {
       this.SET_PLAY_LIST(this.playlist.tracks);
+      // this.SET_CURRENT_INDEX(0);
+      this.$EventBus.$emit('setCurrentIndex', 0)
     },
     showLy () {
-      console.log(this.getCurrentIndex)
       if (this.getCurrentIndex === null) {
-        console.log(111)
         return false;
       }
       this.showLyStatus = !this.showLyStatus;
+    },
+    palyMusic (name) {
+      let index = this.playlist.tracks.findIndex(item => item.name === name);
+      // this.SET_CURRENT_INDEX(0);
+      index != -1 && this.$EventBus.$emit('setCurrentIndex', index)
+      // this.$EventBus.$emit('setCurrentIndex', index);
     }
   },
   mounted () {
     this.$EventBus.$on('showLy', this.showLy);
   },
-  created () {
-
-  },
+  created () { },
   components: {
     PlayMusic
   },
@@ -138,6 +159,9 @@ export default {
         this.initPlaylistDetail();
       },
       immediate: true
+    },
+    getCurrentIndex (newV) {
+      this.currentPlayMusic = this.getCurrentPlaylist[this.getCurrentIndex];
     }
   }
 }
@@ -245,6 +269,9 @@ export default {
     td {
       padding: 5px 10px;
     }
+    .paly-status {
+      color: $base-color;
+    }
     .icon-zan1 {
       color: rgb(217, 22, 23);
     }
@@ -259,6 +286,7 @@ export default {
     right: 0;
     width: 100%;
     height: 100%;
+    z-index: 2;
   }
 }
 </style>

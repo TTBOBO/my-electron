@@ -16,7 +16,7 @@
       </div>
     </div>
     <div class="music-con"
-         v-if="Music.currentIndex !== null && getCurrentPlaylist.length">
+         v-if="getCurrentPlayMusic.id">
       <img :src="getCurrentPlayMusic.al.picUrl"
            alt=""
            class="music-pic">
@@ -69,7 +69,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['getPlayList', 'getCurrentPlaylist', 'getCurrentPlayMusic','getUserInfo']),
+    ...mapGetters(['getPlayList', 'getCurrentPlaylist', 'getCurrentPlayMusic', 'getUserInfo']),
     ...mapState(['Music']),
   },
   methods: {
@@ -91,7 +91,7 @@ export default {
       }
     }
   },
-  created(){
+  created () {
     this.defaultData = JSON.parse(JSON.stringify(this.menuConf))
   },
   watch: {
@@ -102,10 +102,13 @@ export default {
       },
       immediate: true
     },
-    getUserInfo(newV){
-      if(!newV.userId){
+    getUserInfo (newV) {
+      if (!newV.userId) {
         this.menuConf = this.defaultData;
       }
+    },
+    getCurrentPlayMusic (val) {
+
     }
   }
 }

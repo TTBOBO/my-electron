@@ -11,9 +11,10 @@ const state = {
   // ],
   playList: [],
   orderList: [],
-  currentIndex: 0,
-  historyList: [],
-  currentLyric: null
+  currentIndex: '',
+  historyList: [], //当前播放的音乐列表
+  currentLyric: null,
+  currentPlayMusic: {} //当前播放的音乐
 }
 
 const mutations = {
@@ -25,6 +26,7 @@ const mutations = {
   },
   SET_CURRENT_INDEX(state, index) {
     state.currentIndex = index
+    state.currentPlayMusic = state.playList[index];
   },
   SET_MODE(state) {
     state.mode = state.mode + 1 > 2 ? 0 : state.mode + 1;
@@ -51,8 +53,9 @@ const getters = {
   getCurrentIndex: state => state.currentIndex,
   getCurrentPlaylist: state => state.playList, //获取当前播放的列表
   getCurrentPlayMusic: (state) => {
-    return (state.currentIndex !== null && state.playList.length) ? state.playList[state.currentIndex] : {}
-  }
+    return (state.currentIndex !== '' && state.playList.length) ? state.playList[state.currentIndex] : {}
+  },
+  // getCurrentPlayMusic: state => state.currentPlayMusic
 }
 
 export default {

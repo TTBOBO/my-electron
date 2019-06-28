@@ -42,7 +42,8 @@
       <span class="iconfont"
             :class="getModeStaus"
             @click="changeMode"></span>
-      <span @click="showLy">词</span>
+      <span @click="showLy"
+            :class="{active:showLyStatus}">词</span>
       <span class="iconfont icon-wj-bflb"></span>
     </div>
 
@@ -65,6 +66,7 @@ export default {
       index: 0,
       duration: 0,
       currentTime: 0,
+      showLyStatus: false
     }
   },
   computed: {
@@ -81,7 +83,6 @@ export default {
       }
     },
     getMusicUrl () {
-      console.log(this.getCurrentPlaylist, this.Music.currentIndex)
       if (!this.getCurrentPlaylist[this.Music.currentIndex]) return "";
       return `https://music.163.com/song/media/outer/url?id=${this.getCurrentPlaylist[this.Music.currentIndex].id}.mp3`
     }
@@ -98,7 +99,12 @@ export default {
   methods: {
     ...mapMutations(['INIT_AUDIO_EL', 'SET_AUDIO_PLAYING', 'SET_CURRENT_INDEX', 'SET_MODE']),
     showLy () {
-      this.$EventBus.$emit('showLy');
+
+      if (this.Music.currentIndex !== '') {
+        this.$EventBus.$emit('showLy');
+        this.showLyStatus = !this.showLyStatus;
+      }
+
     },
     changeMode () {
       this.SET_MODE();
@@ -110,7 +116,7 @@ export default {
     },
     timeChange () {
       this.currentTime = this.getAudioEl.currentTime;
-      this.$EventBus.$emit('timeChange',this.currentTime); //告诉歌词那边当前播放时间
+      this.$EventBus.$emit('timeChange', this.currentTime); //告诉歌词那边当前播放时间
       if (!this.currentTime) {
         if (this.getMode === 1) {
           this.$EventBus.$emit('loop');
@@ -166,9 +172,7 @@ export default {
         this.SET_AUDIO_PLAYING()
       }
       this.$nextTick(() => {
-        setTimeout(() => {
-          this.play()
-        }, 100)
+        this.play()
       })
     },
     changePro (val) {
@@ -188,7 +192,10 @@ export default {
     }
   },
   mounted () {
-
+    this.$EventBus.$on('setCurrentIndex', this.setCurrentIndex);
+  },
+  destroyed () {
+    this.$EventBus.$off('setCurrentIndex');
   },
   watch: {
     volumeVal (newV) {
@@ -197,7 +204,7 @@ export default {
     getMusicUrl (newV) {
       if (newV) {
         if (!this.getAudioEl) {
-          this.play();  //默认播放
+          // this.play();  //默认播放
           this.INIT_AUDIO_EL(this.$refs.audio);//第一次的时候 初始化 播放器
         }
         this.$nextTick(() => {
@@ -282,6 +289,9 @@ export default {
     justify-content: space-around;
     span {
       cursor: pointer;
+    }
+    .active {
+      color: $base-color;
     }
   }
 }

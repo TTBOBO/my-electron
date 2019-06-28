@@ -1,24 +1,28 @@
 <template>
-  <div class="music-container" v-loading="loading">
-    <div class="msk"></div>
+  <div class="music-container"
+       v-loading="loading">
+    <img class="msk"
+         :src="getCurrentPlayMusic.al.picUrl" />
     <div class="msk2"></div>
-    <Scroll ref="lyricList">
+    <Scroll ref="lyricList"
+            v-if="currentLyric.lines">
       <div class="lyric">
-        <template v-if="currentLyric.lines">
+        <template>
           <p ref="lyricLine"
-            v-for="(line,index) in currentLyric.lines"
-            :class="{active:currentLineNum === index}"
-            :key="index">
+             v-for="(line,index) in currentLyric.lines"
+             :class="{active:currentLineNum === index}"
+             :key="index">
             {{line.txt}}
             <!-- <br /> {{line.txt}} -->
           </p>
         </template>
-        <div class="no-lyric" v-else>
-          暂无歌词
-        </div>
+
       </div>
     </Scroll>
-
+    <div class="no-lyric"
+         v-else>
+      暂无歌词
+    </div>
   </div>
 </template>
 
@@ -26,7 +30,6 @@
 import Lyric from 'lyric-parser';
 import Scroll from '@/components/Scroll.vue';
 import { mapMutations, mapGetters, mapState } from 'vuex'
-
 export default {
   data () {
     return {
@@ -39,69 +42,52 @@ export default {
       ],
       currentLineNum: '',
       currentLyric: {},
-      loading:false
+      loading: false
     }
   },
   methods: {
     ...mapMutations(['SET_AUDIO_PLAYING']),
     loop (time) {
-      if(!this.currentLyric.lines) return;
+      if (!this.currentLyric.lines) return;
       this.$refs.lyricList.scrollTo(0, 0, 1000);
       this.currentLyric.seek(0 * 1000)
     },
     changePro (time) {
-      // console.log(time)
-      if(!this.currentLyric.lines) return;
+      if (!this.currentLyric.lines) return;
       this.currentLyric.seek(time * 1000)
-      
-      // if(this.currentLineNum < 5){
-      //    this.$refs.lyricList.scrollTo(0, 0, 1000);
-      // }else{
-      //   let lineEl = this.$refs.lyricLine[lineNum - 5]
-      //   this.$refs.lyricList.scrollToElement(lineEl, 1000)// 滚动到元素
-      // }
     },
     initPlay (lyric) {
-      //this.musicStr[this.getCurrentIndex]
       this.currentLyric = new Lyric(lyric, (params) => {
-        console.log(params)
         const { lineNum, txt } = params;
         this.currentLineNum = lineNum
         if (lineNum > 5) {
-          let lineEl = this.$refs.lyricLine[lineNum - 5]
-          this.$refs.lyricList.scrollToElement(lineEl, 1000)// 滚动到元素
+          this.$nextTick(() => {
+            let lineEl = this.$refs.lyricLine[lineNum - 5]
+            this.$refs.lyricList.scrollToElement(lineEl, 1000)// 滚动到元素
+          })
         }
         this.playingLyric = txt
       });
-     
-      if(this.getPlayStatus) {
-        this.currentLyric.togglePlay(); 
-         console.log('初始化歌词',this.getPlayStatus)
-      }
       this.$nextTick(() => {
-        this.currentLyric.seek(this.getAudioEl.currentTime * 1000)
+        this.currentLyric.seek(this.getAudioEl.currentTime * 1000);  //seek会自动开启播放
+        if (!this.getPlayStatus) {  //关闭的时候就直接停止播放
+          this.currentLyric.togglePlay();
+        }
       })
-      
+
     },
-    async getMusicLyric(){
+    async getMusicLyric () {
       this.loading = true;
       let res = await this.$ajaxGet('lyric', { id: this.getCurrentPlayMusic.id })
       if (res.code === 200 && res.lrc) {
         this.initPlay(res.lrc.lyric);
-      }else{
+      } else {
         this.currentLyric = {};  //清空
       }
       this.loading = false;
     },
-    // timeChange(time){
-    //   console.log(time);
-    // }
   },
-  props: {
-    // id: {
-    //   type: Number,
-    // }
-  },
+  props: {},
   computed: {
     ...mapGetters([
       'getPlayStatus',
@@ -111,65 +97,41 @@ export default {
       'getCurrentPlayMusic'
     ])
   },
-  
+
   async mounted () {
     this.$nextTick(async () => {
       await this.getMusicLyric();
-      console.log(this.getAudioEl.currentTime)
-      this.currentLyric.seek && this.currentLyric.seek(this.getAudioEl.currentTime * 1000)
-
       this.$EventBus.$on('loop', this.loop);
       this.$EventBus.$on('changePro', this.changePro);  //设置歌曲进度
       this.$EventBus.$on('play', () => {
-        if(!this.currentLyric.lines) return;
+        if (!this.currentLyric.lines) return;
         this.currentLyric.togglePlay();  //播放暂停歌词
-        console.log(this.getPlayStatus ? '开启' :'暂停')
       });
-      // console.log(this.time)
-      // if(this.currentLyric.lines) {
-      //   this.currentLyric.seek(time * 1000)
-      // }
-      
-      
     })
   },
-  destroyed(){
-    if(this.currentLyric.stop){
+  destroyed () {
+    if (this.currentLyric.stop) {
       this.currentLyric.stop();  //停止歌词
     }
     this.currentLyric = {};
-    // this.$EventBus.off('timeChange');
     this.$EventBus.$off('loop')
     this.$EventBus.$off('changePro')
   },
   async created () {
-    
-    // this.$EventBus.$once('timeChange',async (time) => {
-    //   this.time = time;
-    //   this.currentLyric.seek && this.currentLyric.seek(this.time * 1000)
-    // })
   },
   components: {
     Scroll
   },
   watch: {
-    // getPlayStatus(newV){
-    //   // console.log(this.currentLyric)
-    //   if(!this.currentLyric.lines) return;
-    //   this.currentLyric.togglePlay();  //播放暂停歌词
-    //   console.log(newV ? '开启' :'暂停')
+    // getCurrentIndex (newV) {
+    //   this.currentPlayMusic = this.getCurrentPlaylist[this.getCurrentIndex];
     // },
     getCurrentIndex (newV) {
-      console.log(newV)
-      if(this.currentLyric.lines) {
-        console.log(2222)
+      if (this.currentLyric.lines) {
         this.currentLyric.stop();  //停止歌词
         this.currentLineNum = '';  //清除选中状态
         this.currentLyric = {};
-        // this.time = "";
       }
-      
-      this.$refs.lyricList.scrollTo(0, 0, 0);
       this.getMusicLyric();
     }
   }
@@ -189,10 +151,12 @@ export default {
     bottom: 0;
     position: absolute;
     z-index: 2;
-    background: url("http://p4.music.126.net/Ed5azUr2ECZq3vM2ikYeyg==/109951163188783387.jpg")
-      100%;
     opacity: 0.5;
     background-size: 100%;
+    object-fit: cover;
+    width: 100%;
+    transform: scale(5);
+    filter: blur(5px);
   }
   .msk2 {
     left: 0;
@@ -209,9 +173,9 @@ export default {
     text-align: center;
     width: 420px;
     // height: 100%;
-    
+
     p {
-      color: #989898;
+      color: #fff;
       word-wrap: break-word;
       text-align: center;
       line-height: 32px;
@@ -225,12 +189,12 @@ export default {
       font-size: 14px;
       transition: color 0.3s linear;
     }
-    .no-lyric{
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+  }
+  .no-lyric {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 </style>

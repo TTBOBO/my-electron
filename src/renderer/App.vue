@@ -162,6 +162,9 @@ table {
   border-collapse: collapse;
   border-spacing: 0;
 }
+.el-tabs--card > .el-tabs__header .el-tabs__item {
+  transition: color 0s !important;
+}
 .el-tabs--card > .el-tabs__header .el-tabs__item.is-active {
   background: #d63131;
   color: #fff;
