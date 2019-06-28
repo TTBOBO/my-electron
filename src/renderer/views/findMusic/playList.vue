@@ -50,12 +50,13 @@
                   <i class="iconfont icon-xiazai"></i>
                 </td>
                 <td class="musicName">
-                  <div class="musicName">
+                  <div class="musicName"
+                       :class="{'paly-status':item.name == currentPlayMusic.name}">
                     <span class="music-title pointer"
-                          :class="{'paly-status':item.name == currentPlayMusic.name}"
                           @click="palyMusic(item)">{{item.name}}</span>
                     <span v-if="item.alia.length>0"
-                          style="color:gray">({{item.alia[0]}})</span>
+                          class="alia"
+                          :class="{'paly-status':item.name == currentPlayMusic.name}">({{item.alia[0]}})</span>
                   </div>
                 </td>
                 <td class="musicActName">
@@ -254,6 +255,9 @@ export default {
       }
       .musicName {
         width: 220px;
+        .alia {
+          color: gray;
+        }
       }
       .musicActName {
         width: 80px;
@@ -274,7 +278,7 @@ export default {
       padding: 5px 10px;
     }
     .paly-status {
-      color: $base-color;
+      color: $base-color !important;
     }
     .icon-zan1 {
       color: rgb(217, 22, 23);
