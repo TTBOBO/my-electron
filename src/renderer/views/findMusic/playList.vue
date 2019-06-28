@@ -1,8 +1,7 @@
 <template>
   <div class="playlist">
     <div class="play-top">
-      <img v-if="currentPlayMusic.al"
-           :src="currentPlayMusic.al.picUrl"
+      <img :src="getCurretList.coverImgUrl"
            alt=""
            class="paly-img" />
       <div>
@@ -100,7 +99,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['getPlayList', 'getUserInfo', 'getCurrentIndex', 'getCurrentPlaylist']),
+    ...mapGetters(['getPlayList', 'getUserInfo', 'getCurrentIndex', 'getCurrentPlaylist', 'getAudioEl']),
     getCurretList () {
       const { id, type } = this.$route.query;
       this.currentPlayList = this.getPlayList[type == 1 ? 'creatPlayList' : 'collecPlayLit'].filter(item => item.id == id)[0] || {};
@@ -117,20 +116,16 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['SET_PLAY_LIST', 'SET_CURRENT_INDEX']),
+    ...mapMutations(['SET_PLAY_LIST', 'SET_CURRENT_INDEX', 'INIT_AUDIO_EL']),
     async initPlaylistDetail () {
       let { playlist, code, privileges } = await this.$ajaxGet('playlistDetail', { id: this.getCurretList.id });
       if (code == 200) {
         this.playlist = playlist;
-        // this.SET_PLAY_LIST(this.playlist.tracks);
       }
     },
-    handleClick (params) {
-      // console.log(params);
-    },
+    handleClick (params) { },
     playAll () {
       this.SET_PLAY_LIST(this.playlist.tracks);
-      // this.SET_CURRENT_INDEX(0);
       this.$EventBus.$emit('setCurrentIndex', 0)
     },
     showLy () {
@@ -140,10 +135,14 @@ export default {
       this.showLyStatus = !this.showLyStatus;
     },
     palyMusic (name) {
-      let index = this.playlist.tracks.findIndex(item => item.name === name);
-      // this.SET_CURRENT_INDEX(0);
-      index != -1 && this.$EventBus.$emit('setCurrentIndex', index)
-      // this.$EventBus.$emit('setCurrentIndex', index);
+      if (this.currentPlayMusic.name === name) {
+        this.getAudioEl.currentTime = 0;  //重新播放
+        this.$EventBus.$emit('changePro', 0);
+      } else {
+        let index = this.playlist.tracks.findIndex(item => item.name === name);
+        index != -1 && this.$EventBus.$emit('setCurrentIndex', index)
+      }
+
     }
   },
   mounted () {
