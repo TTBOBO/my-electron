@@ -185,7 +185,7 @@ export default {
       transition: color 0.3s linear;
     }
     .active {
-      color: #fff;
+      color: $base-color;
       font-size: 14px;
       transition: color 0.3s linear;
     }

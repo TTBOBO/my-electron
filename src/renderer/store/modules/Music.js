@@ -1,7 +1,7 @@
 const state = {
   audioEl: null, // 播放器
   mode: 0, // 0默认循环  1 单曲循环  2随机
-  playing: false,
+  playing: false, //播放状态
   // playList: ['https://music.163.com/song/media/outer/url?id=34057974.mp3',
   //   'https://music.163.com/song/media/outer/url?id=472219602.mp3',
   //   // 'https://music.163.com/song/media/outer/url?id=19150932.mp3',
@@ -9,12 +9,12 @@ const state = {
   //   // 'https://music.163.com/song/media/outer/url?id=557581284.mp3',
   //   // 'https://music.163.com/song/media/outer/url?id=452986458.mp3'
   // ],
-  playList: [],
+  playList: [], //当前播放的音乐列表
   orderList: [],
-  currentIndex: '',
-  historyList: [], //当前播放的音乐列表
+  currentIndex: '', //当前播放的下标
   currentLyric: null,
-  currentPlayMusic: {} //当前播放的音乐
+  currentPlayMusic: {}, //当前播放的音乐
+  showLyStatus: false //歌词显示状态
 }
 
 const mutations = {
@@ -34,6 +34,14 @@ const mutations = {
   SET_PLAY_LIST(state, list = []) {
     state.playList = list;
     console.log(list);
+  },
+  PUSH_MUSIC_TO_LIST(state, item) {
+    if (item) {
+      state.playList.push(item)
+    }
+  },
+  SET_SHOW_LY_STATUS(state) {
+    state.showLyStatus = !state.showLyStatus;
   }
 }
 
@@ -55,6 +63,7 @@ const getters = {
   getCurrentPlayMusic: (state) => {
     return (state.currentIndex !== '' && state.playList.length) ? state.playList[state.currentIndex] : {}
   },
+  getShowLyStatus: state => state.showLyStatus
   // getCurrentPlayMusic: state => state.currentPlayMusic
 }
 

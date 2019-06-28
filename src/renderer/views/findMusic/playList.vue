@@ -53,7 +53,7 @@
                   <div class="musicName">
                     <span class="music-title pointer"
                           :class="{'paly-status':item.name == currentPlayMusic.name}"
-                          @click="palyMusic(item.name)">{{item.name}}</span>
+                          @click="palyMusic(item)">{{item.name}}</span>
                     <span v-if="item.alia.length>0"
                           style="color:gray">({{item.alia[0]}})</span>
                   </div>
@@ -77,8 +77,8 @@
     </div>
     <!-- -->
     <div class="music-ly animated"
-         :class="{tada:showLyStatus,fadeInDown:!showLyStatus}"
-         v-if="showLyStatus">
+         :class="{tada:getShowLyStatus,fadeInDown:!getShowLyStatus}"
+         v-if="getShowLyStatus">
       <PlayMusic></PlayMusic>
     </div>
   </div>
@@ -94,12 +94,12 @@ export default {
       currentPlayList: this.getCurretList || {},
       playlist: {},
       activeName: "歌曲列表",
-      showLyStatus: false,
+      // showLyStatus: false,
       currentPlayMusic: {}, //当前播放的音乐
     }
   },
   computed: {
-    ...mapGetters(['getPlayList', 'getUserInfo', 'getCurrentIndex', 'getCurrentPlaylist', 'getAudioEl']),
+    ...mapGetters(['getPlayList', 'getUserInfo', 'getCurrentIndex', 'getCurrentPlaylist', 'getAudioEl', 'getShowLyStatus']),
     getCurretList () {
       const { id, type } = this.$route.query;
       this.currentPlayList = this.getPlayList[type == 1 ? 'creatPlayList' : 'collecPlayLit'].filter(item => item.id == id)[0] || {};
@@ -116,7 +116,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['SET_PLAY_LIST', 'SET_CURRENT_INDEX', 'INIT_AUDIO_EL']),
+    ...mapMutations(['SET_PLAY_LIST', 'SET_CURRENT_INDEX', 'INIT_AUDIO_EL', 'PUSH_MUSIC_TO_LIST']),
     async initPlaylistDetail () {
       let { playlist, code, privileges } = await this.$ajaxGet('playlistDetail', { id: this.getCurretList.id });
       if (code == 200) {
@@ -128,19 +128,24 @@ export default {
       this.SET_PLAY_LIST(this.playlist.tracks);
       this.$EventBus.$emit('setCurrentIndex', 0)
     },
-    showLy () {
-      if (this.getCurrentIndex === null) {
-        return false;
-      }
-      this.showLyStatus = !this.showLyStatus;
-    },
-    palyMusic (name) {
-      if (this.currentPlayMusic.name === name) {
+    // showLy () {
+    //   if (this.getCurrentIndex === null) {
+    //     return false;
+    //   }
+    //   // this.showLyStatus = !this.showLyStatus;
+    // },
+    palyMusic (item) {
+      if (this.currentPlayMusic.name === item) {
         this.getAudioEl.currentTime = 0;  //重新播放
         this.$EventBus.$emit('changePro', 0);
       } else {
-        let index = this.playlist.tracks.findIndex(item => item.name === name);
-        index != -1 && this.$EventBus.$emit('setCurrentIndex', index)
+        let index = this.getCurrentPlaylist.findIndex(item => item.name === name);
+        if (index == -1) {  //如果当前音乐没有在播放列表里面直接添加进去再播放
+          this.PUSH_MUSIC_TO_LIST(item);
+          this.$EventBus.$emit('setCurrentIndex', this.getCurrentPlaylist.length - 1)
+        } else {
+          this.$EventBus.$emit('setCurrentIndex', index)
+        }
       }
 
     }

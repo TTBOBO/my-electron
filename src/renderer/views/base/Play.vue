@@ -97,12 +97,13 @@ export default {
     },
   },
   methods: {
-    ...mapMutations(['INIT_AUDIO_EL', 'SET_AUDIO_PLAYING', 'SET_CURRENT_INDEX', 'SET_MODE']),
+    ...mapMutations(['INIT_AUDIO_EL', 'SET_AUDIO_PLAYING', 'SET_CURRENT_INDEX', 'SET_MODE', 'SET_SHOW_LY_STATUS']),
     showLy () {
-
+      console.log(this.Music.currentIndex)
       if (this.Music.currentIndex !== '') {
-        this.$EventBus.$emit('showLy');
-        this.showLyStatus = !this.showLyStatus;
+        // this.$EventBus.$emit('showLy');
+        this.SET_SHOW_LY_STATUS();
+        // this.showLyStatus = !this.showLyStatus;
       }
 
     },
@@ -163,7 +164,6 @@ export default {
           index = 0
         }
       }
-
       this.setCurrentIndex(index);
     },
     setCurrentIndex (index) {

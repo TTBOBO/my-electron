@@ -69,10 +69,11 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['getPlayList', 'getCurrentPlaylist', 'getCurrentPlayMusic', 'getUserInfo']),
+    ...mapGetters(['getPlayList', 'getCurrentPlaylist', 'getCurrentPlayMusic', 'getUserInfo', 'getShowLyStatus']),
     ...mapState(['Music']),
   },
   methods: {
+    ...mapMutations(['SET_SHOW_LY_STATUS']),
     handler ({ path, name, id }, { label }) {
       this.activeName = name;
       if (path) {
@@ -80,14 +81,21 @@ export default {
       }
       switch (label) {
         case '创建的歌单':
-          this.$router.push({ path: "playList", query: { id, type: 1 } })  //1  自己创建的歌单  2 收藏的歌单
+          this.hiddenLy();
+          this.$router.push({ path: "playList", query: { id, type: 1 } });  //1  自己创建的歌单  2 收藏的歌单
           break;
         case '收藏的歌单':
-          this.$router.push({ path: "playList", query: { id, type: 2 } })  //1  自己创建的歌单  2 收藏的歌单
+          this.hiddenLy();
+          this.$router.push({ path: "playList", query: { id, type: 2 } });  //1  自己创建的歌单  2 收藏的歌单
           break;
 
         default:
           break;
+      }
+    },
+    hiddenLy () {
+      if (this.getShowLyStatus) {
+        this.SET_SHOW_LY_STATUS();
       }
     }
   },
