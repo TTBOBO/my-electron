@@ -10,5 +10,6 @@ const REQUEST = {
   playlist: '/user/playlist', //用户歌单
   playlistDetail: "/playlist/detail", //歌单详情
   lyric: '/lyric', //歌词
+  newsong:'/personalized/newsong', //推荐新音乐
 }
 export default REQUEST;

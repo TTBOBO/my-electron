@@ -43,7 +43,7 @@
             :class="getModeStaus"
             @click="changeMode"></span>
       <span @click="showLy"
-            :class="{active:showLyStatus}">词</span>
+            :class="{active:getShowLyStatus}">词</span>
       <span class="iconfont icon-wj-bflb"></span>
     </div>
 
@@ -70,7 +70,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['getAudioEl', 'getMode', 'getCurrentPlaylist']),
+    ...mapGetters(['getAudioEl', 'getMode', 'getCurrentPlaylist','getShowLyStatus']),
     ...mapState(['Music']),
     getAudioPlayStatus () {
       return this.$refs.audio && this.$refs.audio.paused
@@ -99,13 +99,9 @@ export default {
   methods: {
     ...mapMutations(['INIT_AUDIO_EL', 'SET_AUDIO_PLAYING', 'SET_CURRENT_INDEX', 'SET_MODE', 'SET_SHOW_LY_STATUS']),
     showLy () {
-      console.log(this.Music.currentIndex)
       if (this.Music.currentIndex !== '') {
-        // this.$EventBus.$emit('showLy');
         this.SET_SHOW_LY_STATUS();
-        // this.showLyStatus = !this.showLyStatus;
       }
-
     },
     changeMode () {
       this.SET_MODE();
