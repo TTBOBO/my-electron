@@ -41,11 +41,11 @@ function createWindow() {
     width: 1200,
     darkTheme: true,
     frame: false,
-    titleBarStyle: 'hidden'
+    // titleBarStyle: 'hidden'
   })
 
   const tray = new Tray(
-    'C:/Users/TAB000/Desktop/my-electron/build/icons/256x256.png'
+    '/Users/Administrator/Desktop/electron/my-electron/build/icons/256x256.png'
   )
   console.log(process.platform === 'darwin')
   const contextMenu = Menu.buildFromTemplate([{

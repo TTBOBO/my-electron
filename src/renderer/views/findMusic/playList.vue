@@ -136,7 +136,7 @@ export default {
     //   // this.showLyStatus = !this.showLyStatus;
     // },
     palyMusic (item) {
-      if (this.currentPlayMusic.name === item) {
+      if (this.getCurrentIndex !== '' && this.getCurrentPlaylist[this.getCurrentIndex].name === item.name) {
         this.getAudioEl.currentTime = 0;  //重新播放
         this.$EventBus.$emit('changePro', 0);
       } else {
@@ -153,6 +153,11 @@ export default {
   },
   mounted () {
     this.$EventBus.$on('showLy', this.showLy);
+    this.$EventBus.$on('palyMusic', this.palyMusic);
+  },
+  destroyed () {
+    this.$EventBus.$off('showLy');
+    // this.$EventBus.$off('palyMusic');
   },
   created () { },
   components: {

@@ -18,7 +18,7 @@ export default {
 
 <style>
 @import url("https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css");
-@import url("//at.alicdn.com/t/font_1254014_7tjnxxgfk6j.css");
+@import url("//at.alicdn.com/t/font_1254014_ovoy3givh6.css");
 html,
 body,
 #app {
@@ -175,19 +175,16 @@ table {
 .el-tabs__item:hover {
   color: #303133 !important;
 }
-.el-tabs__nav-scroll{
+.el-tabs__nav-scroll {
   display: flex;
   justify-content: center;
 }
-.el-tabs__item.is-active{
-  color: #d63131 !important;
+.el-tabs__active-bar {
+  background: #d63131 !important;
+  height: 1px !important;
 }
-.el-tabs__active-bar{
-  background: #d63131!important;
-  height: 1px!important;
-}
-.el-tabs__nav-wrap::after{
-  height: 1px!important;
+.el-tabs__nav-wrap::after {
+  height: 1px !important;
 }
 /* CSS */
 </style>

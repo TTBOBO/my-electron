@@ -1,9 +1,9 @@
 import axios from 'axios';
 import request from './api';
 
-axios.defaults.timeout = 2000;
+axios.defaults.timeout = 20000;
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL = "http://t92z3c.natappfree.cc/";
+axios.defaults.baseURL = "http://ji27j6.natappfree.cc/";
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
 /**
  * 请求配置
@@ -27,13 +27,14 @@ axios.interceptors.response.use(
     if (response.data.code == 400) {
       // Vue.$Message.error('操作失败')
       return response.data;
-    } else if (response.data.code == 501) {
-
-    } else
+    } else if (response.data.code == 301) {} else
       return response.data;
   },
-  err => {
-    console.log(err)
+  async (err) => {
+    // console.log(err.message)
+    // if (err.message.indexOf('code 301') != -1) {
+    //   let res = await ajaxGet('refreshStatus');
+    // }
     return Promise.reject(err.response.data);
   }
 )
