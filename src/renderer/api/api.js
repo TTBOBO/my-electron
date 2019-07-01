@@ -15,7 +15,7 @@ const REQUEST = {
   resource: '/recommend/resource', //推荐歌单
   songs: '/recommend/songs', //推荐音乐
   topSongs: '/top/song', //新歌速递 
-  album: '/album', //新碟上架
+  album: '/top/album', //新碟上架
   artists: '/top/artists', //热门歌手
   topList: '/top/list', //排行榜
   artist: '/toplist/artist', //歌手排行榜 

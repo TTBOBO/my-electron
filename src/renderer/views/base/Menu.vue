@@ -17,12 +17,12 @@
     </div>
     <div class="music-con"
          v-if="getCurrentPlayMusic.id">
-      <img :src="getCurrentPlayMusic.al.picUrl"
+      <img :src="getCurrentPlayMusic.al? getCurrentPlayMusic.al.picUrl : getCurrentPlayMusic.album.picUrl+'?param=50y50'"
            alt=""
            class="music-pic">
       <div class="music-name">
         <p>{{getCurrentPlayMusic.name}}</p>
-        <p>{{getCurrentPlayMusic.al.name}}</p>
+        <p>{{getCurrentPlayMusic.al? getCurrentPlayMusic.al.name : getCurrentPlayMusic.album.name}}</p>
       </div>
       <div class="music-icon">
         <i class="iconfont icon-aixin1"></i>

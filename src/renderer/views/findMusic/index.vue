@@ -205,5 +205,17 @@ export default {
       line-height: 18px;
     }
   }
+  .tabs {
+    .el-tabs__content{
+    height: calc(100% - 65px);
+    .el-tab-pane{
+      height: 100%;
+      overflow-y: scroll;
+      &::-webkit-scrollbar {
+        width: 0;
+      }
+    }
+  }
+  }
 }
 </style>
