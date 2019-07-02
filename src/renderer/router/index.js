@@ -8,11 +8,11 @@ export default new Router({
       path: '/',
       name: 'main',
       component: require('@/views/main.vue').default,
-      redirect: '/play',
+      redirect: '/findMusic',
       children: [{
         path: '/play',
         name: 'main',
-        component: require('@/views/playMusic.vue').default,
+        component: require('@/views/PlayMusic.vue').default,
       }, {
         path: '/findMusic',
         name: 'findMusic',
@@ -20,7 +20,7 @@ export default new Router({
       }, {
         path: '/playList',
         name: 'playList',
-        component: require('@/views/findMusic/PlayMusic.vue').default,
+        component: require('@/views/findMusic/PlayList.vue').default,
       }]
     },
     {

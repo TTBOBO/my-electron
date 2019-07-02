@@ -142,7 +142,7 @@ export default {
     }
   },
   mounted () {
-    this.initData();//初始化页面数据
+    // this.initData();//初始化页面数据
     this.$EventBus.$on('showLy', this.showLy);
     this.$EventBus.$on('palyMusic', this.palyMusic);
   },

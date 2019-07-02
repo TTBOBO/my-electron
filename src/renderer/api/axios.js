@@ -3,7 +3,7 @@ import request from './api';
 
 axios.defaults.timeout = 20000;
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL = "http://api.boooool.com/";
+axios.defaults.baseURL = "http://bubfxr.natappfree.cc/";
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
 /**
  * 请求配置
