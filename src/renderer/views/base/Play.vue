@@ -48,7 +48,7 @@
                   width="700"
                   trigger="click"
                   v-model="visible">
-        <playview v-if="visible"></playview>
+        <play-view v-if="visible"></play-view>
         <span slot="reference"
               class="iconfont icon-wj-bflb"></span>
       </el-popover>
@@ -64,7 +64,7 @@
 
 <script>
 import { mapMutations, mapGetters, mapState } from 'vuex';
-import playview from './auth/playview'
+import PlayView from './auth/PlayView'
 const electron = require('electron')
 const { ipcRenderer } = electron;
 export default {
@@ -204,7 +204,7 @@ export default {
     this.$EventBus.$off('setCurrentIndex');
   },
   components: {
-    playview
+    PlayView
   },
   watch: {
     volumeVal (newV) {

@@ -25,7 +25,6 @@ const REQUEST = {
   catlist: '/playlist/catlist', //歌单分类
   topPlaylist: '/top/playlist', //通过歌单类型获取歌单
   highquality: '/top/playlist/highquality', ///通过歌单类型获取精品歌单
-  playlistDetail: '/playlist/detail', //歌单详情
   createPlayList: '/playlist/create', // 创建歌单
 }
 export default REQUEST;

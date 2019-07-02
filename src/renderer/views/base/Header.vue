@@ -16,10 +16,10 @@
         <img class="user-header"
              :src="getUserInfo.avatarUrl || avatarUrl">
         <div class="user-name font">
-          <userInfo v-if="getUserInfo.userId"
-                    :userId="getUserInfo.userId">
+          <user-info v-if="getUserInfo.userId"
+                     :userId="getUserInfo.userId">
             <span>{{getUserInfo.nickname}}</span>
-          </userInfo>
+          </user-info>
           <span v-else
                 @click="showLogin">未登录</span>
 
@@ -74,7 +74,7 @@
 <script>
 import util from '../../assets/js/util';
 import { mapMutations, mapGetters, mapState } from 'vuex'
-import userInfo from './auth/userinfo';
+import UserInfo from './auth/UserInfo';
 export default {
   data () {
     return {
@@ -141,7 +141,7 @@ export default {
     }
   },
   components: {
-    userInfo
+    UserInfo
   },
   mounted () {
     if (util.getLocalStorage('account')) {
