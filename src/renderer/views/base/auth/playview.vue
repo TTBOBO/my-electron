@@ -1,5 +1,5 @@
 <template>
-  <div class="playview-container">
+  <div class="playview-container scrollbar">
     <div style="text-align:center;margin-top: 10px;">
       <el-button-group>
         <el-button :type="currentActive == 0 ? 'info' : ''"
@@ -134,6 +134,7 @@ export default {
   width: 100%;
   height: 350px;
   overflow-y: auto;
+
   .el-button {
     &:hover {
       border: 1px solid #dcdfe6 !important;

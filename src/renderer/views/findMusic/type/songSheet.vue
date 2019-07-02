@@ -16,7 +16,8 @@
     <p class="type-list">热门标签：
       <template v-for="(hotTag,index) in hotList">
         <span :key="index">
-          <span class="type-item">{{hotTag.name}}</span>
+          <span class="type-item"
+                @click="changeType(hotTag.name)">{{hotTag.name}}</span>
           <span class="line"
                 v-if="index < hotList.length - 1">|</span>
         </span>
@@ -41,20 +42,7 @@
         <p v-if="noMore"
            class="tip">没有更多了</p>
       </div>
-
-      <!-- <div class="world-con">
-      <div class="world-con-item"
-           v-for="(item,index) in toplist"
-           :key="index">
-        <div class="item-pic-con">
-          <img :src="item.coverImgUrl"
-               alt="description">
-          <div class="play-count">{{item.playCount | getNumber}}</div>
-        </div>
-        <p class="title">{{item.name}}</p>
-      </div> -->
     </div>
-  </div>
   </div>
 </template>
 
@@ -88,8 +76,11 @@ export default {
       this.catlists.push(catlists.all, ...catlists.sub);
 
     },
-    changeType () {
-      this.getPlayLists();
+    changeType (value) {
+      this.highquality = [];
+      this.noMore = false;
+      this.category = value;
+      this.getPlayLists(true);
     },
     async getPlayLists (status = false) {
       let params = {

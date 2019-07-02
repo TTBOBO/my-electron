@@ -4,7 +4,6 @@
     <div class="center">
       <Menu></Menu>
       <div class="tab-content">
-        {{$store.state.Music.main}}
         <router-view></router-view>
       </div>
     </div>

@@ -79,7 +79,7 @@
     <div class="music-ly animated"
          :class="{tada:getShowLyStatus,fadeInDown:!getShowLyStatus}"
          v-if="getShowLyStatus">
-      <PlayMusic></PlayMusic>
+      <PlayMusic v-if="getShowLyStatus"></PlayMusic>
     </div>
   </div>
 </template>

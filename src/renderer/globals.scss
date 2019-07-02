@@ -11,3 +11,21 @@ $base-hcolor:#b22c2c;
   min-width: 920px;
   margin: 0 auto;
 }
+
+.scrollbar {
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    background: #969595;
+  }
+
+  &::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 5px #969595;
+    border-radius: 10px;
+    background: #ededed;
+  }
+}
