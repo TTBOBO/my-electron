@@ -5,7 +5,7 @@
       <!-- <img class="tab-logo"
       src="~@/assets/logo.png" />-->
       <span class="tab-name">
-        网易云音乐
+        音乐播放器
         <!-- 网易云音乐 -->
       </span>
       <input class="search"
@@ -148,8 +148,8 @@ export default {
       this.INIT_ACCOUNT(JSON.parse(util.getLocalStorage('account')));
       this.INIT_PROFILE(JSON.parse(util.getLocalStorage('profile')));
     }
-    
-    this.getSubcount();
+
+    // this.getSubcount();
     this.getPlayList()
   }
 };

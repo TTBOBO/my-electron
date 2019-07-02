@@ -42,8 +42,7 @@
             </thead>
             <tbody>
               <tr v-for="(item,index) in playlist.tracks"
-                  :key="item.id"
-                  @dblclick="handleClick(item.id)">
+                  :key="index">
                 <td class="indexTd">{{String(index+1).padStart(2,0)}}</td>
                 <td class="secTd">
                   <i class="iconfont icon-aixin1"></i>
@@ -95,7 +94,6 @@ export default {
       currentPlayList: this.getCurretList || {},
       playlist: {},
       activeName: "歌曲列表",
-      // showLyStatus: false,
       currentPlayMusic: {}, //当前播放的音乐
     }
   },
@@ -124,17 +122,10 @@ export default {
         this.playlist = playlist;
       }
     },
-    handleClick (params) { },
     playAll () {
       this.SET_PLAY_LIST(this.playlist.tracks);
       this.$EventBus.$emit('setCurrentIndex', 0)
     },
-    // showLy () {
-    //   if (this.getCurrentIndex === null) {
-    //     return false;
-    //   }
-    //   // this.showLyStatus = !this.showLyStatus;
-    // },
     palyMusic (item) {
       if (this.getCurrentIndex !== '' && this.getCurrentPlaylist[this.getCurrentIndex].name === item.name) {
         this.getAudioEl.currentTime = 0;  //重新播放
@@ -170,8 +161,8 @@ export default {
       },
       immediate: true
     },
-    getCurrentIndex (newV) {
-      this.currentPlayMusic = this.getCurrentPlaylist[this.getCurrentIndex];
+    getCurrentIndex (newV, oldV) {
+      this.currentPlayMusic = this.getCurrentPlaylist[newV] || {};
     }
   }
 }

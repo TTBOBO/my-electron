@@ -20,6 +20,11 @@ const REQUEST = {
   topList: '/top/list', //排行榜
   artist: '/toplist/artist', //歌手排行榜 
   toplist: '/toplist', //所有榜单
-
+  artistList: '/artist/list', //歌手,
+  hotPlayList: '/playlist/hot', //热门歌单
+  catlist: '/playlist/catlist', //歌单分类
+  topPlaylist: '/top/playlist', //通过歌单类型获取歌单
+  highquality: '/top/playlist/highquality', ///通过歌单类型获取精品歌单
+  playlistDetail: '/playlist/detail', //歌单详情
 }
 export default REQUEST;

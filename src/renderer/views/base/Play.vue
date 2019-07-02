@@ -44,7 +44,15 @@
             @click="changeMode"></span>
       <span @click="showLy"
             :class="{active:getShowLyStatus}">词</span>
-      <span class="iconfont icon-wj-bflb"></span>
+      <el-popover placement="top-start"
+                  width="700"
+                  trigger="click"
+                  v-model="visible">
+        <playview v-if="visible"></playview>
+        <span slot="reference"
+              class="iconfont icon-wj-bflb"></span>
+      </el-popover>
+
     </div>
 
     <!-- v-if="getCurrentPlaylist[Music.currentIndex]" -->
@@ -55,7 +63,8 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters, mapState } from 'vuex'
+import { mapMutations, mapGetters, mapState } from 'vuex';
+import playview from './auth/playview'
 const electron = require('electron')
 const { ipcRenderer } = electron;
 export default {
@@ -66,11 +75,12 @@ export default {
       index: 0,
       duration: 0,
       currentTime: 0,
-      showLyStatus: false
+      showLyStatus: false,
+      visible: false
     }
   },
   computed: {
-    ...mapGetters(['getAudioEl', 'getMode', 'getCurrentPlaylist','getShowLyStatus']),
+    ...mapGetters(['getAudioEl', 'getMode', 'getCurrentPlaylist', 'getShowLyStatus']),
     ...mapState(['Music']),
     getAudioPlayStatus () {
       return this.$refs.audio && this.$refs.audio.paused
@@ -192,6 +202,9 @@ export default {
   },
   destroyed () {
     this.$EventBus.$off('setCurrentIndex');
+  },
+  components: {
+    playview
   },
   watch: {
     volumeVal (newV) {

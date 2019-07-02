@@ -11,63 +11,70 @@
       </el-button-group>
     </div>
     <!-- <div> -->
-      <HeaderLine :titleArr="titleArr"
-                  @changeType="changeType"
-                  :currentIndex='currentIndex'></HeaderLine>
-      <div class="music-con" v-loading="loading" v-if="currentActive == 0">
-        <div class="tool">
-          <div class="pointer" @click="playAll">播放全部</div>
-          <div class="pointer">收藏全部</div>
-        </div>
-        <table cellspacing="0" >
-          <tbody>
-            <tr v-for="(item,index) in topSongsDatas"
-                :key="item.id"
-                @dblclick="handleClick(item.id)">
-              <td class="indexTd">{{String(index+1).padStart(2,0)}}</td>
-              <td class="secTd">
-                <img class="pic-img"
-                     :src="item.album.picUrl+'?param=45y45'" />
-              </td>
-              <td class="musicName">
-                <div class="musicName"
-                     :class="{'paly-status':item.name == currentPlayMusic.name}">
-                  <a :title="item.name" class="music-title pointer"
-                        @click="palyMusic(item)">{{item.name}}</a>
-                  <!-- <span v-if="item.alia.length>0"
+    <HeaderLine :titleArr="titleArr"
+                @changeType="changeType"
+                :currentIndex='currentIndex'></HeaderLine>
+    <div class="music-con"
+         v-loading="loading"
+         v-if="currentActive == 0">
+      <div class="tool">
+        <div class="pointer"
+             @click="playAll">播放全部</div>
+        <div class="pointer">收藏全部</div>
+      </div>
+      <table cellspacing="0">
+        <tbody>
+          <tr v-for="(item,index) in topSongsDatas"
+              :key="item.id">
+            <td class="indexTd">{{String(index+1).padStart(2,0)}}</td>
+            <td class="secTd">
+              <img class="pic-img"
+                   :src="item.album.picUrl+'?param=45y45'" />
+            </td>
+            <td class="musicName">
+              <div class="musicName"
+                   :class="{'paly-status':item.name == currentPlayMusic.name}">
+                <a :title="item.name"
+                   class="music-title pointer"
+                   @click="palyMusic(item)">{{item.name}}</a>
+                <!-- <span v-if="item.alia.length>0"
                           class="alia"
                           :class="{'paly-status':item.name == currentPlayMusic.name}">({{item.alia[0]}})</span> -->
-                </div>
-              </td>
-              <td class="musicActName">
-                <a :title="item.name">{{item.artists[0].name}}</a>
-              </td>
-              <!-- <td>{{item.al.name}}</td> -->
-              <td class="musicAlName">
-                <a :title="item.name">{{item.album.name}}</a>
-              </td>
-              <td class="time">
-                <div>{{item.duration / 1000 | filterTime}}</div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-       
-      </div>
-       <div v-else class="album-con" v-infinite-scroll="load" :infinite-scroll-disabled="disabled">
-         <div class="world-con">
-          <div class="world-con-item"
-              v-for="(item,index) in albumData"
-              :key="index">
-            <div class="item-pic-con">
-              <img :src="item.blurPicUrl+'?param=300y300'"
-                  alt="description">
-              <!-- <div class="play-count">{{item.playCount}}</div> -->
-            </div>
-            <a :title="item.name" class="title pointer">{{item.name}}</a>
+              </div>
+            </td>
+            <td class="musicActName">
+              <a :title="item.name">{{item.artists[0].name}}</a>
+            </td>
+            <!-- <td>{{item.al.name}}</td> -->
+            <td class="musicAlName">
+              <a :title="item.name">{{item.album.name}}</a>
+            </td>
+            <td class="time">
+              <div>{{item.duration / 1000 | filterTime}}</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+    <div v-else
+         class="album-con"
+         v-infinite-scroll="load"
+         :infinite-scroll-disabled="disabled">
+      <div class="world-con">
+        <div class="world-con-item"
+             v-for="(item,index) in albumData"
+             :key="index">
+          <div class="item-pic-con pointer">
+            <img :src="item.blurPicUrl+'?param=300y300'"
+                 alt="description">
+            <!-- <div class="play-count">{{item.playCount}}</div> -->
           </div>
+          <a :title="item.name"
+             class="title pointer">{{item.name}}</a>
         </div>
-       </div>
+      </div>
+    </div>
     <!-- </div> -->
   </div>
 </template>
@@ -81,12 +88,12 @@ export default {
       currentActive: 0,
       titleArr: [{ name: "全部", id: "0" }, { name: "华语", id: "7" }, { name: "欧美", id: "96" }, { name: "日本", id: "8" }, { name: "韩国", id: "16" }],
       topSongsDatas: [],
-      albumData:[],
-      offset:0,
+      albumData: [],
+      offset: 0,
       currentIndex: 0,  //id
       currentPlayMusic: {},
-      loading:true,
-      noMore:false
+      loading: true,
+      noMore: false
     }
   },
   filters: {
@@ -105,7 +112,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['PUSH_MUSIC_TO_LIST','SET_PLAY_LIST']),
+    ...mapMutations(['PUSH_MUSIC_TO_LIST', 'SET_PLAY_LIST']),
     handerType (num) {
       this.currentActive = num;
       this.currentIndex = 0;
@@ -128,16 +135,16 @@ export default {
         url = 'album';
         params = {
           id: this.currentIndex,
-          offset:this.offset,
-          limit:30
+          offset: this.offset,
+          limit: 30
         }
       }
       let data = await this.$ajaxGet(url, params);
       this.loading = false;
       if (this.currentActive == 0) {
         this.topSongsDatas = data.data;
-      }else{
-        if(!data.albums.length){
+      } else {
+        if (!data.albums.length) {
           this.noMore = true;
           return false;
         }
@@ -158,12 +165,12 @@ export default {
         }
       }
     },
-    load(){
+    load () {
       this.loading = true;
       this.offset++;
       this.getMusic();
     },
-    playAll(){
+    playAll () {
       this.SET_PLAY_LIST(this.topSongsDatas);
       this.$EventBus.$emit('setCurrentIndex', 0)
     }
@@ -231,11 +238,11 @@ export default {
       }
       .musicName {
         width: 300px;
-            max-width: 300px;
+        max-width: 300px;
         padding-left: 10px;
         overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
+        white-space: nowrap;
+        text-overflow: ellipsis;
         .alia {
           color: gray;
         }
@@ -243,17 +250,17 @@ export default {
       .musicActName {
         width: 80px;
         overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
       .musicAlName {
         width: 230px;
-            max-width: 230px;
+        max-width: 230px;
         overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
-      .time{
+      .time {
         width: 80px;
         text-align: center;
       }
@@ -272,16 +279,15 @@ export default {
       // padding: 5px 10px;
       line-height: 45px;
     }
-    .tool{
+    .tool {
       height: 20px;
       font-size: 14px;
       display: flex;
       justify-content: space-between;
       padding: 0 5px;
     }
-    
   }
-  .album-con{
+  .album-con {
     height: calc(100% - 66px);
     width: 100%;
     .world-con {
@@ -291,7 +297,7 @@ export default {
       flex-wrap: wrap;
       margin-top: 20px;
       .world-con-item {
-        width: 169;
+        width: 169px;
         height: 189px;
         margin-right: 15px;
         margin-bottom: 20px;
@@ -321,16 +327,16 @@ export default {
           }
         }
         .title {
+          width: 169px;
           font-size: 12px;
           line-height: 20px;
           text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
-        width: 169px;
+          white-space: nowrap;
+          overflow: hidden;
+          display: inherit;
         }
       }
     }
   }
-  
 }
 </style>
