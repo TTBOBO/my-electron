@@ -55,6 +55,11 @@ export default {
       newSongs: [],
     }
   },
+  filters: {
+    getNumber (val) {
+      return parseInt(val / 10000) + "万"
+    }
+  },
   methods: {
     async init () {
       let newBanner = await this.$ajaxGet('banner');

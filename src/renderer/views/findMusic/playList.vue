@@ -101,7 +101,6 @@ export default {
     ...mapGetters(['getPlayList', 'getUserInfo', 'getCurrentIndex', 'getCurrentPlaylist', 'getAudioEl', 'getShowLyStatus']),
     getCurretList () {
       const { id, type } = this.$route.query;
-      this.currentPlayList = this.getPlayList[type == 1 ? 'creatPlayList' : 'collecPlayLit'].filter(item => item.id == id)[0] || {};
       return this.getPlayList[type == 1 ? 'creatPlayList' : 'collecPlayLit'].filter(item => item.id == id)[0] || {};
     },
     getTitle () {
@@ -143,6 +142,7 @@ export default {
     }
   },
   mounted () {
+    this.initData();//初始化页面数据
     this.$EventBus.$on('showLy', this.showLy);
     this.$EventBus.$on('palyMusic', this.palyMusic);
   },

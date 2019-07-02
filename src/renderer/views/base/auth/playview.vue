@@ -30,7 +30,8 @@
               <a :title="item.name">{{item.ar[0].name}}</a>
             </td>
             <td class="">
-              <i class="iconfont icon-lianjie"></i>
+              <i class="iconfont icon-lianjie"
+                 @click="copy(item)"></i>
             </td>
             <td class="">
               <div>{{item.dt / 1000 | filterTime}}</div>
@@ -121,6 +122,10 @@ export default {
     },
     clearPlayList () {
       this.CLEAR_PLAY_LIST();
+    },
+    copy (item) {
+      // https://music.163.com/song/media/outer/url?id=${item.id}.mp3
+      this.$electron.clipboard.writeText(` https://music.163.com/#/song?id=${item.id}`)
     }
   },
   created () {

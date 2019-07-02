@@ -5,6 +5,9 @@
            v-for="(item,index) in menuConf"
            :key="index">
         <span class="menu-group-name">{{item.label}}</span>
+        <span v-if="item.label == '创建的歌单'"
+              @click="createPlay"
+              class="creat iconfont icon-jia"></span>
         <div class="menu-group-item"
              @click="handler(_child,item)"
              :class="{active:_child.name===activeName}"
@@ -29,6 +32,20 @@
         <i class="iconfont icon-web-icon-"></i>
       </div>
     </div>
+    <el-dialog title="歌单名称"
+               width='300px'
+               :visible.sync="showDialog">
+      <el-input v-model="playlistName"
+                autocomplete="off"></el-input>
+      <div slot="footer"
+           class="dialog-footer">
+        <el-button size="mini"
+                   @click="showDialog = false">取 消</el-button>
+        <el-button size="mini"
+                   type="primary"
+                   @click="addPlaylist">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -65,7 +82,9 @@ export default {
       }, {
         label: '收藏的歌单',
         group: []
-      }]
+      }],
+      showDialog: false,
+      playlistName: ""
     }
   },
   computed: {
@@ -73,7 +92,7 @@ export default {
     ...mapState(['Music']),
   },
   methods: {
-    ...mapMutations(['SET_SHOW_LY_STATUS']),
+    ...mapMutations(['SET_SHOW_LY_STATUS', 'SET_PLAYLIST']),
     handler ({ path, name, id }, { label }) {
       this.activeName = name;
       if (path) {
@@ -93,11 +112,24 @@ export default {
           break;
       }
     },
+    createPlay () {
+      this.showDialog = true;
+    },
+    async addPlaylist () {
+      if (!this.playlistName) {
+        this.$message.warning('歌单名称不能为空');
+        return false;
+      }
+      let data = await this.$ajaxPost('createPlayList', { name: this.playlistName });
+      this.SET_PLAYLIST([data.playlist]);
+      this.showDialog = false;
+      this.$message.success('添加成功');
+    },
     hiddenLy () {
       if (this.getShowLyStatus) {
         this.SET_SHOW_LY_STATUS();
       }
-    }
+    },
   },
   created () {
     this.defaultData = JSON.parse(JSON.stringify(this.menuConf))
@@ -105,6 +137,8 @@ export default {
   watch: {
     getPlayList: {
       handler (newV) {
+        this.menuConf[2].group = [];
+        this.menuConf[3].group = [];
         this.menuConf[2].group.push(...newV.creatPlayList);
         this.menuConf[3].group.push(...newV.collecPlayLit);
       },
@@ -137,6 +171,13 @@ export default {
     .menu-group {
       color: #8c8c8c;
       font-weight: 100;
+      .creat {
+        float: right;
+        line-height: 32px;
+        margin-right: 10px;
+        font-size: 19px;
+        font-weight: 700;
+      }
       .menu-group-name {
         height: 32px;
         padding-left: 10px;
