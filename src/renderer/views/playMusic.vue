@@ -2,7 +2,7 @@
   <div class="music-container"
        v-loading="loading">
     <img class="msk"
-         :src="getCurrentPlayMusic.al.picUrl" />
+         :src="getCurrentPlayMusic.al? getCurrentPlayMusic.al.picUrl : getCurrentPlayMusic.album.picUrl" />
     <div class="msk2"></div>
     <Scroll ref="lyricList"
             v-if="currentLyric.lines">
@@ -93,7 +93,6 @@ export default {
   },
 
   async mounted () {
-    console.log(111);
     this.$nextTick(async () => {
       await this.getMusicLyric();
       this.$EventBus.$on('loop', this.loop);

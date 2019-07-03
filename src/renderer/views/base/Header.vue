@@ -73,7 +73,7 @@
 
 <script>
 import util from '../../assets/js/util';
-import { mapMutations, mapGetters, mapState } from 'vuex'
+import { mapMutations, mapGetters, mapState, mapActions } from 'vuex'
 import UserInfo from './auth/UserInfo';
 export default {
   data () {
@@ -93,6 +93,7 @@ export default {
   },
   methods: {
     ...mapMutations(['INIT_ACCOUNT', 'INIT_PROFILE', 'SET_PLAYLIST']),
+    ...mapActions(['getPlayListAction']),
     sendStatus (type) {
       if (type === 'maxSize') {
         this.isFull = !this.isFull;
@@ -109,6 +110,8 @@ export default {
       this.loading = true;
       try {
         let res = await this.$ajaxPost('login', this.ruleForm);
+        // let { ids } = await this.$ajaxGet('likelist');
+        // this.SET_LIKE_LIST(ids);
         let { account, profile } = res;
 
         this.INIT_ACCOUNT(account);
@@ -118,7 +121,7 @@ export default {
         this.loading = false;
         this.loginStatus = false;
         this.getSubcount();
-        this.getPlayList()
+        this.getPlayListAction()
       } catch (error) {
         console.log(error)
         this.$message({
@@ -131,13 +134,6 @@ export default {
     async getSubcount () {
       let subcountData = await this.$ajaxPost('subcount');
       console.log(subcountData);
-    },
-    async getPlayList () {
-      let playListData = await this.$ajaxPost('playlist', { uid: this.getUserInfo.userId });
-      this.SET_PLAYLIST(playListData.playlist);
-    },
-    login () {
-
     }
   },
   components: {
@@ -148,9 +144,10 @@ export default {
       this.INIT_ACCOUNT(JSON.parse(util.getLocalStorage('account')));
       this.INIT_PROFILE(JSON.parse(util.getLocalStorage('profile')));
     }
+    this.getPlayListAction();
 
     // this.getSubcount();
-    this.getPlayList()
+    // this.getPlayList()
   }
 };
 </script>

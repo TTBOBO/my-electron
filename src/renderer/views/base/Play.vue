@@ -158,6 +158,7 @@ export default {
       this.setCount('next')
     },
     setCount (status = 'prev') {
+      console.log(this.Music.currentIndex);
       let index = this.Music.currentIndex
       let len = this.getCurrentPlaylist.length
       if (this.getMode === 2) {
@@ -210,20 +211,28 @@ export default {
     volumeVal (newV) {
       this.getAudioEl.volume = newV / 100;
     },
-    getMusicUrl (newV) {
-      if (newV) {
-        if (!this.getAudioEl) {
-          // this.play();  //默认播放
-          this.INIT_AUDIO_EL(this.$refs.audio);//第一次的时候 初始化 播放器
-        }
-        this.$nextTick(() => {
-          this.getAudioEl.oncanplay = this.initMusicInfo
-        })
+    async getMusicUrl (newV) {
+      try {
+        let data = await this.$ajaxGet("checkMusic", { id: this.getCurrentPlaylist[this.Music.currentIndex].id });
+        if (newV) {
+          if (!this.getAudioEl) {
+            // this.play();  //默认播放
+            this.INIT_AUDIO_EL(this.$refs.audio);//第一次的时候 初始化 播放器
+          }
+          this.$nextTick(() => {
+            this.getAudioEl.oncanplay = this.initMusicInfo
+          })
 
-        this.getAudioEl.volume = this.volumeVal / 100;  //设置音量大小
-        this.ipcEvent();
-        // 
+          this.getAudioEl.volume = this.volumeVal / 100;  //设置音量大小
+          this.ipcEvent();
+          // 
+        }
+      } catch (error) {
+        this.$message.error(error.message)
+        this.next();  //播放下一首歌
       }
+
+
     }
   }
 }

@@ -30,7 +30,8 @@
         <div class="world-con-item"
              v-for="(item,index) in highquality"
              :key="index">
-          <div class="item-pic-con" @click="handlerPlay(item)">
+          <div class="item-pic-con"
+               @click="handlerPlay(item)">
             <img :src="item.coverImgUrl+'?param=300y300'">
             <div class="play-count">{{item.playCount | getNumber}}</div>
           </div>
@@ -69,9 +70,8 @@ export default {
     }
   },
   methods: {
-    handlerPlay(item){
-      console.log(item);
-      this.$router.push({ path: "playList", query: { id:item.id } });
+    handlerPlay (item) {
+      this.$router.push({ path: "playList", query: { id: item.id } });
     },
     async hotPlayList () {
       let hotList = await this.$ajaxGet('hotPlayList');

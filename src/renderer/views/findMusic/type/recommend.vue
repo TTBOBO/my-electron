@@ -28,14 +28,14 @@
         <p class="name pointer">{{item.name}}</p>
       </div>
     </div>
-    <HeaderLine title="新歌速递"></HeaderLine>
+    <HeaderLine title="推荐歌曲"></HeaderLine>
     <div class="resource">
       <div class="resource-item"
            v-for="(item,index) in newSongs"
            :key="index">
         <div class="pic-con">
           <img class="pic pointer"
-               :src="item.album.blurPicUrl +'?param=300y300'" />
+               :src="item.song.album.blurPicUrl +'?param=300y300'" />
           <!-- <span class="play-count">
                 <i class="iconfont icon-erji"></i>{{item.playcount}}</span> -->
         </div>
@@ -65,9 +65,10 @@ export default {
       let newBanner = await this.$ajaxGet('banner');
       this.banners = newBanner.banners;
       let resource = await this.$ajaxGet('resource');
-      this.recommend = resource.recommend.slice(0, 12);
-      let newSongs = await this.$ajaxGet('topSongs', { type: 0 });
-      this.newSongs = newSongs.data.slice(0, 12);
+      this.recommend = resource.recommend.slice(0, 10);
+      let newSongs = await this.$ajaxGet('newsong', { type: 0 });
+      console.log(newSongs)
+      this.newSongs = newSongs.result;
     }
   },
   components: {
@@ -109,10 +110,10 @@ export default {
     justify-content: space-between;
     flex-wrap: wrap;
     .resource-item {
-      width: 20%;
+      width: 180px;
       margin-bottom: 20px;
       flex-direction: column;
-      margin-right: 30px;
+      // margin-right: 66px;
       &:nth-child(4) {
         margin-right: 0;
       }

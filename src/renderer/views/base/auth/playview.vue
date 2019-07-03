@@ -27,7 +27,7 @@
             <td class="pointer"
                 @click="palyMusic(item)">{{item.name}}</td>
             <td class="musicAlName pointer">
-              <a :title="item.name">{{item.ar[0].name}}</a>
+              <a :title="item.artists ? item.artists[0].name :item.ar[0].name">{{item.artists ? item.artists[0].name :item.ar[0].name}}</a>
             </td>
             <td class="">
               <i class="iconfont icon-lianjie"
@@ -57,7 +57,7 @@
             <td class="pointer"
                 @click="palyMusic(item)">{{item.name}}</td>
             <td class="musicAlName pointer">
-              <a :title="item.name">{{item.ar[0].name}}</a>
+              <a :title="item.artists ? item.artists[0].name :item.ar[0].name">{{item.artists ? item.artists[0].name :item.ar[0].name}}</a>
             </td>
             <td class="">
               <i class="iconfont icon-lianjie"></i>
@@ -108,7 +108,7 @@ export default {
         this.getAudioEl.currentTime = 0;  //重新播放
         this.$EventBus.$emit('changePro', 0);
       } else {
-        let index = this.getCurrentPlaylist.findIndex(item => item.name === name);
+        let index = this.getCurrentPlaylist.findIndex(_item => _item.name === item.name);
         if (index == -1) {  //如果当前音乐没有在播放列表里面直接添加进去再播放
           this.PUSH_MUSIC_TO_LIST(item);
           this.$EventBus.$emit('setCurrentIndex', this.getCurrentPlaylist.length - 1);

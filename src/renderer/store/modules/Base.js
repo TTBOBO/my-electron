@@ -1,8 +1,13 @@
+import {
+  ajaxPost,
+  ajaxGet
+} from '@/api/axios.js'
 const state = {
   account: {},
   profile: {},
   creatPlayList: [], //自己的歌单
   collecPlayLit: [], //收藏的歌单
+  likeLists: [] //喜欢的音乐列表id
 }
 
 const mutations = {
@@ -19,6 +24,8 @@ const mutations = {
     state.collecPlayLit = [];
   },
   SET_PLAYLIST(state, list = []) {
+    state.collecPlayLit = [];
+    state.creatPlayList = [];
     list.forEach((item) => {
       if (item.userId != state.profile.userId) {
         state.collecPlayLit.push(item);
@@ -26,11 +33,25 @@ const mutations = {
         state.creatPlayList.push(item);
       }
     })
+  },
+  SET_LIKE_LIST(state, list) {
+    state.likeLists = list;
   }
 }
 
 const actions = {
-
+  async getPlayListAction({
+    state,
+    commit,
+    dispatch
+  }, params) {
+    if (!state.profile.userId) return false;
+    let playListData = await ajaxGet('playlist', {
+      uid: state.profile.userId,
+      timestamp: new Date().getTime()
+    });
+    commit('SET_PLAYLIST', playListData.playlist)
+  }
 }
 
 const getters = {
@@ -40,7 +61,8 @@ const getters = {
       creatPlayList: state.creatPlayList,
       collecPlayLit: state.collecPlayLit
     }
-  }
+  },
+  getLikeLists: state => state.likeLists
 }
 
 export default {

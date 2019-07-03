@@ -4,25 +4,25 @@
              class="tabs">
       <el-tab-pane label="个性推荐"
                    name="个性推荐">
-        <recommend v-if="activeName == '个性推荐'"></recommend>
+        <Recommend v-if="activeName == '个性推荐'"></Recommend>
       </el-tab-pane>
       <el-tab-pane label="歌单"
                    name="歌单">
-        <songsheet v-if="activeName == '歌单'"></songsheet>
+        <song-sheet v-if="activeName == '歌单'"></song-sheet>
       </el-tab-pane>
       <!-- <el-tab-pane label="电台"
                    name="电台">电台</el-tab-pane> -->
       <el-tab-pane label="排名榜"
                    name="排名榜">
-        <listPeer v-if="activeName == '排名榜'"></listPeer>
+        <list-peer v-if="activeName == '排名榜'"></list-peer>
       </el-tab-pane>
       <el-tab-pane label="歌手"
                    name="歌手">
-        <player v-if="activeName == '歌手'"></player>
+        <Player v-if="activeName == '歌手'"></Player>
       </el-tab-pane>
       <el-tab-pane label="最新音乐"
                    name="最新音乐">
-        <newMusic v-if="activeName == '最新音乐'"></newMusic>
+        <new-music v-if="activeName == '最新音乐'"></new-music>
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -30,15 +30,15 @@
 
 <script>
 
-import listPeer from './type/ListPeer';
-import newMusic from './type/newMusic';
-import player from './type/player';
-import songsheet from './type/songSheet';
-import recommend from './type/recommend';
+import ListPeer from './type/ListPeer';
+import NewMusic from './type/NewMusic';
+import Player from './type/Player';
+import SongSheet from './type/SongSheet';
+import Recommend from './type/Recommend';
 export default {
   data () {
     return {
-      activeName: "歌单"
+      activeName: "个性推荐"
     }
   },
   filters: {
@@ -54,11 +54,11 @@ export default {
 
   },
   components: {
-    songsheet,
-    listPeer,
-    newMusic,
-    player,
-    recommend
+    SongSheet,
+    ListPeer,
+    NewMusic,
+    Player,
+    Recommend
   }
 }
 </script>

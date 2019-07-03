@@ -1,7 +1,7 @@
 <template>
   <div class="playlist">
     <div class="play-top">
-      <img :src="getCurretList.coverImgUrl"
+      <img :src="currentPlayList.coverImgUrl"
            alt=""
            class="paly-img" />
       <div>
@@ -12,19 +12,21 @@
         </p>
         <p class="play-info">
           <i class="iconfont icon-yinle"></i>
-          <span>{{getUserInfo.nickname}}</span>
-          <span>{{getCurretList.createTime | time}}创建</span>
+          <span>{{currentPlayList.creator && currentPlayList.creator.nickname}}</span>
+          <span>{{currentPlayList.createTime | time}}创建</span>
         </p>
         <div class="play-tool">
           <div class="btn"
                @click="playAll">播放全部</div>
-          <div class="btn btn-dis">收藏</div>
+          <div class="btn btn-dis"
+               @click="subscribe"
+               v-if="currentPlayList.creator && currentPlayList.creator.userId != getUserInfo.userId">{{currentPlayList.subscribed ? '已' : ''}}收藏</div>
           <div class="btn">分享</div>
           <div class="btn">下载</div>
         </div>
       </div>
       <div class="linten-count">
-        <i class="iconfont icon-yinle"></i>{{getCurretList.playCount}}
+        <i class="iconfont icon-yinle"></i>{{currentPlayList.playCount}}
       </div>
     </div>
     <div class="play-bottom">
@@ -45,17 +47,19 @@
                   :key="index">
                 <td class="indexTd">{{String(index+1).padStart(2,0)}}</td>
                 <td class="secTd">
-                  <i class="iconfont icon-aixin1"></i>
+                  <i @click="like(item,index)"
+                     class="iconfont"
+                     :class="{'icon-aixin1':getLikeIds.indexOf(item.id) === -1,'icon-aixin active':getLikeIds.indexOf(item.id) !== -1}"></i>
                   <i class="iconfont icon-xiazai"></i>
                 </td>
                 <td class="musicName">
                   <div class="musicName"
-                       :class="{'paly-status':item.name == currentPlayMusic.name}">
+                       :class="{'paly-status':item.name == currentPlayList.name}">
                     <span class="music-title pointer"
                           @click="palyMusic(item)">{{item.name}}</span>
                     <span v-if="item.alia.length>0"
                           class="alia"
-                          :class="{'paly-status':item.name == currentPlayMusic.name}">({{item.alia[0]}})</span>
+                          :class="{'paly-status':item.name == currentPlayList.name}">({{item.alia[0]}})</span>
                   </div>
                 </td>
                 <td class="musicActName">
@@ -72,7 +76,10 @@
         <el-tab-pane label="评论"
                      name="评论">评论</el-tab-pane>
         <el-tab-pane label="收藏"
-                     name="收藏">收藏</el-tab-pane>
+                     name="收藏">
+          <Subscribe v-if="activeName=='收藏'"
+                     :id="currentPlayList.id"></Subscribe>
+        </el-tab-pane>
       </el-tabs>
     </div>
     <!-- -->
@@ -85,41 +92,53 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters, mapState } from 'vuex';
+import { mapMutations, mapGetters, mapState, mapActions } from 'vuex';
 import util from '@/assets/js/util'
-import PlayMusic from '../playMusic'
+import PlayMusic from '../PlayMusic'
+import Subscribe from './Subscribe'
 export default {
   data () {
     return {
-      currentPlayList: this.getCurretList || {},
+      currentPlayList: {},
       playlist: {},
       activeName: "歌曲列表",
       currentPlayMusic: {}, //当前播放的音乐
+      currentId: this.$route.query.id
     }
   },
   computed: {
-    ...mapGetters(['getPlayList', 'getUserInfo', 'getCurrentIndex', 'getCurrentPlaylist', 'getAudioEl', 'getShowLyStatus']),
-    getCurretList () {
-      const { id, type } = this.$route.query;
-      return this.getPlayList[type == 1 ? 'creatPlayList' : 'collecPlayLit'].filter(item => item.id == id)[0] || {};
-    },
+    ...mapGetters(['getPlayList', 'getUserInfo', 'getCurrentIndex', 'getCurrentPlaylist', 'getAudioEl', 'getShowLyStatus', 'getLikeLists', 'getLikeIds']),
     getTitle () {
-      if (!this.getCurretList.name) return '';
-      return this.getCurretList.name.replace(this.getUserInfo.nickname, '我')
+      if (!this.currentPlayList.name) return '';
+      return this.currentPlayList.name.replace(this.getUserInfo.nickname, '我')
     },
   },
   filters: {
     time (val) {
+      if (!val) return '';
       return util.time.getNowTime(parseInt(val / 1000));
     }
   },
   methods: {
-    ...mapMutations(['SET_PLAY_LIST', 'SET_CURRENT_INDEX', 'INIT_AUDIO_EL', 'PUSH_MUSIC_TO_LIST']),
+    ...mapMutations(['SET_PLAY_LIST', 'SET_CURRENT_INDEX', 'INIT_AUDIO_EL', 'PUSH_MUSIC_TO_LIST', 'SET_LIKE_IDS']),
+    ...mapActions(['getPlayListAction']),
     async initPlaylistDetail () {
-      let { playlist, code, privileges } = await this.$ajaxGet('playlistDetail', { id: this.getCurretList.id });
+      this.likelist();
+      const { id, type } = this.$route.query;
+
+      let data = await this.$ajaxGet('playlistDetail', { id, timestamp: new Date().getTime() });
+
+      let { playlist, code, privileges } = data;
+      console.log(data);
+      this.loading.close();
       if (code == 200) {
+        this.currentPlayList = playlist;
         this.playlist = playlist;
       }
+    },
+    async likelist () {
+      let { ids } = await this.$ajaxGet('likelist', { uid: this.getUserInfo.userId, timestamp: new Date().getTime() });
+      this.SET_LIKE_IDS(ids);
     },
     playAll () {
       this.SET_PLAY_LIST(this.playlist.tracks);
@@ -130,7 +149,7 @@ export default {
         this.getAudioEl.currentTime = 0;  //重新播放
         this.$EventBus.$emit('changePro', 0);
       } else {
-        let index = this.getCurrentPlaylist.findIndex(item => item.name === name);
+        let index = this.getCurrentPlaylist.findIndex(_item => _item.name === item.name);
         if (index == -1) {  //如果当前音乐没有在播放列表里面直接添加进去再播放
           this.PUSH_MUSIC_TO_LIST(item);
           this.$EventBus.$emit('setCurrentIndex', this.getCurrentPlaylist.length - 1)
@@ -138,32 +157,61 @@ export default {
           this.$EventBus.$emit('setCurrentIndex', index)
         }
       }
+    },
+    async like ({ id }, index) {
+      let status = this.getLikeIds.indexOf(id) !== -1 ? false : true;
+      let res = await this.$ajaxGet('like', { id, like: status, timestamp: new Date().getTime() });
+      if (!status) {
+        let ids = JSON.parse(JSON.stringify(this.getLikeIds));
+        ids.splice(ids.indexOf(id), 1);
+        this.SET_LIKE_IDS(ids);
+        if (this.currentPlayList.name === `${this.getUserInfo.nickname}喜欢的音乐`) {
+          this.playlist.tracks.splice(index, 1);
+        }
+      } else {
+        this.likelist();
+      }
+    },
+    createLoading () {
+      this.loading = this.$Loading.service({
+        background: "#fff",
+      })
+    },
+    async subscribe () {
+      const { creator: { userId }, subscribed, id } = this.currentPlayList;
+      if (userId != this.getUserInfo.userId) {
+        let data = await this.$ajaxGet('subscribe', { t: subscribed ? 2 : 1, id, timestamp: new Date().getTime() });
+        this.$message.success(`${subscribed ? '取消' : ''}收藏成功`);
+        this.getPlayListAction();
+        this.currentPlayList.subscribed = !this.currentPlayList.subscribed;
+      }
 
     }
   },
   mounted () {
-    // this.initData();//初始化页面数据
+    this.initPlaylistDetail();//初始化页面数据
     this.$EventBus.$on('showLy', this.showLy);
     this.$EventBus.$on('palyMusic', this.palyMusic);
   },
   destroyed () {
     this.$EventBus.$off('showLy');
-    // this.$EventBus.$off('palyMusic');
+    this.$EventBus.$off('palyMusic');
   },
-  created () { },
+  created () {
+    this.createLoading();
+  },
   components: {
-    PlayMusic
+    PlayMusic,
+    Subscribe
   },
   watch: {
-    getCurretList: {
-      handler (newV, oldV) {
-        this.initPlaylistDetail();
-      },
-      immediate: true
+    $route (newV) {
+      this.createLoading();
+      this.initPlaylistDetail();
     },
-    getCurrentIndex (newV, oldV) {
-      this.currentPlayMusic = this.getCurrentPlaylist[newV] || {};
-    }
+    // getCurrentIndex (newV, oldV) {
+    //   this.currentPlayList = this.getCurrentPlaylist[newV] || {};
+    // }
   }
 }
 </script>
@@ -291,6 +339,9 @@ export default {
     width: 100%;
     height: 100%;
     z-index: 2;
+  }
+  .active {
+    color: $base-color;
   }
 }
 </style>

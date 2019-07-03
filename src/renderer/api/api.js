@@ -2,6 +2,8 @@ const REQUEST = {
   login: "/login/cellphone", //登录
   refreshStatus: "/login/refresh", //刷新登录状态
   sendCode: "/captch/sent", //发送验证码
+  likelist: '/likelist', //喜欢的列表
+  like: '/like', //喜欢音乐
   loginOut: "/logout", //退出登录
   loginOut: "/logout", //退出登录 
   userDetail: "/user/detail", //用户信息 
@@ -26,5 +28,8 @@ const REQUEST = {
   topPlaylist: '/top/playlist', //通过歌单类型获取歌单
   highquality: '/top/playlist/highquality', ///通过歌单类型获取精品歌单
   createPlayList: '/playlist/create', // 创建歌单
+  subscribe: '/playlist/subscribe', //收藏歌单
+  subscribers: '/playlist/subscribers', //歌单收藏者
+  checkMusic: '/check/music', //查看音乐是否可用
 }
 export default REQUEST;

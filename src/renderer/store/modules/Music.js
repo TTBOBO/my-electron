@@ -7,7 +7,8 @@ const state = {
   currentIndex: '', //当前播放的下标
   currentLyric: null,
   currentPlayMusic: {}, //当前播放的音乐
-  showLyStatus: false //歌词显示状态
+  showLyStatus: false, //歌词显示状态
+  likeIds: [], //喜欢的id
 }
 
 const mutations = {
@@ -20,7 +21,9 @@ const mutations = {
   SET_CURRENT_INDEX(state, index) {
     state.currentIndex = index
     state.currentPlayMusic = state.playList[index];
-    let Index = state.historyList.findIndex(item => item.id == state.currentPlayMusic.id)
+    let Index = state.historyList.findIndex(item => {
+      return item.id == state.currentPlayMusic.id
+    })
     if (Index === -1) {
       state.historyList.push(state.currentPlayMusic);
     }
@@ -47,6 +50,9 @@ const mutations = {
     state.currentIndex = '';
     state.playing = false;
     state.playList = [];
+  },
+  SET_LIKE_IDS(state, data) {
+    state.likeIds = data;
   }
 }
 
@@ -69,7 +75,8 @@ const getters = {
     return (state.currentIndex !== '' && state.playList.length) ? state.playList[state.currentIndex] : {}
   },
   getShowLyStatus: state => state.showLyStatus,
-  getHistoryList: state => state.historyList
+  getHistoryList: state => state.historyList,
+  getLikeIds: state => state.likeIds
   // getCurrentPlayMusic: state => state.currentPlayMusic
 }
 

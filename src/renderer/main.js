@@ -15,6 +15,7 @@ Vue.http = Vue.prototype.$http = axios
 Vue.prototype.$EventBus = new Vue();
 Vue.prototype.$ajaxGet = ajaxGet;
 Vue.prototype.$ajaxPost = ajaxPost;
+Vue.prototype.$Loading = ElementUI.Loading;
 Vue.config.productionTip = false
 Vue.use(ElementUI)
 /* eslint-disable no-new */

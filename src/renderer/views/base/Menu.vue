@@ -14,7 +14,8 @@
              v-for="(_child,_index) in item.group"
              :key="_index">
           <span class="item-icon el-icon-user"></span>
-          <span>{{_child.name}}</span>
+          <a :title="_child.name"
+             class="title">{{_child.name}}</a>
         </div>
       </div>
     </div>
@@ -28,7 +29,9 @@
         <p>{{getCurrentPlayMusic.al? getCurrentPlayMusic.al.name : getCurrentPlayMusic.album.name}}</p>
       </div>
       <div class="music-icon">
-        <i class="iconfont icon-aixin1"></i>
+        <i class="iconfont"
+           :class="{'icon-aixin1':getLikeIds.indexOf(getCurrentPlayMusic.id) === -1,'icon-aixin active':getLikeIds.indexOf(getCurrentPlayMusic.id) !== -1}"
+           @click="like"></i>
         <i class="iconfont icon-web-icon-"></i>
       </div>
     </div>
@@ -50,7 +53,7 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters, mapState } from 'vuex';
+import { mapMutations, mapGetters, mapState, mapActions } from 'vuex';
 export default {
   data () {
     return {
@@ -88,11 +91,12 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['getPlayList', 'getCurrentPlaylist', 'getCurrentPlayMusic', 'getUserInfo', 'getShowLyStatus']),
+    ...mapGetters(['getPlayList', 'getCurrentPlaylist', 'getCurrentPlayMusic', 'getUserInfo', 'getShowLyStatus', 'getLikeIds']),
     ...mapState(['Music']),
   },
   methods: {
-    ...mapMutations(['SET_SHOW_LY_STATUS', 'SET_PLAYLIST']),
+    ...mapMutations(['SET_SHOW_LY_STATUS', 'SET_PLAYLIST', 'SET_LIKE_IDS']),
+    ...mapActions(['getPlayListAction']),
     handler ({ path, name, id }, { label }) {
       this.activeName = name;
       if (path) {
@@ -112,6 +116,19 @@ export default {
           break;
       }
     },
+    async like () {
+      let id = this.getCurrentPlayMusic.id;
+      let status = this.getLikeIds.indexOf(id) !== -1 ? false : true;
+      let res = await this.$ajaxGet('like', { id, like: status, timestamp: new Date().getTime() });
+      if (!status) {
+        let ids = JSON.parse(JSON.stringify(this.getLikeIds));
+        ids.splice(ids.indexOf(id), 1);
+        this.SET_LIKE_IDS(ids);
+      } else {
+        let { ids } = await this.$ajaxGet('likelist', { uid: this.getUserInfo.userId, timestamp: new Date().getTime() });
+        this.SET_LIKE_IDS(ids);
+      }
+    },
     createPlay () {
       this.showDialog = true;
     },
@@ -121,7 +138,8 @@ export default {
         return false;
       }
       let data = await this.$ajaxPost('createPlayList', { name: this.playlistName });
-      this.SET_PLAYLIST([data.playlist]);
+      // this.SET_PLAYLIST([data.playlist]);
+      this.getPlayListAction();
       this.showDialog = false;
       this.$message.success('添加成功');
     },
@@ -191,8 +209,17 @@ export default {
         font-size: 13px;
         padding-left: 20px;
         line-height: 32px;
+        display: flex;
+        align-items: center;
         .item-icon {
           margin-right: 10px;
+        }
+        .title {
+          display: inline-block;
+          white-space: nowrap;
+          flex: 1;
+          text-overflow: ellipsis;
+          overflow: hidden;
         }
       }
       .active {
@@ -247,6 +274,9 @@ export default {
       justify-content: space-between;
       margin-right: 5px;
       padding: 5px 0;
+      .active {
+        color: $base-color;
+      }
     }
   }
 }
