@@ -54,12 +54,12 @@
                 </td>
                 <td class="musicName">
                   <div class="musicName"
-                       :class="{'paly-status':item.name == currentPlayList.name}">
+                       :class="{'paly-status':item.name == getCurrentPlayMusic.name}">
                     <span class="music-title pointer"
                           @click="palyMusic(item)">{{item.name}}</span>
                     <span v-if="item.alia.length>0"
                           class="alia"
-                          :class="{'paly-status':item.name == currentPlayList.name}">({{item.alia[0]}})</span>
+                          :class="{'paly-status':item.name == getCurrentPlayMusic.name}">({{item.alia[0]}})</span>
                   </div>
                 </td>
                 <td class="musicActName">
@@ -107,7 +107,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['getPlayList', 'getUserInfo', 'getCurrentIndex', 'getCurrentPlaylist', 'getAudioEl', 'getShowLyStatus', 'getLikeLists', 'getLikeIds']),
+    ...mapGetters(['getPlayList', 'getUserInfo', 'getCurrentIndex', 'getCurrentPlaylist', 'getAudioEl', 'getShowLyStatus', 'getLikeLists', 'getLikeIds', 'getCurrentPlayMusic']),
     getTitle () {
       if (!this.currentPlayList.name) return '';
       return this.currentPlayList.name.replace(this.getUserInfo.nickname, '我')
@@ -129,7 +129,6 @@ export default {
       let data = await this.$ajaxGet('playlistDetail', { id, timestamp: new Date().getTime() });
 
       let { playlist, code, privileges } = data;
-      console.log(data);
       this.loading.close();
       if (code == 200) {
         this.currentPlayList = playlist;

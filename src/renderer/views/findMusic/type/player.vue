@@ -41,9 +41,12 @@
              v-for="(item,index) in artists"
              :key="index">
           <div class="item-pic-con">
-            <img :src="item.picUrl+'?param=300y300'">
+            <img class="pointer"
+                 @click="handerPlayer(item)"
+                 :src="item.picUrl+'?param=300y300'">
           </div>
-          <a :title="item.name"
+          <a @click="handerPlayer(item)"
+             :title="item.name"
              class="title pointer">{{item.name}}</a>
         </div>
         <p v-if="loading"
@@ -128,14 +131,18 @@ export default {
           this.artists.push(...data.artists);
         }
       }, 500)
-
-
-
     },
     load () {
       this.loading = true;
       this.offset++;
       this.getPlayers();
+    },
+    handerPlayer (item) {
+      console.log(item);
+      this.$router.push({
+        path: '/playinfo',
+        query: { id: item.id }
+      });
     }
   },
   mounted () {

@@ -31,5 +31,10 @@ const REQUEST = {
   subscribe: '/playlist/subscribe', //收藏歌单
   subscribers: '/playlist/subscribers', //歌单收藏者
   checkMusic: '/check/music', //查看音乐是否可用
+  artists: '/artists', //歌手信息
+  simiArtist: '/simi/artist', // 相似歌手,
+  artistDesc: '/artist/desc', //歌手描述，
+  artistMv: '/artist/mv', //歌手MV
+
 }
 export default REQUEST;

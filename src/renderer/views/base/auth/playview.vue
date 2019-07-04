@@ -128,9 +128,7 @@ export default {
       this.$electron.clipboard.writeText(` https://music.163.com/#/song?id=${item.id}`)
     }
   },
-  created () {
-    console.log(this.getCurrentPlaylist);
-  }
+  created () { }
 }
 </script>
 

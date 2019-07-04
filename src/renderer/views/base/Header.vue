@@ -8,6 +8,14 @@
         音乐播放器
         <!-- 网易云音乐 -->
       </span>
+      <el-button-group style="margin-left: 150px;">
+        <el-button @click="handerRouter('left')"
+                   icon="el-icon-arrow-left"
+                   size="mini"></el-button>
+        <el-button @click="handerRouter"
+                   icon="el-icon-arrow-right"
+                   size="mini"></el-button>
+      </el-button-group>
       <input class="search"
              placeholder="搜索音乐，视频，歌词，电台">
     </div>
@@ -94,6 +102,9 @@ export default {
   methods: {
     ...mapMutations(['INIT_ACCOUNT', 'INIT_PROFILE', 'SET_PLAYLIST']),
     ...mapActions(['getPlayListAction']),
+    handerRouter (type) {
+      this.$router[type == 'left' ? 'back' : 'forward']();
+    },
     sendStatus (type) {
       if (type === 'maxSize') {
         this.isFull = !this.isFull;
@@ -178,7 +189,7 @@ export default {
       border-color: transparent;
       background: #a72929;
       width: 200px;
-      margin-left: 150px;
+      margin-left: 20px;
       padding-left: 10px;
       color: #fff;
       outline: none;
