@@ -144,10 +144,8 @@ export default {
   },
   methods: {
     async intiPlayInfo () {
-      console.log(this.$route.query.id)
       this.artistData = await this.$ajaxGet('artists', { id: this.$route.query.id });
       this.songs = this.artistData.hotSongs.slice(0, 10);
-      console.log(this.artistData.hotSongs)
     },
     getStr (str) {
       return str.replace(/\n/g, '<br/>')

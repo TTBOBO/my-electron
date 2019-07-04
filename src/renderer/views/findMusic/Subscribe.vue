@@ -1,12 +1,16 @@
 <template>
   <div class="subscribe-container">
-    <div class="subscriber-item"
-         v-for="(item,index) in subscriveArr"
-         :key='index'>
-      <img class="auth-pic"
-           :src="item.avatarUrl" />
-      <p class="title">{{item.nickname}}</p>
-    </div>
+    <template v-if="subscriveArr.length">
+      <div class="subscriber-item"
+           v-for="(item,index) in subscriveArr"
+           :key='index'>
+        <img class="auth-pic"
+             :src="item.avatarUrl" />
+        <p class="title">{{item.nickname}}</p>
+      </div>
+    </template>
+    <div v-else
+         class="no-more">{{noMore ? '暂无数据' :'加载中...'}}</div>
   </div>
 </template>
 
@@ -28,12 +32,15 @@ export default {
         limit: 30,
         offset: this.offset
       })
+      if (!data.subscribers.length) {
+        this.noMore = true;
+        return;
+      }
       this.subscriveArr.push(...data.subscribers);
     }
   },
   mounted () {
     this.initSubscribeData();
-    console.log(this.id);
   }
 }
 </script>
@@ -46,6 +53,11 @@ export default {
   display: flex;
   justify-content: space-around;
   flex-wrap: wrap;
+  .no-more {
+    text-align: center;
+    font-size: 14px;
+    margin: 50px 0;
+  }
   .subscriber-item {
     width: 120px;
     margin-right: 64px;

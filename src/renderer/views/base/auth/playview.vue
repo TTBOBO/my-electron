@@ -27,7 +27,8 @@
             <td class="pointer"
                 @click="palyMusic(item)">{{item.name}}</td>
             <td class="musicAlName pointer">
-              <a :title="item.artists ? item.artists[0].name :item.ar[0].name">{{item.artists ? item.artists[0].name :item.ar[0].name}}</a>
+              <a @click="Player(item.artists ? item.artists[0] :item.ar[0])"
+                 :title="item.artists ? item.artists[0].name :item.ar[0].name">{{item.artists ? item.artists[0].name :item.ar[0].name}}</a>
             </td>
             <td class="">
               <i class="iconfont icon-lianjie"
@@ -57,7 +58,8 @@
             <td class="pointer"
                 @click="palyMusic(item)">{{item.name}}</td>
             <td class="musicAlName pointer">
-              <a :title="item.artists ? item.artists[0].name :item.ar[0].name">{{item.artists ? item.artists[0].name :item.ar[0].name}}</a>
+              <a @click="Player(item.artists ? item.artists[0] :item.ar[0])"
+                 :title="item.artists ? item.artists[0].name :item.ar[0].name">{{item.artists ? item.artists[0].name :item.ar[0].name}}</a>
             </td>
             <td class="">
               <i class="iconfont icon-lianjie"></i>
@@ -126,6 +128,12 @@ export default {
     copy (item) {
       // https://music.163.com/song/media/outer/url?id=${item.id}.mp3
       this.$electron.clipboard.writeText(` https://music.163.com/#/song?id=${item.id}`)
+    },
+    Player (item) {
+      this.$router.push({
+        path: '/playinfo',
+        query: { id: item.id }
+      });
     }
   },
   created () { }

@@ -6,7 +6,7 @@ import {
   Menu,
   ipcRenderer
 } from 'electron'
-
+import fs from 'fs';
 /**
  * Set `__static` path to static files in production
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
@@ -86,6 +86,8 @@ function createWindow() {
     mainWindow.minimize()
   })
 
+
+
   // const ret = globalShortcut.register('CommandOrControl+X', () => { //注册快捷键
   //   mainWindow.minimize()
   // })
@@ -114,6 +116,27 @@ ipcMain.on('maxSize', () => {
   mainWindow[mainWindow.isMaximized() ? 'unmaximize' : 'maximize']()
 })
 ipcMain.on('close', () => mainWindow.minimize())
+
+ipcMain.on('scnn', () => {
+  let musicArr = [];
+  let path = 'C:\\Users\\Administrator\\Desktop\\测试文件'
+  fs.readdir(path, (err, data) => {
+    console.log(data)
+    data.forEach(item => {
+      if (/\.mp3$/.test(item)) {
+        console.log(path + '\\' + item)
+        let data = fs.readFileSync(path + '\\' + item);
+        // console.log(data.toString())
+        musicArr.push(data);
+      }
+    });
+    mainWindow.send('playLocaMusic', musicArr)
+    console.log(musicArr)
+  })
+
+  //C:\Users\Administrator\Desktop
+
+})
 // ipcMain.on('playPrev', (event) => {
 //   event.reply('playPrevMusic')
 // })

@@ -57,8 +57,9 @@
 
     <!-- v-if="getCurrentPlaylist[Music.currentIndex]" -->
     <audio ref="audio"
-           :src="getMusicUrl"
+           :src="'' ||getMusicUrl"
            :loop="getMode === 1"></audio>
+    <!-- C:\\Users\\Administrator\\Desktop\\测试文件\\18b33f91060e11e00237239daa864c98.mp3 -->
   </div>
 </template>
 
@@ -187,6 +188,7 @@ export default {
       this.$EventBus.$emit('changePro', val);
     },
     ipcEvent () {
+      console.log(111);
       ipcRenderer.on('playPrev', () => {
         this.prev();
       })
@@ -195,6 +197,9 @@ export default {
       })
       ipcRenderer.on('togglePlay', () => {
         this.play();
+      })
+      ipcRenderer.on('playLocaMusic', (data) => {
+        console.log(1111);
       })
     }
   },

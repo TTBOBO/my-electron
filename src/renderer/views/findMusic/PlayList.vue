@@ -1,5 +1,5 @@
 <template>
-  <div class="playlist">
+  <div class="playlist center-con">
     <div class="play-top">
       <img :src="currentPlayList.coverImgUrl"
            alt=""
@@ -62,8 +62,8 @@
                           :class="{'paly-status':item.name == getCurrentPlayMusic.name}">({{item.alia[0]}})</span>
                   </div>
                 </td>
-                <td class="musicActName">
-                  <div>{{item.ar[0].name}}</div>
+                <td class="musicActName pointer">
+                  <div @click="handlePlayer(item.ar[0])">{{item.ar[0].name}}</div>
                 </td>
                 <!-- <td>{{item.al.name}}</td> -->
                 <td class="musicAlName">
@@ -75,7 +75,7 @@
         </el-tab-pane>
         <el-tab-pane label="评论"
                      name="评论">评论</el-tab-pane>
-        <el-tab-pane label="收藏"
+        <el-tab-pane label="收藏者"
                      name="收藏">
           <Subscribe v-if="activeName=='收藏'"
                      :id="currentPlayList.id"></Subscribe>
@@ -156,6 +156,12 @@ export default {
           this.$EventBus.$emit('setCurrentIndex', index)
         }
       }
+    },
+    handlePlayer (item) {
+      this.$router.push({
+        path: '/playinfo',
+        query: { id: item.id }
+      });
     },
     async like ({ id }, index) {
       let status = this.getLikeIds.indexOf(id) !== -1 ? false : true;

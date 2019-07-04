@@ -63,19 +63,22 @@ export default {
         group: [{
           name: '发现音乐',
           path: "/findMusic"
-        }, {
-          name: '私人FM'
-        }, {
-          name: 'LOOK直播'
-        }, {
-          name: '视频'
-        }, {
+        },
+        // {
+        //   name: '私人FM'
+        // }, {
+        //   name: 'LOOK直播'
+        // }, {
+        //   name: '视频'
+        // }, 
+        {
           name: '朋友'
         }]
       }, {
         label: '我的音乐',
         group: [{
-          name: '本地音乐'
+          name: '本地音乐',
+          path: "/scnn"
         }, {
           name: '下载管理'
         }]
@@ -111,7 +114,6 @@ export default {
           this.hiddenLy();
           this.$router.push({ path: "playList", query: { id, type: 2 } });  //1  自己创建的歌单  2 收藏的歌单
           break;
-
         default:
           break;
       }
