@@ -133,6 +133,7 @@ export default {
       if (code == 200) {
         this.currentPlayList = playlist;
         this.playlist = playlist;
+        console.log(this.playlist)
       }
     },
     async likelist () {
@@ -301,6 +302,7 @@ export default {
       }
       .secTd {
         width: 50px;
+        display: inline-block;
       }
       .musicName {
         width: 220px;

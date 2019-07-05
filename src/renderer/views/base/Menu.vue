@@ -20,13 +20,16 @@
       </div>
     </div>
     <div class="music-con"
-         v-if="getCurrentPlayMusic.id">
-      <img :src="getCurrentPlayMusic.al? getCurrentPlayMusic.al.picUrl : getCurrentPlayMusic.album.picUrl+'?param=50y50'"
+         v-if="getCurrentPlayMusic.name">
+      <img v-if="getCurrentPlayMusic.al || getCurrentPlayMusic.album"
+           :src="getCurrentPlayMusic.al? getCurrentPlayMusic.al.picUrl : getCurrentPlayMusic.album.picUrl+'?param=50y50'"
            alt=""
            class="music-pic">
+      <div v-else
+           class="music-pic no-pic"><span class="iconfont icon-zhuanji"></span></div>
       <div class="music-name">
         <p>{{getCurrentPlayMusic.name}}</p>
-        <p>{{getCurrentPlayMusic.al? getCurrentPlayMusic.al.name : getCurrentPlayMusic.album.name}}</p>
+        <p v-if="getCurrentPlayMusic.al || getCurrentPlayMusic.album">{{getCurrentPlayMusic.al? getCurrentPlayMusic.al.name : getCurrentPlayMusic.album.name}}</p>
       </div>
       <div class="music-icon">
         <i class="iconfont"
@@ -254,6 +257,16 @@ export default {
       width: 50px;
       height: 50px;
       object-fit: cover;
+      line-height: 50px;
+      text-align: center;
+
+      color: #dadad3;
+      .iconfont {
+        font-size: 18px;
+      }
+    }
+    .no-pic {
+      border-right: 1px solid #dadad3;
     }
     .music-name {
       font-size: 12px;

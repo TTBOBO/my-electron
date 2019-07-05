@@ -77,7 +77,7 @@ export default {
       duration: 0,
       currentTime: 0,
       showLyStatus: false,
-      visible: false
+      visible: false,
     }
   },
   computed: {
@@ -95,7 +95,12 @@ export default {
     },
     getMusicUrl () {
       if (!this.getCurrentPlaylist[this.Music.currentIndex]) return "";
-      return `https://music.163.com/song/media/outer/url?id=${this.getCurrentPlaylist[this.Music.currentIndex].id}.mp3`
+      if (this.getCurrentPlaylist[this.Music.currentIndex].id) {
+        return `https://music.163.com/song/media/outer/url?id=${this.getCurrentPlaylist[this.Music.currentIndex].id}.mp3`;
+      } else {
+        return this.getCurrentPlaylist[this.Music.currentIndex].path;
+      }
+
     }
   },
   filters: {
@@ -188,7 +193,6 @@ export default {
       this.$EventBus.$emit('changePro', val);
     },
     ipcEvent () {
-      console.log(111);
       ipcRenderer.on('playPrev', () => {
         this.prev();
       })
@@ -198,13 +202,29 @@ export default {
       ipcRenderer.on('togglePlay', () => {
         this.play();
       })
-      ipcRenderer.on('playLocaMusic', (data) => {
-        console.log(1111);
-      })
+
+    },
+    initPlay (newV) {
+      if (newV) {
+        if (!this.getAudioEl) {
+          // this.play();  //默认播放
+          this.INIT_AUDIO_EL(this.$refs.audio);//第一次的时候 初始化 播放器
+        }
+        this.$nextTick(() => {
+          this.getAudioEl.oncanplay = this.initMusicInfo
+        })
+
+        this.getAudioEl.volume = this.volumeVal / 100;  //设置音量大小
+        this.ipcEvent();
+      }
     }
   },
   mounted () {
     this.$EventBus.$on('setCurrentIndex', this.setCurrentIndex);
+    // this.$EventBus.$on('setTestUrl', (url) => {
+    //   this.testUrl = url;
+    //   console.log(this.testUrl);
+    // });
   },
   destroyed () {
     this.$EventBus.$off('setCurrentIndex');
@@ -217,25 +237,19 @@ export default {
       this.getAudioEl.volume = newV / 100;
     },
     async getMusicUrl (newV) {
-      try {
-        let data = await this.$ajaxGet("checkMusic", { id: this.getCurrentPlaylist[this.Music.currentIndex].id });
-        if (newV) {
-          if (!this.getAudioEl) {
-            // this.play();  //默认播放
-            this.INIT_AUDIO_EL(this.$refs.audio);//第一次的时候 初始化 播放器
-          }
-          this.$nextTick(() => {
-            this.getAudioEl.oncanplay = this.initMusicInfo
-          })
-
-          this.getAudioEl.volume = this.volumeVal / 100;  //设置音量大小
-          this.ipcEvent();
-          // 
+      let item = this.getCurrentPlaylist[this.Music.currentIndex];
+      if (item.id) {
+        try {
+          let data = await this.$ajaxGet("checkMusic", { id: item.id });
+          this.initPlay(newV);
+        } catch (error) {
+          this.$message.error(error.message)
+          this.next();  //播放下一首歌
         }
-      } catch (error) {
-        this.$message.error(error.message)
-        this.next();  //播放下一首歌
+      } else {
+        this.initPlay(newV);
       }
+
 
 
     }

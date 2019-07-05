@@ -18,7 +18,7 @@ export default {
 
 <style>
 @import url("https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css");
-@import url("//at.alicdn.com/t/font_1254014_a5nizptsx3g.css");
+@import url("//at.alicdn.com/t/font_1254014_l9rpe4n7uz.css");
 html,
 body,
 #app {

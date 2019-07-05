@@ -35,6 +35,5 @@ const REQUEST = {
   simiArtist: '/simi/artist', // 相似歌手,
   artistDesc: '/artist/desc', //歌手描述，
   artistMv: '/artist/mv', //歌手MV
-
 }
 export default REQUEST;

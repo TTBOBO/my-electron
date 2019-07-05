@@ -8,6 +8,15 @@ export default {
   computed: {
     ...mapGetters(['getUserInfo', 'getCurrentIndex', 'getCurrentPlaylist', 'getLikeIds', 'getCurrentPlayMusic']),
   },
+  filters: {
+    filterTime(val) {
+      if (!val) return '00:00';
+      val = Math.ceil(val);
+      let minute = Math.floor(val / 60);
+      let second = Math.floor(val % 60)
+      return `${minute < 10 ? '0' + minute : minute}:${second < 10 ? '0' + second : second}`;
+    },
+  },
   methods: {
     ...mapMutations(['SET_PLAY_LIST', 'PUSH_MUSIC_TO_LIST', 'SET_LIKE_IDS']),
     async likelist() {
@@ -20,6 +29,7 @@ export default {
       this.SET_LIKE_IDS(ids);
     },
     palyMusic(item) {
+      console.log(item);
       if (this.getCurrentIndex !== '' && this.getCurrentPlaylist[this.getCurrentIndex].name === item.name) {
         this.getAudioEl.currentTime = 0; //重新播放
         this.$EventBus.$emit('changePro', 0);

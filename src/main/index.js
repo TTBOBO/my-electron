@@ -117,23 +117,29 @@ ipcMain.on('maxSize', () => {
 })
 ipcMain.on('close', () => mainWindow.minimize())
 
-ipcMain.on('scnn', () => {
+ipcMain.on('scnn', (event, arg) => {
+  // console.log(arg)
   let musicArr = [];
   let path = 'C:\\Users\\Administrator\\Desktop\\测试文件'
-  fs.readdir(path, (err, data) => {
-    console.log(data)
-    data.forEach(item => {
+  arg.forEach((dir, _index) => {
+    let data = fs.readdirSync(dir)
+    data.forEach(async (item) => {
       if (/\.mp3$/.test(item)) {
-        console.log(path + '\\' + item)
-        let data = fs.readFileSync(path + '\\' + item);
-        // console.log(data.toString())
-        musicArr.push(data);
+        let data = fs.readFileSync(dir + '\\' + item);
+        musicArr.push({
+          type: 'mp3',
+          path: data,
+          length: data.length,
+          dir,
+          name: item.replace('.mp3', '')
+        });
       }
     });
-    mainWindow.send('playLocaMusic', musicArr)
-    console.log(musicArr)
   })
 
+  event.sender.send('playMusic', musicArr)
+  // mainWindow.send('playLocaMusic', musicArr)
+  console.log(musicArr)
   //C:\Users\Administrator\Desktop
 
 })

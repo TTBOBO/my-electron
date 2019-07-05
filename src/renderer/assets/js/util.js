@@ -902,64 +902,6 @@ let utils = {
             return obj
         }
     },
-    store: {
-        // 存储 cookie
-        setCookie(name, value, iDay) {
-            var oDate = new Date()
-            oDate.setDate(oDate.getDate() + iDay)
-            document.cookie = name + '=' + value + ';expires=' + oDate
-        },
-
-        // 获取 cookie
-        getCookie(name) {
-            var arr = document.cookie.split('; ')
-            for (var i = 0; i < arr.length; i++) {
-                var arr2 = arr[i].split('=')
-                if (arr2[0] === name) {
-                    return arr2[1]
-                }
-            }
-            return ''
-        },
-
-        // 删除 cookie
-        removeCookie(name) {
-            this.setCookie(name, 1, -1)
-        },
-
-        // https://github.com/ustbhuangyi/storage
-
-        // 存储 localstorage
-        // localStorage.key="value"
-        // localStorage.setItem(key, value)
-        setLocalstorage(key = '__test__', value) {
-            if (typeof value !== 'string') {
-                value = JSON.stringify(value)
-            }
-            return window.localStorage.setItem(key, value)
-        },
-
-        // 获取 localstorage
-        // localStorage.key
-        getLocalstorage(key = '__test__', def = '') {
-            if (localStorage.key) {
-                return window.localStorage.getItem(key)
-            } else {
-                return def
-            }
-        },
-
-        // 删除单个数据 localstorage
-        // localStorage.removeItem("key");
-        removeLocalstorage(key = '__test__') {
-            window.localStorage.removeItem(key)
-        },
-
-        // 删除所有数据 localstorage
-        clearLocalstorage() {
-            return window.localStorage.clear()
-        }
-    },
     event: {
         // event 兼容
         getEvent(event) {
