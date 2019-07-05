@@ -129,7 +129,8 @@ export default {
       let data = await this.$ajaxGet('playlistDetail', { id, timestamp: new Date().getTime() });
 
       let { playlist, code, privileges } = data;
-      this.loading.close();
+      console.log()
+      this.loading.close(data);
       if (code == 200) {
         this.currentPlayList = playlist;
         this.playlist = playlist;

@@ -81,7 +81,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['getAudioEl', 'getMode', 'getCurrentPlaylist', 'getShowLyStatus']),
+    ...mapGetters(['getAudioEl', 'getMode', 'getCurrentPlaylist', 'getShowLyStatus', 'getCurrentPlayMusic']),
     ...mapState(['Music']),
     getAudioPlayStatus () {
       return this.$refs.audio && this.$refs.audio.paused
@@ -163,8 +163,7 @@ export default {
     next () {
       this.setCount('next')
     },
-    setCount (status = 'prev') {
-      console.log(this.Music.currentIndex);
+    async setCount (status = 'prev') {
       let index = this.Music.currentIndex
       let len = this.getCurrentPlaylist.length
       if (this.getMode === 2) {
