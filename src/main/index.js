@@ -116,20 +116,17 @@ function createWindow() {
 
   mainWindow.webContents.session.on('will-download', (event, item, webContents) => {
     let name = item.getFilename();
-    //C:/Users/Administrator/Desktop/download
-    console.log(process.env.USERPROFILE + '/' + name)
     item.setSavePath('C:\\Users\\Administrator\\Desktop\\测试文件\\' + name);
+    downloadItems[Math.round(item.getStartTime())] = item;
+    webContents && webContents.send('download', item.getStartTime())
     item.on('updated', (event, state) => {
-      downloadItems[Math.round(item.getStartTime())] = item;
       if (state === 'interrupted') {
-        webContents && webContents.send('download', item.getStartTime())
         console.log('download is intertupted but can be resumed')
-        // item.resume();
       } else if (state === 'progressing') {
         if (item.isPaused()) {
           console.log("download is paused");
         } else {
-          console.log("文件大小:" + item.getReceivedBytes());
+          console.log("当前下载文件大小:" + (Math.round(item.getReceivedBytes() / 1000)) + 'kb/s');
         }
       }
     })
@@ -200,13 +197,13 @@ ipcMain.on('scnn', (event, arg) => {
 
 
 ipcMain.on('download', (e, data, status) => {
-  // console.log("参数：" + data)
+  console.log("参数：" + data)
   let downloadItem = downloadItems[Math.round(data)];
   if (!downloadItem) return;
-  console.log(downloadItem.canResume() + '状态')
+  console.log(status)
   switch (status) {
     case 'pause':
-      downloadItem.paused();
+      downloadItem.pause();
       break;
     case 'cancel':
       downloadItem.cancel();
