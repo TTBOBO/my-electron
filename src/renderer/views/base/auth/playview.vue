@@ -27,7 +27,8 @@
             <td class="pointer"
                 @click="palyMusic(item)">{{item.name}}</td>
             <td class="musicAlName pointer">
-              <a @click="Player(item.artists ? item.artists[0] :item.ar[0])"
+              <a v-if="item.artists || item.ar"
+                 @click="Player(item.artists ? item.artists[0] :item.ar[0])"
                  :title="item.artists ? item.artists[0].name :item.ar[0].name">{{item.artists ? item.artists[0].name :item.ar[0].name}}</a>
             </td>
             <td class="">
@@ -58,7 +59,8 @@
             <td class="pointer"
                 @click="palyMusic(item)">{{item.name}}</td>
             <td class="musicAlName pointer">
-              <a @click="Player(item.artists ? item.artists[0] :item.ar[0])"
+              <a v-if="item.artists || item.ar"
+                 @click="Player(item.artists ? item.artists[0] :item.ar[0])"
                  :title="item.artists ? item.artists[0].name :item.ar[0].name">{{item.artists ? item.artists[0].name :item.ar[0].name}}</a>
             </td>
             <td class="">

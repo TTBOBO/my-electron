@@ -8,7 +8,7 @@ export default new Router({
       path: '/',
       name: 'main',
       component: require('@/views/main.vue').default,
-      redirect: '/scnn',
+      redirect: '/download',
       children: [{
         path: '/play',
         name: 'main',
@@ -29,6 +29,10 @@ export default new Router({
         path: '/scnn',
         name: 'scnn',
         component: require('@/views/localMusic/index.vue').default,
+      }, {
+        path: '/download',
+        name: 'download',
+        component: require('@/views/download/index.vue').default,
       }]
     },
     {

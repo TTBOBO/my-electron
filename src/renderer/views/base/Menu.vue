@@ -67,24 +67,28 @@ export default {
           name: '发现音乐',
           path: "/findMusic"
         },
-        // {
-        //   name: '私人FM'
-        // }, {
-        //   name: 'LOOK直播'
-        // }, {
-        //   name: '视频'
-        // }, 
-        {
-          name: '朋友'
-        }]
+          // {
+          //   name: '私人FM'
+          // }, {
+          //   name: 'LOOK直播'
+          // }, {
+          //   name: '视频'
+          // }, 
+          // {
+          //   name: '朋友'
+          // }
+        ]
       }, {
         label: '我的音乐',
         group: [{
           name: '本地音乐',
           path: "/scnn"
-        }, {
-          name: '下载管理'
-        }]
+        },
+        {
+          name: '下载管理',
+          path: '/download'
+        }
+        ]
       }, {
         label: '创建的歌单',
         group: []

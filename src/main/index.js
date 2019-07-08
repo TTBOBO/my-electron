@@ -4,7 +4,7 @@ import {
   ipcMain,
   Tray,
   Menu,
-  ipcRenderer
+  session
 } from 'electron'
 import fs from 'fs';
 /**
@@ -22,6 +22,7 @@ const winURL =
   process.env.NODE_ENV === 'development' ?
   `http://localhost:9080` :
   `file://${__dirname}/index.html`
+let downloadItems = {};
 
 function createWindow() {
   /**
@@ -43,11 +44,38 @@ function createWindow() {
     frame: false,
     // titleBarStyle: 'hidden'
   })
+  // mainWindow.callback = () => {
+
+  //   session.removeAllListeners('will-download');
+  //   session.on('will-download', (event, item, webContents) => {
+  //     let name = item.getFilename();
+  //     console.log(name);
+  //     item.setSavePath('C:/Users/Administrator/Desktop/测试文件/' + name);
+  //     item.on('updated', (event, state) => {
+  //       console.log(state);
+  //       if (state === 'interrupted') {
+  //         console.log('download is intertupted but can be resumed')
+  //       } else if (state === 'progressing') {
+  //         if (item.isPaused()) {
+  //           console.log("download is paused");
+  //         } else {
+  //           console.log(item.getReceivedBytes());
+  //         }
+  //       }
+  //     })
+  //     item.on('done', (event, state) => {
+  //       if (state === 'completed ') {
+  //         console.log("下载完成");
+  //       } else if (state === 'cancelled') {
+  //         console.log("下载取消");
+  //       }
+  //     })
+  //   })
+  // }
 
   const tray = new Tray(
     '/Users/Administrator/Desktop/electron/my-electron/build/icons/256x256.png'
   )
-  console.log(process.platform === 'darwin')
   const contextMenu = Menu.buildFromTemplate([{
       label: '上一首',
       click() {
@@ -86,6 +114,36 @@ function createWindow() {
     mainWindow.minimize()
   })
 
+  mainWindow.webContents.session.on('will-download', (event, item, webContents) => {
+    let name = item.getFilename();
+    //C:/Users/Administrator/Desktop/download
+    console.log(process.env.USERPROFILE + '/' + name)
+    item.setSavePath('C:\\Users\\Administrator\\Desktop\\测试文件\\' + name);
+    item.on('updated', (event, state) => {
+      downloadItems[Math.round(item.getStartTime())] = item;
+      if (state === 'interrupted') {
+        webContents && webContents.send('download', item.getStartTime())
+        console.log('download is intertupted but can be resumed')
+        // item.resume();
+      } else if (state === 'progressing') {
+        if (item.isPaused()) {
+          console.log("download is paused");
+        } else {
+          console.log("文件大小:" + item.getReceivedBytes());
+        }
+      }
+    })
+    item.on('done', (event, state) => {
+      console.log(state)
+      if (state === 'completed') {
+        console.log("下载完成");
+        delete downloadItems[Math.round(item.getStartTime())];
+      } else if (state === 'cancelled') {
+        console.log("下载取消");
+      }
+    })
+  })
+
 
 
   // const ret = globalShortcut.register('CommandOrControl+X', () => { //注册快捷键
@@ -118,9 +176,7 @@ ipcMain.on('maxSize', () => {
 ipcMain.on('close', () => mainWindow.minimize())
 
 ipcMain.on('scnn', (event, arg) => {
-  // console.log(arg)
   let musicArr = [];
-  let path = 'C:\\Users\\Administrator\\Desktop\\测试文件'
   arg.forEach((dir, _index) => {
     let data = fs.readdirSync(dir)
     data.forEach(async (item) => {
@@ -138,10 +194,31 @@ ipcMain.on('scnn', (event, arg) => {
   })
 
   event.sender.send('playMusic', musicArr)
-  // mainWindow.send('playLocaMusic', musicArr)
   console.log(musicArr)
-  //C:\Users\Administrator\Desktop
 
+})
+
+
+ipcMain.on('download', (e, data, status) => {
+  // console.log("参数：" + data)
+  let downloadItem = downloadItems[Math.round(data)];
+  if (!downloadItem) return;
+  console.log(downloadItem.canResume() + '状态')
+  switch (status) {
+    case 'pause':
+      downloadItem.paused();
+      break;
+    case 'cancel':
+      downloadItem.cancel();
+      break;
+    case 'resume':
+      if (downloadItem.canResume()) {
+        downloadItem.resume();
+      }
+      break;
+    default:
+      break;
+  }
 })
 // ipcMain.on('playPrev', (event) => {
 //   event.reply('playPrevMusic')
