@@ -29,9 +29,9 @@ export default {
 
   },
   mounted () {
-    setTimeout(() => {
-      this.$electron.remote.getCurrentWebContents().downloadURL('http://localhost:8081/reptile.zip')
-    }, 2000)
+    // setTimeout(() => {
+    //   this.$electron.remote.getCurrentWebContents().downloadURL('http://localhost:8081/reptile.zip')
+    // }, 2000)
     this.$electron.ipcRenderer.on('download', (e, data) => {
       this.data = data;
       // setTimeout(() => {
