@@ -206,7 +206,6 @@ export default {
     initPlay (newV) {
       if (newV) {
         if (!this.getAudioEl) {
-          // this.play();  //默认播放
           this.INIT_AUDIO_EL(this.$refs.audio);//第一次的时候 初始化 播放器
         }
         this.$nextTick(() => {
@@ -220,10 +219,6 @@ export default {
   },
   mounted () {
     this.$EventBus.$on('setCurrentIndex', this.setCurrentIndex);
-    // this.$EventBus.$on('setTestUrl', (url) => {
-    //   this.testUrl = url;
-    //   console.log(this.testUrl);
-    // });
   },
   destroyed () {
     this.$EventBus.$off('setCurrentIndex');
@@ -233,7 +228,7 @@ export default {
   },
   watch: {
     volumeVal (newV) {
-      this.getAudioEl.volume = newV / 100;
+      this.getAudioEl && (this.getAudioEl.volume = newV / 100);
     },
     async getMusicUrl (newV) {
       let item = this.getCurrentPlaylist[this.Music.currentIndex];

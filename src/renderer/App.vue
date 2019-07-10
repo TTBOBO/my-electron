@@ -11,7 +11,11 @@ export default {
 
   },
   mounted () {
-
+    setTimeout(() => {
+      if (localStorage.getItem('settingConfig')) {
+        this.$electron.ipcRenderer.send('settingConf', JSON.parse(localStorage.getItem('settingConfig')));
+      }
+    }, 500)
   }
 }
 </script>

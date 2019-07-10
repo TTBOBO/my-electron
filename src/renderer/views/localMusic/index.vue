@@ -85,7 +85,7 @@ export default {
       this.$electron.remote.dialog.showOpenDialog({ properties: ['openDirectory'] }, (file) => {
         console.log(file);
         this.checkDirOptions.push(...file)
-        localStorage.setItem('checkDirOptions', JSON.stringify(file))
+        localStorage.setItem('checkDirOptions', JSON.stringify(this.checkDirOptions))
       })
     },
     getMusic () {
