@@ -3,8 +3,10 @@ import {
   BrowserWindow,
   ipcMain,
   Tray,
-  Menu
+  Menu,
+  nativeImage
 } from 'electron'
+const path = require('path');
 class Base {
   constructor({
     baseUrl
@@ -13,6 +15,8 @@ class Base {
     this.mainWindow = null;
     this.beowserWindows = {};
     this.downloadItems = {};
+    this.tray = null;
+    this.settingConfig = {};
   }
 
   initApp(loadSuccess) {
@@ -37,22 +41,24 @@ class Base {
       winURL: this.baseUrl,
       finishLoad: () => {
         this.loadSuccess();
+        this.initIpc();
         this.initTray();
         this.initSearchMusic();
-        this.initDownload();
-        this.initIpc();
       }
     })
   }
 
   initIpc() {
+    ipcMain.on('settingConf', (e, conf) => {
+      this.settingConfig = conf;
+      this.initDownload();
+    })
     ipcMain.on('miniSize', () => this.mainWindow.minimize())
     ipcMain.on('maxSize', () => {
       this.mainWindow[this.mainWindow.isMaximized() ? 'unmaximize' : 'maximize']()
     })
     ipcMain.on('close', () => this.mainWindow.minimize());
     ipcMain.on('download', (e, data, status) => {
-      console.log("参数：" + data)
       let downloadItem = this.downloadItems[Math.round(data)];
       if (!downloadItem) return;
       switch (status) {
@@ -74,30 +80,39 @@ class Base {
   }
 
   initDownload() {
-    this.mainWindow.webContents.session.on('will-download', (event, item, webContents) => {
-      let name = item.getFilename();
-      item.setSavePath('C:\\Users\\Administrator\\Desktop\\测试文件\\' + name);
-      this.downloadItems[Math.round(item.getStartTime())] = item;
-      webContents && webContents.send('download', item.getStartTime())
-      item.on('updated', (event, state) => {
-        if (state === 'interrupted') {
-          console.log('download is intertupted but can be resumed')
-        } else if (state === 'progressing') {
-          if (item.isPaused()) {
-            console.log("download is paused");
-          } else {
-            console.log("当前下载文件大小:" + (Math.round(item.getReceivedBytes() / 1000)) + 'kb/s');
-          }
+    this.mainWindow.webContents.session.removeAllListeners('will-download');
+    this.mainWindow.webContents.session.on('will-download', this.doDownLoad.bind(this))
+  }
+
+  doDownLoad(event, item, webContents) {
+    const {
+      downloadDir
+    } = this.settingConfig;
+    let name = item.getFilename();
+    item.setSavePath(downloadDir + '\\' + name);
+
+    // console.log(downloadDir + '\\' + name)
+    this.downloadItems[Math.round(item.getStartTime())] = item;
+    webContents && webContents.send('download', item.getStartTime())
+    item.on('updated', (event, state) => {
+      if (state === 'interrupted') {
+        console.log('download is intertupted but can be resumed')
+      } else if (state === 'progressing') {
+        if (item.isPaused()) {
+          console.log("download is paused");
+        } else {
+          console.log("当前下载文件大小:" + (Math.round(item.getReceivedBytes() / 1000)) + 'kb/s');
         }
-      })
-      item.on('done', (event, state) => {
-        if (state === 'completed') {
-          console.log("下载完成");
-          delete this.downloadItems[Math.round(item.getStartTime())];
-        } else if (state === 'cancelled') {
-          console.log("下载取消");
-        }
-      })
+      }
+    })
+    item.on('done', (event, state) => {
+      console.log(state)
+      if (state === 'completed') {
+        console.log("下载完成");
+        delete this.downloadItems[Math.round(item.getStartTime())];
+      } else if (state === 'cancelled') {
+        console.log("下载取消");
+      }
     })
   }
 
@@ -124,29 +139,63 @@ class Base {
   }
 
   initTray() {
-    const tray = new Tray(
-      '/Users/Administrator/Desktop/electron/my-electron/build/icons/256x256.png'
-    )
-    const contextMenu = Menu.buildFromTemplate([{
+    let defaultIcon = path.join(__static, '/img/icon.ico');
+    let changeIcon = path.join(__static, '/img/prev.png')
+
+    this.tray = new Tray(defaultIcon);
+    let menuItems = [{
         label: '上一首',
-        click() {
-          this.mainWindow.send('playPrev')
+        icon: nativeImage.createFromPath(path.join(__static, '/img/prev.png')),
+        click: () => {
+          this.mainWindow.send('playPrev');
         }
       },
       {
         label: '播放/暂停',
-        click() {
-          this.mainWindow.send('togglePlay')
+        icon: nativeImage.createFromPath(path.join(__static, '/img/stop.png')),
+        click: () => {
+          // menuItems[1].icon = nativeImage.createFromPath(path.join(__static, '/img/play.png'));
+          // this.tray.setContextMenu(Menu.buildFromTemplate(menuItems));
+          this.mainWindow.send('togglePlay');
         }
       }, {
         label: '下一首',
-        click() {
-          this.mainWindow.send('playNext')
+        icon: nativeImage.createFromPath(path.join(__static, '/img/next.png')),
+        click: () => {
+          this.mainWindow.send('playNext');
         }
-      }
-    ])
-    tray.setToolTip('This is my application.')
-    tray.setContextMenu(contextMenu);
+      },
+      {
+        label: '退出',
+        icon: nativeImage.createFromPath(path.join(__static, '/img/close.png')),
+        click: () => {
+          app.quit();
+        }
+      },
+      // {
+      //   label: "图标闪烁",
+      //   click: () => {
+      //     let count = 0;
+      //     let timer = setInterval(() => {
+      //       count++;
+      //       this.tray.setImage(count % 2 ? defaultIcon : changeIcon);
+      //       if (count > 10) {
+      //         clearInterval(timer);
+      //       }
+      //     }, 500)
+      //   }
+      // }
+    ];
+    this.tray.setToolTip('This is my application.')
+    this.tray.setContextMenu(Menu.buildFromTemplate(menuItems));
+    // setTimeout(() => {
+    //   console.log(111)
+    //   menuItems[1].icon = nativeImage.createFromPath(path.join(__static, '/img/play.png'));
+    //   this.tray.setContextMenu(Menu.buildFromTemplate(menuItems));
+    // }, 10000)
+    this.tray.on('click', () => {
+      this.mainWindow.restore();
+    })
   }
 
   createBrowserWindow({

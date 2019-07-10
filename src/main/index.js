@@ -12,11 +12,9 @@ const winURL =
   process.env.NODE_ENV === 'development' ?
   `http://localhost:9080` :
   `file://${__dirname}/index.html`
-let downloadItems = {};
-let mainWindow;
 let base = new Base({
   baseUrl: winURL
 });
 base.initApp(() => {
-  mainWindow = base.mainWindow;
+  //初始化成功回调
 });

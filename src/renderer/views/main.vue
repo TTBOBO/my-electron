@@ -29,7 +29,8 @@ export default {
     Play,
     Menu
   },
-  mounted () {
+  created () {
+
   }
 }
 </script>

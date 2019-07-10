@@ -35,7 +35,8 @@
       </div>
       <span class="font">开通会员</span>
       <i class="el-icon-chat-line-round font"></i>
-      <i class="el-icon-setting font"></i>
+      <i class="el-icon-setting font"
+         @click="showSetting"></i>
       <span class="label">|</span>
       <div class="tool">
         <i class="el-icon-minus font"
@@ -76,6 +77,11 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+    <el-dialog title="设置"
+               :visible.sync="showSettingStatus"
+               width="700px">
+      <Setting></Setting>
+    </el-dialog>
   </div>
 </template>
 
@@ -83,10 +89,12 @@
 import util from '../../assets/js/util';
 import { mapMutations, mapGetters, mapState, mapActions } from 'vuex'
 import UserInfo from './auth/UserInfo';
+import Setting from './auth/Setting';
 export default {
   data () {
     return {
       loginStatus: false,
+      showSettingStatus: false,
       ruleForm: {
         phone: "13698006449",
         password: "tab822520"
@@ -102,6 +110,9 @@ export default {
   methods: {
     ...mapMutations(['INIT_ACCOUNT', 'INIT_PROFILE', 'SET_PLAYLIST']),
     ...mapActions(['getPlayListAction']),
+    showSetting () {
+      this.showSettingStatus = !this.showSettingStatus;
+    },
     handerRouter (type) {
       this.$router[type == 'left' ? 'back' : 'forward']();
     },
@@ -148,7 +159,8 @@ export default {
     }
   },
   components: {
-    UserInfo
+    UserInfo,
+    Setting
   },
   mounted () {
     if (util.getLocalStorage('account')) {
