@@ -50,7 +50,8 @@
                   <i @click="like(item,index)"
                      class="iconfont"
                      :class="{'icon-aixin1':getLikeIds.indexOf(item.id) === -1,'icon-aixin active':getLikeIds.indexOf(item.id) !== -1}"></i>
-                  <i class="iconfont icon-xiazai"></i>
+                  <i class="iconfont icon-xiazai"
+                     @click="download(item)"></i>
                 </td>
                 <td class="musicName">
                   <div class="musicName"
@@ -122,6 +123,9 @@ export default {
   methods: {
     ...mapMutations(['SET_PLAY_LIST', 'SET_CURRENT_INDEX', 'INIT_AUDIO_EL', 'PUSH_MUSIC_TO_LIST', 'SET_LIKE_IDS']),
     ...mapActions(['getPlayListAction']),
+    download (item) {
+      console.log(item);
+    },
     async initPlaylistDetail () {
       this.likelist();
       const { id, type } = this.$route.query;

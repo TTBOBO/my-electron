@@ -9,6 +9,10 @@ const state = {
   currentPlayMusic: {}, //当前播放的音乐
   showLyStatus: false, //歌词显示状态
   likeIds: [], //喜欢的id
+  downloadList: {
+    downloadingList: [], //正在下载
+    downloadedList: [] //已下载
+  }
 }
 
 const mutations = {
