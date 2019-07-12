@@ -80,7 +80,8 @@ const getters = {
   },
   getShowLyStatus: state => state.showLyStatus,
   getHistoryList: state => state.historyList,
-  getLikeIds: state => state.likeIds
+  getLikeIds: state => state.likeIds,
+  getDownload: state => state.downloadList
   // getCurrentPlayMusic: state => state.currentPlayMusic
 }
 
