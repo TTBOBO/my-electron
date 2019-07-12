@@ -56,6 +56,7 @@
 </template>
 
 <script>
+import { mapMutations, mapGetters, mapState, mapActions } from 'vuex';
 import base from '@/mixin/base'
 export default {
   mixins: [base],
@@ -65,6 +66,9 @@ export default {
       downloadList: [],
       DownloadedList: [] //
     }
+  },
+  computed: {
+    ...mapGetters(['getDownload'])
   },
   methods: {
     handerType (num) {
