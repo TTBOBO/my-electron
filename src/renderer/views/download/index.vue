@@ -20,8 +20,8 @@
           <th>专辑</th>
           <th>时长</th>
         </thead>
-        <tbody v-if="DownloadedList.length">
-          <tr v-for="(item,index) in DownloadedList"
+        <tbody v-if="DownloadList.downloaded.length">
+          <tr v-for="(item,index) in DownloadList.downloaded"
               :key="index">
             <td class="indexTd">{{String(index+1).padStart(2,0)}}</td>
             <td class="musicName">
@@ -33,11 +33,11 @@
               </div>
             </td>
             <td class="musicActName pointer">
-              <div>未知歌手</div>
+              <div>{{item.ar[0].name}}</div>
             </td>
             <!-- <td>{{item.al.name}}</td> -->
             <td class="musicAlName">
-              <div>未知专辑</div>
+              <div>{{item.al.name}}</div>
             </td>
             <td class="">
               <div>{{item.duration | filterTime}}</div>
@@ -46,12 +46,48 @@
         </tbody>
       </table>
     </div>
-    <div v-else>
-      正在下载
+    <div class="local-bottom"
+         v-else>
+      <table cellspacing="0">
+        <thead>
+          <th></th>
+          <th>音乐标题</th>
+          <th>下载进度</th>
+          <th>大小</th>
+          <th>操作</th>
+        </thead>
+        <tbody v-if="DownloadList.downloadingList.length">
+          <tr v-for="(item,index) in DownloadList.downloadingList"
+              :key="index">
+            <td class="indexTd">{{String(index+1).padStart(2,0)}}</td>
+            <td class="musicName">
+              <!-- item.name == getCurrentPlayMusic.name -->
+              <div class="musicName">
+                <span class="music-title pointer"
+                      @click="handlePlayer(item)">{{item.name}}</span>
+              </div>
+            </td>
+            <td class="musicActName pointer">
+              <el-progress :percentage="progressCount(item)"
+                           color="#d63131"></el-progress>
+            </td>
+            <td>
+              <span v-if="item.chunk != item.size">{{item.chunk | FileSize}}/</span>{{item.size | FileSize}}
+            </td>
+            <td class="icon pointer">
+              <i class="iconfont pointer"
+                 :class="{'icon-iconstop':item.state != 'completed','icon-bofang2':item.state == 'completed'}"></i>
+              <i class="iconfont icon-guanbi pointer"
+                 @click="cancel(item,index)"></i>
+              <i class="iconfont icon-wenjianjia_o pointer"
+                 @click="openDir(item)"></i>
+              <i class="iconfont icon-lianjie pointer"
+                 @click="copy(item)"></i>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-    <!-- <el-button @click="download">下载</el-button>
-    <el-button @click="resume">重新下载</el-button>
-    <el-button @click="cancel">取消下载</el-button> -->
   </div>
 </template>
 
@@ -63,42 +99,109 @@ export default {
   data () {
     return {
       currentActive: 1,
-      downloadList: [],
-      DownloadedList: [] //
+      DownloadList: {
+        downloadingList: [], //正在下载
+        downloaded: [] //已下载
+      },
+      isDownload: {
+
+      }
+    }
+  },
+  filters: {
+    FileSize (bytes) {
+      if (!bytes) return 0;
+      bytes = parseFloat(bytes);
+      if (bytes === 0) return '0B';
+      let k = 1024,
+        sizes = ['B', 'KB', 'MB', 'GB', 'TB'],
+        i = Math.floor(Math.log(bytes) / Math.log(k));
+      return (bytes / Math.pow(k, i)).toPrecision(3) + sizes[i];
     }
   },
   computed: {
     ...mapGetters(['getDownload'])
   },
   methods: {
+    ...mapActions(['set_download_list']),
+    ...mapMutations(['SET_DOWNLOAD_CURRENT_DATA', 'SPLICE_DOWNLOAD_MUSIC', 'SET_DOWNLOAD']),
+    handlePlayer (item) {
+      this.$router.push({
+        path: '/playinfo',
+        query: { id: item.id }
+      });
+    },
     handerType (num) {
       this.currentActive = num;
     },
-    cancel () {
-      this.$electron.ipcRenderer.send('download', this.data, 'cancel');
+    changeStatus (item, status) {
+      this.$electron.ipcRenderer.send('download', item.taskId, status);
     },
-    download () {
-      this.$electron.ipcRenderer.send('download', this.data, 'pause');
+    copy (item) {
+      this.$electron.clipboard.writeText(` https://music.163.com/#/song?id=${item.id}`)
     },
-    resume () {
-      this.$electron.ipcRenderer.send('download', this.data, 'resume');
+    progressCount (item) {
+      if (!item.size) return 0;
+      return parseInt((item.chunk / item.size) * 100);
+    },
+    cancel (item, index) {
+      this.SPLICE_DOWNLOAD_MUSIC(index);
+    },
+    openDir (item) {
+      this.$electron.shell.showItemInFolder(item.path);
+    },
+    // startDown () {
+    //   this.DownloadList.downloadingList.forEach((item, index) => {
+    //     this.$electron.remote.getCurrentWebContents().downloadURL('localhost:8081/reptile.zip' || item.downloadUrl);
+    //   });
+    //   //localhost:8081/reptile.zip
+    //   this.$electron.ipcRenderer.on('download', (e, data) => {
+    //     console.log(data.music_id)
+    //     for (var i = 0; i < this.DownloadList.downloadingList.length; i++) {
+    //       if (data.url[0] === ('localhost:8081/reptile.zip' || `https://music.163.com/song/media/outer/url?id=${this.DownloadList.downloadingList[i].id}.mp3`)) {
+    //         this.$set(this.DownloadList.downloadingList, i, { ...this.DownloadList.downloadingList[i], ...data });
+    //         if (data.chunk === data.size && !this.isDownload[data.music_id]) {
+    //           this.DownloadList.downloaded.unshift(this.DownloadList.downloadingList.splice(i, 1)[0]);
+    //           this.isDownload[data.music_id] = true;
+    //         }
+    //         break;
+    //       }
+    //     }
+    //   })
+    // }
+    startDown () {
+      this.DownloadList.downloadingList.forEach((item, index) => {
+        this.$electron.remote.getCurrentWebContents().downloadURL(item.downloadUrl);
+      });
+      //localhost:8081/reptile.zip
+      this.$electron.ipcRenderer.on('download', (e, data) => {
+        for (var i = 0; i < this.DownloadList.downloadingList.length; i++) {
+          if (data.url[0] === `https://music.163.com/song/media/outer/url?id=${this.DownloadList.downloadingList[i].id}.mp3`) {
+            this.$set(this.DownloadList.downloadingList, i, { ...this.DownloadList.downloadingList[i], ...data });
+            if (data.chunk === data.size && !this.isDownload[data.music_id]) {
+              this.DownloadList.downloaded.unshift(this.DownloadList.downloadingList.splice(i, 1)[0]);
+              this.SPLICE_DOWNLOAD_MUSIC(i)
+              this.isDownload[data.music_id] = true;
+            }
+            break;
+          }
+        }
+      })
     }
   },
   created () {
 
   },
   mounted () {
-    // setTimeout(() => {
-    //   this.$electron.remote.getCurrentWebContents().downloadURL('http://localhost:8081/reptile.zip')
-    // }, 2000)
-    this.$electron.ipcRenderer.on('download', (e, data) => {
-      this.data = data;
-      // setTimeout(() => {
-      //   console.log("开始下载");
-      //   // this.$electron.ipcRenderer.send('download', data, 'resume');
-      // })
-    })
-    // console.log();
+    if (localStorage.getItem('download')) {
+      // this.set_download_list(JSON.parse(localStorage.getItem('download')));
+    }
+    this.DownloadList = JSON.parse(JSON.stringify(this.getDownload));
+    this.startDown();
+  },
+  deactivated () {
+    this.SET_DOWNLOAD(this.DownloadList);
+    localStorage.setItem('download', JSON.stringify(this.DownloadList));
   }
 }
 </script>
@@ -146,7 +249,10 @@ export default {
         }
       }
       .musicActName {
-        width: 80px;
+        width: 200px;
+      }
+      .icon {
+        color: #333;
       }
       .musicAlName {
         width: 230px;

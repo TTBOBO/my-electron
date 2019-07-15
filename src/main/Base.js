@@ -89,26 +89,26 @@ class Base {
       downloadDir
     } = this.settingConfig;
     let name = item.getFilename();
-    item.setSavePath(downloadDir + '\\' + name);
-
-    // console.log(downloadDir + '\\' + name)
+    let path = downloadDir + '\\' + name;
+    item.path = path;
+    item.fileName = name;
+    item.taskId = Math.round(item.getStartTime());
+    item.setSavePath(path);
     this.downloadItems[Math.round(item.getStartTime())] = item;
-    webContents && webContents.send('download', item.getStartTime())
+    // let file = this.FileObject(item, item.isPaused() ? 'interrupted' : false);
+    // webContents && webContents.send('download', file)
     item.on('updated', (event, state) => {
-      if (state === 'interrupted') {
-        console.log('download is intertupted but can be resumed')
-      } else if (state === 'progressing') {
-        if (item.isPaused()) {
-          console.log("download is paused");
-        } else {
-          console.log("当前下载文件大小:" + (Math.round(item.getReceivedBytes() / 1000)) + 'kb/s');
-        }
-      }
+      let file = this.FileObject(item, item.isPaused() ? 'interrupted' : false);
+      console.log(item.getReceivedBytes());
+      webContents && webContents.send('download', file)
     })
     item.on('done', (event, state) => {
-      console.log(state)
+      let file = this.FileObject(item, item.isPaused() ? 'interrupted' : false);
+      webContents && webContents.send('download', file);
+      // console.log(state)
       if (state === 'completed') {
         console.log("下载完成");
+        // this.downloadItems[Math.round(item.getStartTime())].cancel();
         delete this.downloadItems[Math.round(item.getStartTime())];
       } else if (state === 'cancelled') {
         console.log("下载取消");
@@ -196,6 +196,23 @@ class Base {
     this.tray.on('click', () => {
       this.mainWindow.restore();
     })
+  }
+
+  FileObject(item, state) {
+    return {
+      music_id: new Date().getTime(),
+      url: item.getURLChain(),
+      time: item.getStartTime(),
+      music_name: item.fileName,
+      path: item.path,
+      chunk: item.getReceivedBytes(),
+      size: item.getTotalBytes(),
+      trans_type: 'download',
+      state: state || item.getState(),
+      disk_main: item.getURL(),
+      canResume: item.canResume(),
+      shows: true,
+    }
   }
 
   createBrowserWindow({

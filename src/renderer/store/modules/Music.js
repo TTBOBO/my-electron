@@ -11,7 +11,7 @@ const state = {
   likeIds: [], //喜欢的id
   downloadList: {
     downloadingList: [], //正在下载
-    downloadedList: [] //已下载
+    downloaded: [] //已下载
   }
 }
 
@@ -57,6 +57,21 @@ const mutations = {
   },
   SET_LIKE_IDS(state, data) {
     state.likeIds = data;
+  },
+  PUSH_DOWNLOAD_ITEM(state, data) {
+    state.downloadList.downloadingList.push(...data);
+  },
+  SET_DOWNLOAD_CURRENT_DATA(state, {
+    data,
+    index
+  }) {
+    state.downloadList.downloadingList[index] = data;
+  },
+  SET_DOWNLOAD(state, data) {
+    state.downloadList = data;
+  },
+  SPLICE_DOWNLOAD_MUSIC(state, index) {
+    state.downloadList.downloadingList.splice(index, 1);
   }
 }
 
@@ -66,7 +81,12 @@ const actions = {
   }) {
     // do something async
     commit('INIT_AUDIO_EL')
-  }
+  },
+  set_download_list({
+    commit
+  }, data) {
+    commit('PUSH_DOWNLOAD_ITEM', [data]);
+  },
 }
 
 const getters = {

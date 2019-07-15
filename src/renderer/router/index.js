@@ -8,7 +8,7 @@ export default new Router({
       path: '/',
       name: 'main',
       component: require('@/views/main.vue').default,
-      redirect: '/download',
+      redirect: '/findMusic',
       children: [{
         path: '/play',
         name: 'main',
@@ -32,6 +32,9 @@ export default new Router({
       }, {
         path: '/download',
         name: 'download',
+        meta: {
+          keepAlive: true
+        },
         component: require('@/views/download/index.vue').default,
       }]
     },

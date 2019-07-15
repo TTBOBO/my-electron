@@ -122,9 +122,11 @@ export default {
   },
   methods: {
     ...mapMutations(['SET_PLAY_LIST', 'SET_CURRENT_INDEX', 'INIT_AUDIO_EL', 'PUSH_MUSIC_TO_LIST', 'SET_LIKE_IDS']),
-    ...mapActions(['getPlayListAction']),
+    ...mapActions(['getPlayListAction', 'set_download_list']),
     download (item) {
       console.log(item);
+      // localStorage.setItem('download', JSON.stringify({ ...item, percentage: 10, downloadUrl: `https://music.163.com/song/media/outer/url?id=${item.id}.mp3` }));
+      this.set_download_list({ ...item, percentage: 10, downloadUrl: `https://music.163.com/song/media/outer/url?id=${item.id}.mp3` });
     },
     async initPlaylistDetail () {
       this.likelist();
@@ -137,7 +139,6 @@ export default {
       if (code == 200) {
         this.currentPlayList = playlist;
         this.playlist = playlist;
-        console.log(this.playlist)
       }
     },
     async likelist () {
