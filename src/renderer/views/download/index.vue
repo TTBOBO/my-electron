@@ -12,7 +12,8 @@
     </div>
     <div class="local-bottom"
          v-if="currentActive === 0">
-      <table cellspacing="0">
+      <table cellspacing="0"
+             v-if="DownloadList.downloaded.length">
         <thead>
           <th></th>
           <th>音乐标题</th>
@@ -20,7 +21,7 @@
           <th>专辑</th>
           <th>时长</th>
         </thead>
-        <tbody v-if="DownloadList.downloaded.length">
+        <tbody>
           <tr v-for="(item,index) in DownloadList.downloaded"
               :key="index">
             <td class="indexTd">{{String(index+1).padStart(2,0)}}</td>
@@ -40,15 +41,20 @@
               <div>{{item.al.name}}</div>
             </td>
             <td class="">
-              <div>{{item.duration | filterTime}}</div>
+              <div>{{item.dt / 1000 | filterTime}}</div>
             </td>
           </tr>
         </tbody>
       </table>
+      <div v-else
+           class="no-data">
+        <span class="iconfont icon-xiazai1"></span>
+      </div>
     </div>
     <div class="local-bottom"
          v-else>
-      <table cellspacing="0">
+      <table cellspacing="0"
+             v-if="DownloadList.downloadingList.length">
         <thead>
           <th></th>
           <th>音乐标题</th>
@@ -56,7 +62,7 @@
           <th>大小</th>
           <th>操作</th>
         </thead>
-        <tbody v-if="DownloadList.downloadingList.length">
+        <tbody>
           <tr v-for="(item,index) in DownloadList.downloadingList"
               :key="index">
             <td class="indexTd">{{String(index+1).padStart(2,0)}}</td>
@@ -87,6 +93,10 @@
           </tr>
         </tbody>
       </table>
+      <div v-else
+           class="no-data">
+        <span class="iconfont icon-xiazai1"></span>
+      </div>
     </div>
   </div>
 </template>
@@ -208,12 +218,24 @@ export default {
 
 <style lang="scss">
 .download-container {
+  height: 100%;
   .local-bottom {
     padding: 20px 25px;
     flex: 1;
+    height: calc(100% - 88px);
     overflow-y: auto;
     &::-webkit-scrollbar {
       width: 0;
+    }
+    .no-data {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      .iconfont {
+        font-size: 40px;
+      }
     }
     table {
       font-size: 12px;
