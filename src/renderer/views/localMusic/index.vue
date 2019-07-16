@@ -20,9 +20,9 @@
             <td class="musicName">
               <!-- item.name == getCurrentPlayMusic.name -->
               <div class="musicName"
-                   :class="{'paly-status':false}">
+                   :class="{'paly-status':item.name == getCurrentPlayMusic.name}">
                 <span class="music-title pointer"
-                      @click="palyMusic(item)">{{item.name}}</span>
+                      @click="playLocalMusic(item)">{{item.name}}</span>
               </div>
             </td>
             <td class="musicActName pointer">
@@ -83,6 +83,7 @@ export default {
   methods: {
     openShell () {
       this.$electron.remote.dialog.showOpenDialog({ properties: ['openDirectory'] }, (file) => {
+        console.log(file);
         this.checkDirOptions.push(...file)
         localStorage.setItem('checkDirOptions', JSON.stringify(this.checkDirOptions))
       })
@@ -92,19 +93,25 @@ export default {
       if (!this.checkDir.length) return;
       this.$electron.ipcRenderer.send('scnn', this.checkDir);
     },
+
     getMusicUrl (data) {
+      let audioCtx = new AudioContext();
       data.forEach(async (item, index) => {
         const blob = new Blob([item.path], {
           type: "application/" + item.type
         });
-        let audioCtx = new AudioContext();
         let arrBuff = new Uint8Array(item.path).buffer;
         let { duration } = await audioCtx.decodeAudioData(arrBuff)
         item.duration = duration;
-        this.$set(this.musicUrl, index, item);
         item.path = URL.createObjectURL(blob);
+        this.$set(this.musicUrl, index, item);
       })
       this.musicUrl = JSON.parse(JSON.stringify(data));
+      console.log(this.musicUrl);
+      data.forEach(item => { //因为 buffer数据占用空间大  执行删除操作
+        delete item.path
+      })
+      localStorage.setItem('localMusic', JSON.stringify(data));//存储本地音乐数据
     },
     showDialog () {
       this.showShell = true;
@@ -122,6 +129,9 @@ export default {
     }
   },
   created () {
+    if (localStorage.getItem('localMusic')) {
+      this.musicUrl = JSON.parse(localStorage.getItem('localMusic'));
+    }
   }
 }
 </script>

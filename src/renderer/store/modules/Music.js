@@ -75,7 +75,6 @@ const mutations = {
     localStorage.setItem('download', JSON.stringify(state.downloadList));
   },
   SPLICE_DOWNLOAD_MUSIC(state, id) { //设置正在下载歌曲完成并移动到已下载列表
-    console.log(state.downloadList.downloadingList.findIndex(item => item.id === id), id)
     state.downloadList.downloaded.push(state.downloadList.downloadingList.splice(state.downloadList.downloadingList.findIndex(item => item.id === id), 1)[0]);
     localStorage.setItem('download', JSON.stringify(state.downloadList));
   },

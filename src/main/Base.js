@@ -60,7 +60,6 @@ class Base {
     })
     ipcMain.on('close', () => this.mainWindow.minimize());
     ipcMain.on('download', (e, data, status) => {
-      console.log(data, status)
       let downloadItem = this.downloadItems[Math.round(data)];
       if (!downloadItem) return;
       switch (status) {
@@ -101,7 +100,6 @@ class Base {
     item.on('updated', (event, state) => {
       // console.log(item.music_id)
       let file = this.FileObject(item, item.isPaused() ? 'interrupted' : false);
-      console.log(item.getReceivedBytes());
       webContents && webContents.send('download', file)
     })
     item.on('done', (event, state) => {
@@ -109,13 +107,14 @@ class Base {
       webContents && webContents.send('download', file);
       if (state === 'completed') {
         console.log("下载完成");
-        // this.downloadItems[Math.round(item.getStartTime())].cancel();
         delete this.downloadItems[Math.round(item.getStartTime())];
       } else if (state === 'cancelled') {
         console.log("下载取消");
       }
     })
   }
+
+
 
   initSearchMusic() {
     ipcMain.on('scnn', (event, arg) => {
@@ -129,13 +128,17 @@ class Base {
               type: 'mp3',
               path: data,
               length: data.length,
-              dir,
+              dir: dir + '\\' + item,
               name: item.replace('.mp3', '')
             });
           }
         });
       })
       event.sender.send('playMusic', musicArr)
+    })
+
+    ipcMain.on('get_local_music', (event, dir) => {
+      event.sender.send('local_music_cbk', fs.readFileSync(dir));
     })
   }
 
@@ -170,6 +173,7 @@ class Base {
         label: '退出',
         icon: nativeImage.createFromPath(path.join(__static, '/img/close.png')),
         click: () => {
+
           app.quit();
         }
       },

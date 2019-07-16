@@ -165,7 +165,7 @@ export default {
     },
     async setCount (status = 'prev') {
       let index = this.Music.currentIndex
-      let len = this.getCurrentPlaylist.length
+      let len = this.getCurrentPlaylist.length;
       if (this.getMode === 2) {
         index = this.getRandom();
       } else {
@@ -213,12 +213,12 @@ export default {
         })
 
         this.getAudioEl.volume = this.volumeVal / 100;  //设置音量大小
-        this.ipcEvent();
       }
     }
   },
   mounted () {
     this.$EventBus.$on('setCurrentIndex', this.setCurrentIndex);
+    this.ipcEvent();
   },
   destroyed () {
     this.$EventBus.$off('setCurrentIndex');

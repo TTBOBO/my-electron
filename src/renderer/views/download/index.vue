@@ -28,9 +28,9 @@
             <td class="indexTd">{{String(index+1).padStart(2,0)}}</td>
             <td class="musicName">
               <div class="musicName"
-                   :class="{'paly-status':false}">
+                   :class="{'paly-status':item.name == getCurrentPlayMusic.name}">
                 <span class="music-title pointer"
-                      @click="palyMusic(item)">{{item.name}}</span>
+                      @click="playLocalMusic(item)">{{item.name}}</span>
               </div>
             </td>
             <td class="musicActName pointer">
@@ -149,7 +149,6 @@ export default {
       this.currentActive = num;
     },
     changeStatus (item, status) {
-      console.log(item.state)
       this.$electron.ipcRenderer.send('download', item.taskId, item.state === 'progressing' ? 'pause' : 'resume');
     },
     copy (item) {
@@ -160,7 +159,6 @@ export default {
       return parseInt((item.chunk / item.size) * 100);
     },
     cancel (item, index) {
-      console.log(1111)
       this.CANCEL_DOWNLOAD_ITEM(index);
       this.$electron.ipcRenderer.send('download', item.taskId, 'cancel');
     },
