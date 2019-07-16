@@ -67,7 +67,6 @@ export default {
       let resource = await this.$ajaxGet('resource');
       this.recommend = resource.recommend.slice(0, 10);
       let newSongs = await this.$ajaxGet('newsong', { type: 0 });
-      console.log(newSongs)
       this.newSongs = newSongs.result;
     }
   },

@@ -10,7 +10,7 @@
               class="creat iconfont icon-jia"></span>
         <div class="menu-group-item"
              @click="handler(_child,item)"
-             :class="{active:_child.name===activeName}"
+             :class="{active:_child.path===activeName}"
              v-for="(_child,_index) in item.group"
              :key="_index">
           <span class="item-icon el-icon-user"></span>
@@ -108,7 +108,7 @@ export default {
     ...mapMutations(['SET_SHOW_LY_STATUS', 'SET_PLAYLIST', 'SET_LIKE_IDS']),
     ...mapActions(['getPlayListAction']),
     handler ({ path, name, id }, { label }) {
-      this.activeName = name;
+      this.activeName = path;
       if (path) {
         this.$router.push({ path })
       }
@@ -147,7 +147,6 @@ export default {
         return false;
       }
       let data = await this.$ajaxPost('createPlayList', { name: this.playlistName });
-      // this.SET_PLAYLIST([data.playlist]);
       this.getPlayListAction();
       this.showDialog = false;
       this.$message.success('添加成功');
@@ -166,8 +165,8 @@ export default {
       handler (newV) {
         this.menuConf[2].group = [];
         this.menuConf[3].group = [];
-        this.menuConf[2].group.push(...newV.creatPlayList);
-        this.menuConf[3].group.push(...newV.collecPlayLit);
+        this.menuConf[2].group.push(...newV.creatPlayList.map((item, index) => { return { ...item, path: "/playList" + item.id } }));
+        this.menuConf[3].group.push(...newV.collecPlayLit.map((item, index) => { return { ...item, path: "/playList" + item.id } }));
       },
       immediate: true
     },
@@ -178,6 +177,12 @@ export default {
     },
     getCurrentPlayMusic (val) {
 
+    },
+    "$route": {
+      handler (newV) {
+        this.activeName = newV.path === '/playList' ? newV.path + newV.query.id : newV.path;
+      },
+      immediate: true
     }
   }
 }

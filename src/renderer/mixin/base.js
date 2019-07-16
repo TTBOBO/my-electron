@@ -43,6 +43,14 @@ export default {
         }
       }
     },
+    handlePlayer(item) {
+      this.$router.push({
+        path: '/playinfo',
+        query: {
+          id: item.id
+        }
+      });
+    },
     playAll(list) {
       this.SET_PLAY_LIST(list || this.playlist.tracks);
       this.$EventBus.$emit('setCurrentIndex', 0)

@@ -13,20 +13,20 @@
     <div class="local-bottom"
          v-if="currentActive === 0">
       <table cellspacing="0"
-             v-if="DownloadList.downloaded.length">
+             v-if="getDownload.downloaded.length">
         <thead>
           <th></th>
           <th>音乐标题</th>
           <th>歌手</th>
           <th>专辑</th>
           <th>时长</th>
+          <th>操作</th>
         </thead>
         <tbody>
-          <tr v-for="(item,index) in DownloadList.downloaded"
+          <tr v-for="(item,index) in getDownload.downloaded"
               :key="index">
             <td class="indexTd">{{String(index+1).padStart(2,0)}}</td>
             <td class="musicName">
-              <!-- item.name == getCurrentPlayMusic.name -->
               <div class="musicName"
                    :class="{'paly-status':false}">
                 <span class="music-title pointer"
@@ -34,15 +34,19 @@
               </div>
             </td>
             <td class="musicActName pointer">
-              <div>{{item.ar[0].name}}</div>
+              <div @click="handlePlayer(item.ar[0])">{{item.ar[0].name}}</div>
             </td>
-            <!-- <td>{{item.al.name}}</td> -->
             <td class="musicAlName">
               <div>{{item.al.name}}</div>
             </td>
             <td class="">
               <div>{{item.dt / 1000 | filterTime}}</div>
             </td>
+            <td class="icon pointer">
+              <i class="iconfont icon-wenjianjia_o pointer"
+                 @click="openDir(item)"></i>
+            </td>
+
           </tr>
         </tbody>
       </table>
@@ -54,7 +58,7 @@
     <div class="local-bottom"
          v-else>
       <table cellspacing="0"
-             v-if="DownloadList.downloadingList.length">
+             v-if="getDownload.downloadingList.length">
         <thead>
           <th></th>
           <th>音乐标题</th>
@@ -63,26 +67,27 @@
           <th>操作</th>
         </thead>
         <tbody>
-          <tr v-for="(item,index) in DownloadList.downloadingList"
+          <tr v-for="(item,index) in getDownload.downloadingList"
               :key="index">
             <td class="indexTd">{{String(index+1).padStart(2,0)}}</td>
             <td class="musicName">
               <!-- item.name == getCurrentPlayMusic.name -->
               <div class="musicName">
                 <span class="music-title pointer"
-                      @click="handlePlayer(item)">{{item.name}}</span>
+                      @click="handlePlayer(item.ar[0])">{{item.name}}</span>
               </div>
             </td>
             <td class="musicActName pointer">
               <el-progress :percentage="progressCount(item)"
                            color="#d63131"></el-progress>
             </td>
-            <td>
+            <td class="size">
               <span v-if="item.chunk != item.size">{{item.chunk | FileSize}}/</span>{{item.size | FileSize}}
             </td>
             <td class="icon pointer">
               <i class="iconfont pointer"
-                 :class="{'icon-iconstop':item.state != 'completed','icon-bofang2':item.state == 'completed'}"></i>
+                 @click="changeStatus(item)"
+                 :class="{'icon-iconstop' :item.state == 'progressing','icon-bofang2':item.state == 'interrupted'}"></i>
               <i class="iconfont icon-guanbi pointer"
                  @click="cancel(item,index)"></i>
               <i class="iconfont icon-wenjianjia_o pointer"
@@ -133,8 +138,7 @@ export default {
     ...mapGetters(['getDownload'])
   },
   methods: {
-    ...mapActions(['set_download_list']),
-    ...mapMutations(['SET_DOWNLOAD_CURRENT_DATA', 'SPLICE_DOWNLOAD_MUSIC', 'SET_DOWNLOAD']),
+    ...mapMutations(['CANCEL_DOWNLOAD_ITEM']),
     handlePlayer (item) {
       this.$router.push({
         path: '/playinfo',
@@ -145,7 +149,8 @@ export default {
       this.currentActive = num;
     },
     changeStatus (item, status) {
-      this.$electron.ipcRenderer.send('download', item.taskId, status);
+      console.log(item.state)
+      this.$electron.ipcRenderer.send('download', item.taskId, item.state === 'progressing' ? 'pause' : 'resume');
     },
     copy (item) {
       this.$electron.clipboard.writeText(` https://music.163.com/#/song?id=${item.id}`)
@@ -155,63 +160,27 @@ export default {
       return parseInt((item.chunk / item.size) * 100);
     },
     cancel (item, index) {
-      this.SPLICE_DOWNLOAD_MUSIC(index);
+      console.log(1111)
+      this.CANCEL_DOWNLOAD_ITEM(index);
+      this.$electron.ipcRenderer.send('download', item.taskId, 'cancel');
     },
     openDir (item) {
       this.$electron.shell.showItemInFolder(item.path);
     },
-    // startDown () {
-    //   this.DownloadList.downloadingList.forEach((item, index) => {
-    //     this.$electron.remote.getCurrentWebContents().downloadURL('localhost:8081/reptile.zip' || item.downloadUrl);
-    //   });
-    //   //localhost:8081/reptile.zip
-    //   this.$electron.ipcRenderer.on('download', (e, data) => {
-    //     console.log(data.music_id)
-    //     for (var i = 0; i < this.DownloadList.downloadingList.length; i++) {
-    //       if (data.url[0] === ('localhost:8081/reptile.zip' || `https://music.163.com/song/media/outer/url?id=${this.DownloadList.downloadingList[i].id}.mp3`)) {
-    //         this.$set(this.DownloadList.downloadingList, i, { ...this.DownloadList.downloadingList[i], ...data });
-    //         if (data.chunk === data.size && !this.isDownload[data.music_id]) {
-    //           this.DownloadList.downloaded.unshift(this.DownloadList.downloadingList.splice(i, 1)[0]);
-    //           this.isDownload[data.music_id] = true;
-    //         }
-    //         break;
-    //       }
-    //     }
-    //   })
-    // }
     startDown () {
-      this.DownloadList.downloadingList.forEach((item, index) => {
-        this.$electron.remote.getCurrentWebContents().downloadURL(item.downloadUrl);
-      });
-      //localhost:8081/reptile.zip
-      this.$electron.ipcRenderer.on('download', (e, data) => {
-        for (var i = 0; i < this.DownloadList.downloadingList.length; i++) {
-          if (data.url[0] === `https://music.163.com/song/media/outer/url?id=${this.DownloadList.downloadingList[i].id}.mp3`) {
-            this.$set(this.DownloadList.downloadingList, i, { ...this.DownloadList.downloadingList[i], ...data });
-            if (data.chunk === data.size && !this.isDownload[data.music_id]) {
-              this.DownloadList.downloaded.unshift(this.DownloadList.downloadingList.splice(i, 1)[0]);
-              this.SPLICE_DOWNLOAD_MUSIC(i)
-              this.isDownload[data.music_id] = true;
-            }
-            break;
-          }
-        }
-      })
     }
   },
   created () {
 
   },
   mounted () {
-    if (localStorage.getItem('download')) {
-      // this.set_download_list(JSON.parse(localStorage.getItem('download')));
-    }
-    this.DownloadList = JSON.parse(JSON.stringify(this.getDownload));
-    this.startDown();
-  },
-  deactivated () {
-    this.SET_DOWNLOAD(this.DownloadList);
-    localStorage.setItem('download', JSON.stringify(this.DownloadList));
+    // console.log(this.$store.state.Music.downloadList)
+    // if (localStorage.getItem('download')) {
+    //   // this.set_download_list(JSON.parse(localStorage.getItem('download')));
+    // }
+    // this.DownloadList = JSON.parse(JSON.stringify(this.getDownload));
+    // console.log(this.DownloadList)
+    // this.startDown();
   }
 }
 </script>
@@ -278,6 +247,9 @@ export default {
       }
       .musicAlName {
         width: 230px;
+      }
+      .size {
+        width: 150px;
       }
       td > div {
         text-overflow: ellipsis;

@@ -60,18 +60,28 @@ const mutations = {
   },
   PUSH_DOWNLOAD_ITEM(state, data) {
     state.downloadList.downloadingList.push(...data);
+    localStorage.setItem('download', JSON.stringify(state.downloadList));
   },
-  SET_DOWNLOAD_CURRENT_DATA(state, {
+  SET_DOWNLOAD_CURRENT_DATA(state, { //修改指定下载歌曲的状态
     data,
     index
   }) {
-    state.downloadList.downloadingList[index] = data;
+    state.downloadList.downloadingList[index] = Object.assign({}, state.downloadList.downloadingList[index], data);
+    state.downloadList = JSON.parse(JSON.stringify(state.downloadList))
+    localStorage.setItem('download', JSON.stringify(state.downloadList));
   },
-  SET_DOWNLOAD(state, data) {
+  SET_DOWNLOAD(state, data) { //设置所有的下载歌曲列表
     state.downloadList = data;
+    localStorage.setItem('download', JSON.stringify(state.downloadList));
   },
-  SPLICE_DOWNLOAD_MUSIC(state, index) {
+  SPLICE_DOWNLOAD_MUSIC(state, id) { //设置正在下载歌曲完成并移动到已下载列表
+    console.log(state.downloadList.downloadingList.findIndex(item => item.id === id), id)
+    state.downloadList.downloaded.push(state.downloadList.downloadingList.splice(state.downloadList.downloadingList.findIndex(item => item.id === id), 1)[0]);
+    localStorage.setItem('download', JSON.stringify(state.downloadList));
+  },
+  CANCEL_DOWNLOAD_ITEM(state, index) { //取消指定歌曲下载
     state.downloadList.downloadingList.splice(index, 1);
+    localStorage.setItem('download', JSON.stringify(state.downloadList));
   }
 }
 

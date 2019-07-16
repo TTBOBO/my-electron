@@ -83,7 +83,6 @@ export default {
   methods: {
     openShell () {
       this.$electron.remote.dialog.showOpenDialog({ properties: ['openDirectory'] }, (file) => {
-        console.log(file);
         this.checkDirOptions.push(...file)
         localStorage.setItem('checkDirOptions', JSON.stringify(this.checkDirOptions))
       })
@@ -116,7 +115,6 @@ export default {
     ipcRenderer.on('playMusic', (event, arg) => {
       this.search = false;
       this.showShell = false;
-      // this.musicUrl = arg;
       this.getMusicUrl(arg);
     })
     if (localStorage.getItem('checkDirOptions')) {

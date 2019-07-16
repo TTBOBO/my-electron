@@ -7,6 +7,7 @@ import {
   nativeImage
 } from 'electron'
 const path = require('path');
+const fs = require('fs');
 class Base {
   constructor({
     baseUrl
@@ -59,6 +60,7 @@ class Base {
     })
     ipcMain.on('close', () => this.mainWindow.minimize());
     ipcMain.on('download', (e, data, status) => {
+      console.log(data, status)
       let downloadItem = this.downloadItems[Math.round(data)];
       if (!downloadItem) return;
       switch (status) {
@@ -80,6 +82,7 @@ class Base {
   }
 
   initDownload() {
+
     this.mainWindow.webContents.session.removeAllListeners('will-download');
     this.mainWindow.webContents.session.on('will-download', this.doDownLoad.bind(this))
   }
@@ -95,9 +98,8 @@ class Base {
     item.taskId = Math.round(item.getStartTime());
     item.setSavePath(path);
     this.downloadItems[Math.round(item.getStartTime())] = item;
-    // let file = this.FileObject(item, item.isPaused() ? 'interrupted' : false);
-    // webContents && webContents.send('download', file)
     item.on('updated', (event, state) => {
+      // console.log(item.music_id)
       let file = this.FileObject(item, item.isPaused() ? 'interrupted' : false);
       console.log(item.getReceivedBytes());
       webContents && webContents.send('download', file)
@@ -105,7 +107,6 @@ class Base {
     item.on('done', (event, state) => {
       let file = this.FileObject(item, item.isPaused() ? 'interrupted' : false);
       webContents && webContents.send('download', file);
-      // console.log(state)
       if (state === 'completed') {
         console.log("下载完成");
         // this.downloadItems[Math.round(item.getStartTime())].cancel();
@@ -212,6 +213,7 @@ class Base {
       disk_main: item.getURL(),
       canResume: item.canResume(),
       shows: true,
+      taskId: item.taskId
     }
   }
 

@@ -22,7 +22,8 @@
                @click="subscribe"
                v-if="currentPlayList.creator && currentPlayList.creator.userId != getUserInfo.userId">{{currentPlayList.subscribed ? '已' : ''}}收藏</div>
           <div class="btn">分享</div>
-          <div class="btn">下载</div>
+          <div class="btn"
+               @click="downloadAll">下载</div>
         </div>
       </div>
       <div class="linten-count">
@@ -104,7 +105,10 @@ export default {
       playlist: {},
       activeName: "歌曲列表",
       currentPlayMusic: {}, //当前播放的音乐
-      currentId: this.$route.query.id
+      currentId: this.$route.query.id,
+      settingConfig: {
+        downloadDir: ""
+      }
     }
   },
   computed: {
@@ -121,12 +125,34 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['SET_PLAY_LIST', 'SET_CURRENT_INDEX', 'INIT_AUDIO_EL', 'PUSH_MUSIC_TO_LIST', 'SET_LIKE_IDS']),
+    ...mapMutations(['SET_PLAY_LIST', 'SET_CURRENT_INDEX', 'INIT_AUDIO_EL', 'PUSH_MUSIC_TO_LIST', 'SET_LIKE_IDS', 'PUSH_DOWNLOAD_ITEM']),
     ...mapActions(['getPlayListAction', 'set_download_list']),
     download (item) {
-      console.log(item);
+      if (this.getConfigStatus()) {
+        this.set_download_list(JSON.parse(JSON.stringify({ ...item, percentage: 10, downloadUrl: `https://music.163.com/song/media/outer/url?id=${item.id}.mp3` })));
+        this.$EventBus.$emit('download');
+      }
       // localStorage.setItem('download', JSON.stringify({ ...item, percentage: 10, downloadUrl: `https://music.163.com/song/media/outer/url?id=${item.id}.mp3` }));
-      this.set_download_list({ ...item, percentage: 10, downloadUrl: `https://music.163.com/song/media/outer/url?id=${item.id}.mp3` });
+
+    },
+    downloadAll () {
+      if (this.getConfigStatus()) {
+        this.PUSH_DOWNLOAD_ITEM(this.playlist.tracks.map((item, index) => {
+          return JSON.parse(JSON.stringify({ ...item, percentage: 10, downloadUrl: `https://music.163.com/song/media/outer/url?id=${item.id}.mp3` }))
+        }));
+        this.$EventBus.$emit('download');
+      }
+    },
+    getConfigStatus () {
+      if (!localStorage.getItem('settingConfig')) {
+        this.$electron.remote.dialog.showOpenDialog({ properties: ['openDirectory'] }, (file) => {
+          this.settingConfig.downloadDir = file[0];
+          this.$electron.ipcRenderer.send('settingConf', this.settingConfig);
+          localStorage.setItem('settingConfig', JSON.stringify(this.settingConfig))
+        })
+        return;
+      }
+      return true;
     },
     async initPlaylistDetail () {
       this.likelist();
