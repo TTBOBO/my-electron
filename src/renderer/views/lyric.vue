@@ -28,13 +28,14 @@ export default {
 
         console.log({ x: x - this.position.x, y: y - this.position.y })
         this.$electron.ipcRenderer.send('drag', { x: x - this.position.x, y: y - this.position.y })
-        this.position = { x, y }
+        // this.position = { x, y }
         // { x: x - this.position.x, y: y - this.position.y };
         // this.position = JSON.parse(JSON.stringify({ x, y }));
       }
 
     },
     mouseup ({ x, y }) {
+      // this.position = { x, y }
       // this.position = JSON.parse(JSON.stringify({ x, y }));
       this.flag = false;
     }

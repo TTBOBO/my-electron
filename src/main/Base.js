@@ -24,6 +24,7 @@ class Base {
     this.tray = null
     this.settingConfig = {}
     this.thumbarBtns = []
+    this.musicPosition = {};
   }
 
   initApp(loadSuccess) {
@@ -175,16 +176,28 @@ class Base {
     })
     ipcMain.on('showLyric', (e, status) => {
       this.lyricWindow[status ? 'show' : 'hide']()
+      if (status) {
+        const [x, y] = this.lyricWindow.getPosition();
+        this.musicPosition = {
+          x,
+          y
+        };
+      }
       console.log();
     })
     ipcMain.on('drag', (e, {
       x,
       y
     }) => {
-      const [x1, y1] = this.lyricWindow.getPosition();
-      console.log(`x1：${x1},x：${x}  ====   ${x1+x}`)
-      console.log(`y1：${y1},y：${y}  ====   ${y1+y}`)
-      this.lyricWindow.setPosition(x1 + x, y1 + y)
+      // const {
+      //   x,
+      //   y
+      // } = this.musicPosition
+      // console.log(`x1：${x1},x：${x}  ====   ${x1+x}`)
+      // console.log(`y1：${y1},y：${y}  ====   ${y1+y}`)
+      // console.log(this.musicPosition)
+      // console.log(x1, y1)
+      this.lyricWindow.setPosition(this.musicPosition.x + x, this.musicPosition.y + y)
     })
   }
 
