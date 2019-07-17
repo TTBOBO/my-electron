@@ -42,7 +42,7 @@
       <span class="iconfont"
             :class="getModeStaus"
             @click="changeMode"></span>
-      <span @click="showLy"
+      <span @click="showLy(getShowLyStatus)"
             :class="{active:getShowLyStatus}">词</span>
       <el-popover placement="top-start"
                   width="700"
@@ -112,10 +112,11 @@ export default {
   },
   methods: {
     ...mapMutations(['INIT_AUDIO_EL', 'SET_AUDIO_PLAYING', 'SET_CURRENT_INDEX', 'SET_MODE', 'SET_SHOW_LY_STATUS']),
-    showLy () {
+    showLy (status) {
       if (this.Music.currentIndex !== '') {
         this.SET_SHOW_LY_STATUS();
       }
+      this.$electron.ipcRenderer.send('showLyric', !status);
     },
     changeMode () {
       this.SET_MODE();

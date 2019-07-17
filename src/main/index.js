@@ -8,17 +8,17 @@ if (process.env.NODE_ENV !== 'development') {
     .join(__dirname, '/static')
     .replace(/\\/g, '\\\\')
 }
-const winURL =
-  process.env.NODE_ENV === 'development' ?
-  `http://localhost:9080` :
-  `file://${__dirname}/index.html`
-const musicURL = process.env.NODE_ENV === 'development' ?
-  `http://localhost:9080` :
-  `file://${__dirname}/index.html`;
 let base = new Base({
-  baseUrl: winURL,
-  musicUrl: musicURL
+  baseUrl: getUrl(),
+  musicUrl: getUrl('lyric')
 });
 base.initApp(() => {
   //初始化成功回调
 });
+
+
+function getUrl(path) {
+  return process.env.NODE_ENV === 'development' ?
+    `http://localhost:9080#/` + (path || '') :
+    `file://${__dirname}/index.html/` + (path || '')
+}
