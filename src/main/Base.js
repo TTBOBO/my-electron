@@ -117,6 +117,7 @@ class Base {
 
 
   initSearchMusic() {
+    let count = 0;
     ipcMain.on('scnn', (event, arg) => {
       let musicArr = [];
       arg.forEach((dir, _index) => {
@@ -138,7 +139,9 @@ class Base {
     })
 
     ipcMain.on('get_local_music', (event, dir) => {
-      event.sender.send('local_music_cbk', fs.readFileSync(dir));
+      console.log(count++)
+      let buffer = fs.readFileSync(dir);
+      event.sender.send('local_music_cbk', buffer);
     })
   }
 

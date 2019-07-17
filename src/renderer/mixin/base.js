@@ -5,6 +5,11 @@ import {
   mapActions
 } from 'vuex';
 export default {
+  data() {
+    return {
+      musicItem: {}
+    }
+  },
   computed: {
     ...mapGetters(['getUserInfo', 'getCurrentIndex', 'getCurrentPlaylist', 'getLikeIds', 'getCurrentPlayMusic', 'getAudioEl']),
   },
@@ -30,9 +35,7 @@ export default {
     },
     palyMusic(item) {
       if (this.getCurrentIndex !== '' && this.getCurrentPlaylist[this.getCurrentIndex].name === item.name) {
-        console.log(222)
         this.getAudioEl.currentTime = 0; //重新播放
-        console.log(223)
         this.$EventBus.$emit('changePro', 0);
       } else {
         let index = this.getCurrentPlaylist.findIndex(_item => _item.name === item.name);
@@ -44,21 +47,13 @@ export default {
         }
       }
     },
+
     playLocalMusic(item) {
-      let musicItem = JSON.parse(JSON.stringify(item));
-      if (/^http/.test(musicItem.path)) { //网络链接
-        console.log(41)
-        this.palyMusic(musicItem);
+      this.musicItem = JSON.parse(JSON.stringify(item));
+      if (/^http/.test(this.musicItem.path)) { //网络链接
+        this.palyMusic(this.musicItem);
       } else {
-        console.log(42)
-        this.$electron.ipcRenderer.send('get_local_music', musicItem.dir || musicItem.path);
-        this.$electron.ipcRenderer.on('local_music_cbk', (event, buffer) => {
-          const blob = new Blob([buffer], {
-            type: "application/mp3"
-          });
-          musicItem.path = URL.createObjectURL(blob);
-          this.palyMusic(musicItem);
-        })
+        this.$electron.ipcRenderer.send('get_local_music', this.musicItem.dir || this.musicItem.path);
       }
     },
     handlePlayer(item) {
@@ -73,5 +68,18 @@ export default {
       this.SET_PLAY_LIST(list || this.playlist.tracks);
       this.$EventBus.$emit('setCurrentIndex', 0)
     },
+  },
+  mounted() {
+    this.$electron.ipcRenderer.on('local_music_cbk', (event, buffer) => {
+      const blob = new Blob([buffer], {
+        type: "application/mp3"
+      });
+      this.musicItem.path = URL.createObjectURL(blob);
+      this.palyMusic(this.musicItem);
+    })
+  },
+  destroyed() {
+    //因为当前在 mixin 里面 每个页面加载当前js 的时候 都会 从新监听一次 所以要销毁
+    this.$electron.ipcRenderer.removeAllListeners('local_music_cbk');
   }
 }

@@ -78,22 +78,15 @@
 
 <script>
 import { mapMutations, mapGetters, mapState } from 'vuex';
+import base from '@/mixin/base'
 export default {
+  mixins: [base],
   data () {
     return {
       currentActive: 0,
       currentIndex: 0,  //id
       currentPlayMusic: {}
     }
-  },
-  filters: {
-    filterTime (val) {
-      if (!val) return '00:00';
-      val = Math.ceil(val);
-      let minute = Math.floor(val / 60);
-      let second = Math.floor(val % 60)
-      return `${minute < 10 ? '0' + minute : minute}:${second < 10 ? '0' + second : second}`;
-    },
   },
   computed: {
     ...mapGetters(['getCurrentPlaylist', 'getAudioEl', 'getCurrentIndex', 'getHistoryList']),
@@ -106,20 +99,6 @@ export default {
     handerType (num) {
       this.currentActive = num;
       this.currentIndex = 0;
-    },
-    palyMusic (item) {
-      if (this.getCurrentIndex !== '' && this.getCurrentPlaylist[this.getCurrentIndex].name === item.name) {
-        this.getAudioEl.currentTime = 0;  //重新播放
-        this.$EventBus.$emit('changePro', 0);
-      } else {
-        let index = this.getCurrentPlaylist.findIndex(_item => _item.name === item.name);
-        if (index == -1) {  //如果当前音乐没有在播放列表里面直接添加进去再播放
-          this.PUSH_MUSIC_TO_LIST(item);
-          this.$EventBus.$emit('setCurrentIndex', this.getCurrentPlaylist.length - 1);
-        } else {
-          this.$EventBus.$emit('setCurrentIndex', index)
-        }
-      }
     },
     clearHis () {
       this.CLEAR_HISTORY_LIST();

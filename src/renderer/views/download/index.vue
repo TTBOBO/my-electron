@@ -113,7 +113,7 @@ export default {
   mixins: [base],
   data () {
     return {
-      currentActive: 1,
+      currentActive: 0,
       DownloadList: {
         downloadingList: [], //正在下载
         downloaded: [] //已下载

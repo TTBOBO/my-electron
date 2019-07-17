@@ -66,8 +66,6 @@
 <script>
 import { mapMutations, mapGetters, mapState } from 'vuex';
 import PlayView from './auth/PlayView'
-const electron = require('electron')
-const { ipcRenderer } = electron;
 export default {
   data () {
     return {
@@ -94,7 +92,7 @@ export default {
       }
     },
     getMusicUrl () {
-      if (!this.getCurrentPlaylist[this.Music.currentIndex]) return "";
+      if (this.Music.currentIndex === '' || !this.getCurrentPlaylist[this.Music.currentIndex]) return "";
       if (this.getCurrentPlaylist[this.Music.currentIndex].id) {
         return `https://music.163.com/song/media/outer/url?id=${this.getCurrentPlaylist[this.Music.currentIndex].id}.mp3`;
       } else {
@@ -178,27 +176,29 @@ export default {
       }
       this.setCurrentIndex(index);
     },
-    setCurrentIndex (index) {
+    setCurrentIndex (index, playStatus = true) {
       this.SET_CURRENT_INDEX(index)
-      if (!this.$refs.audio.paused) {
-        this.SET_AUDIO_PLAYING()
+      if (playStatus) {
+        if (!this.$refs.audio.paused) {
+          this.SET_AUDIO_PLAYING()
+        }
+        this.$nextTick(() => {
+          this.play()
+        })
       }
-      this.$nextTick(() => {
-        this.play()
-      })
     },
     changePro (val) {
       this.getAudioEl.currentTime = val;
       this.$EventBus.$emit('changePro', val);
     },
     ipcEvent () {
-      ipcRenderer.on('playPrev', () => {
+      this.$electron.ipcRenderer.on('playPrev', () => {
         this.prev();
       })
-      ipcRenderer.on('playNext', () => {
+      this.$electron.ipcRenderer.on('playNext', () => {
         this.next();
       })
-      ipcRenderer.on('togglePlay', () => {
+      this.$electron.ipcRenderer.on('togglePlay', () => {
         this.play();
       })
 
@@ -231,6 +231,8 @@ export default {
       this.getAudioEl && (this.getAudioEl.volume = newV / 100);
     },
     async getMusicUrl (newV) {
+      if (this.Music.currentIndex === '') return;
+      // console.log()
       let item = this.getCurrentPlaylist[this.Music.currentIndex];
       if (item.id) {
         try {
@@ -243,9 +245,6 @@ export default {
       } else {
         this.initPlay(newV);
       }
-
-
-
     }
   }
 }

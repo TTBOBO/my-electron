@@ -15,6 +15,10 @@ const state = {
   }
 }
 
+function setLocalStorage(state, localKey, key) {
+  localStorage.setItem(localKey, JSON.stringify(state[key || localKey]));
+}
+
 const mutations = {
   INIT_AUDIO_EL(state, params) {
     state.audioEl = params
@@ -30,6 +34,7 @@ const mutations = {
     })
     if (Index === -1) {
       state.historyList.push(state.currentPlayMusic);
+      setLocalStorage(state, 'historyList');
     }
 
   },
@@ -38,10 +43,14 @@ const mutations = {
   },
   SET_PLAY_LIST(state, list = []) {
     state.playList = list;
+    console.log(list)
+    setLocalStorage(state, 'playList');
+    // localStorage.setItem('playList', JSON.stringify(state.playList));
   },
   PUSH_MUSIC_TO_LIST(state, item) {
     if (item) {
-      state.playList.push(item)
+      state.playList.push(item);
+      setLocalStorage(state, 'playList');
     }
   },
   SET_SHOW_LY_STATUS(state) {
@@ -49,18 +58,20 @@ const mutations = {
   },
   CLEAR_HISTORY_LIST(state) {
     state.historyList = [];
+    setLocalStorage(state, 'historyList');
   },
   CLEAR_PLAY_LIST(state) {
     state.currentIndex = '';
     state.playing = false;
     state.playList = [];
+    setLocalStorage(state, 'playList');
   },
   SET_LIKE_IDS(state, data) {
     state.likeIds = data;
   },
   PUSH_DOWNLOAD_ITEM(state, data) {
     state.downloadList.downloadingList.push(...data);
-    localStorage.setItem('download', JSON.stringify(state.downloadList));
+    setLocalStorage(state, 'download', 'downloadList');
   },
   SET_DOWNLOAD_CURRENT_DATA(state, { //修改指定下载歌曲的状态
     data,
@@ -68,19 +79,19 @@ const mutations = {
   }) {
     state.downloadList.downloadingList[index] = Object.assign({}, state.downloadList.downloadingList[index], data);
     state.downloadList = JSON.parse(JSON.stringify(state.downloadList))
-    localStorage.setItem('download', JSON.stringify(state.downloadList));
+    setLocalStorage(state, 'download', 'downloadList');
   },
   SET_DOWNLOAD(state, data) { //设置所有的下载歌曲列表
     state.downloadList = data;
-    localStorage.setItem('download', JSON.stringify(state.downloadList));
+    setLocalStorage(state, 'download', 'downloadList');
   },
   SPLICE_DOWNLOAD_MUSIC(state, id) { //设置正在下载歌曲完成并移动到已下载列表
     state.downloadList.downloaded.push(state.downloadList.downloadingList.splice(state.downloadList.downloadingList.findIndex(item => item.id === id), 1)[0]);
-    localStorage.setItem('download', JSON.stringify(state.downloadList));
+    setLocalStorage(state, 'download', 'downloadList');
   },
   CANCEL_DOWNLOAD_ITEM(state, index) { //取消指定歌曲下载
     state.downloadList.downloadingList.splice(index, 1);
-    localStorage.setItem('download', JSON.stringify(state.downloadList));
+    setLocalStorage(state, 'download', 'downloadList');
   }
 }
 
@@ -105,7 +116,7 @@ const getters = {
   getCurrentIndex: state => state.currentIndex,
   getCurrentPlaylist: state => state.playList, //获取当前播放的列表
   getCurrentPlayMusic: (state) => {
-    return (state.currentIndex !== '' && state.playList.length) ? state.playList[state.currentIndex] : {}
+    return (state.currentIndex !== '' && state.playList.length) ? state.playList[state.currentIndex] : {};
   },
   getShowLyStatus: state => state.showLyStatus,
   getHistoryList: state => state.historyList,

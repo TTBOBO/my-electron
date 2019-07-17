@@ -24,7 +24,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['SET_DOWNLOAD', 'SET_DOWNLOAD_CURRENT_DATA', 'SPLICE_DOWNLOAD_MUSIC']),
+    ...mapMutations(['SET_DOWNLOAD', 'SET_DOWNLOAD_CURRENT_DATA', 'SPLICE_DOWNLOAD_MUSIC', 'SET_PLAY_LIST']),
     initDownload () {
       this.getDownload.downloadingList.forEach((item, index) => {
         if (!item.size && item.downloadUrl) { //没有被下载即可下载  反之不下载
@@ -60,7 +60,11 @@ export default {
     if (localStorage.getItem('download')) {
       this.SET_DOWNLOAD(JSON.parse(localStorage.getItem('download')));
     }
-    // this.DownloadList = JSON.parse(JSON.stringify(this.getDownload));
+
+    if (localStorage.getItem('playList')) {
+      this.SET_PLAY_LIST(JSON.parse(localStorage.getItem('playList')));
+      this.$EventBus.$emit('setCurrentIndex', 0, false)
+    }
     setTimeout(() => {
       if (localStorage.getItem('settingConfig')) {
         this.$electron.ipcRenderer.send('settingConf', JSON.parse(localStorage.getItem('settingConfig')));

@@ -64,8 +64,6 @@
 </template>
 
 <script>
-const electron = require('electron')
-const { ipcRenderer } = electron;
 import base from '@/mixin/base'
 import util from '../../assets/js/util';
 
@@ -83,7 +81,6 @@ export default {
   methods: {
     openShell () {
       this.$electron.remote.dialog.showOpenDialog({ properties: ['openDirectory'] }, (file) => {
-        console.log(file);
         this.checkDirOptions.push(...file)
         localStorage.setItem('checkDirOptions', JSON.stringify(this.checkDirOptions))
       })
@@ -119,7 +116,7 @@ export default {
   },
 
   mounted () {
-    ipcRenderer.on('playMusic', (event, arg) => {
+    this.$electron.ipcRenderer.on('playMusic', (event, arg) => {
       this.search = false;
       this.showShell = false;
       this.getMusicUrl(arg);

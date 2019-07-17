@@ -33,7 +33,7 @@
             </td>
             <td class="musicName">
               <div class="musicName"
-                   :class="{'paly-status':item.name == currentPlayMusic.name}">
+                   :class="{'paly-status':item.name == getCurrentPlayMusic.name}">
                 <a :title="item.name"
                    class="music-title pointer"
                    @click="palyMusic(item)">{{item.name}}</a>
@@ -82,7 +82,9 @@
 <script>
 import { mapMutations, mapGetters, mapState } from 'vuex';
 import HeaderLine from '@/components/headerLine';
+import base from '@/mixin/base'
 export default {
+  mixins: [base],
   data () {
     return {
       currentActive: 0,
@@ -95,15 +97,6 @@ export default {
       loading: true,
       noMore: false
     }
-  },
-  filters: {
-    filterTime (val) {
-      if (!val) return '00:00';
-      val = Math.ceil(val);
-      let minute = Math.floor(val / 60);
-      let second = Math.floor(val % 60)
-      return `${minute < 10 ? '0' + minute : minute}:${second < 10 ? '0' + second : second}`;
-    },
   },
   computed: {
     ...mapGetters(['getCurrentPlaylist', 'getAudioEl', 'getCurrentIndex']),
@@ -149,20 +142,6 @@ export default {
           return false;
         }
         this.albumData.push(...data.albums);
-      }
-    },
-    palyMusic (item) {
-      if (this.getCurrentIndex !== '' && this.getCurrentPlaylist[this.getCurrentIndex].name === item.name) {
-        this.getAudioEl.currentTime = 0;  //重新播放
-        this.$EventBus.$emit('changePro', 0);
-      } else {
-        let index = this.getCurrentPlaylist.findIndex(item => item.name === name);
-        if (index == -1) {  //如果当前音乐没有在播放列表里面直接添加进去再播放
-          this.PUSH_MUSIC_TO_LIST(item);
-          this.$EventBus.$emit('setCurrentIndex', this.getCurrentPlaylist.length - 1);
-        } else {
-          this.$EventBus.$emit('setCurrentIndex', index)
-        }
       }
     },
     load () {
@@ -259,6 +238,9 @@ export default {
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
+      }
+      .paly-status {
+        color: $base-color !important;
       }
       .time {
         width: 80px;

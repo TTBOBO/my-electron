@@ -132,16 +132,6 @@ export default {
       }
     }
   },
-  filters: {
-    filterTime (val) {
-      if (!val) return '00:00';
-      val = Math.ceil(val);
-      let minute = Math.floor(val / 60);
-      let second = Math.floor(val % 60)
-      return `${minute < 10 ? '0' + minute : minute}:${second < 10 ? '0' + second : second}`;
-    },
-
-  },
   methods: {
     async intiPlayInfo () {
       this.artistData = await this.$ajaxGet('artists', { id: this.$route.query.id });
