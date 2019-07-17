@@ -12,8 +12,12 @@ const winURL =
   process.env.NODE_ENV === 'development' ?
   `http://localhost:9080` :
   `file://${__dirname}/index.html`
+const musicURL = process.env.NODE_ENV === 'development' ?
+  `http://localhost:9080` :
+  `file://${__dirname}/index.html`;
 let base = new Base({
-  baseUrl: winURL
+  baseUrl: winURL,
+  musicUrl: musicURL
 });
 base.initApp(() => {
   //初始化成功回调

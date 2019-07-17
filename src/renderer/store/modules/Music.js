@@ -27,7 +27,8 @@ const mutations = {
     state.playing = !state.playing
   },
   SET_CURRENT_INDEX(state, index) {
-    state.currentIndex = index
+    state.currentIndex = index;
+    localStorage.setItem('currentIndex', state.currentIndex);
     state.currentPlayMusic = state.playList[index];
     let Index = state.historyList.findIndex(item => {
       return item.id == state.currentPlayMusic.id
@@ -43,7 +44,6 @@ const mutations = {
   },
   SET_PLAY_LIST(state, list = []) {
     state.playList = list;
-    console.log(list)
     setLocalStorage(state, 'playList');
     // localStorage.setItem('playList', JSON.stringify(state.playList));
   },
@@ -62,6 +62,7 @@ const mutations = {
   },
   CLEAR_PLAY_LIST(state) {
     state.currentIndex = '';
+    localStorage.setItem('currentIndex', state.currentIndex);
     state.playing = false;
     state.playList = [];
     setLocalStorage(state, 'playList');

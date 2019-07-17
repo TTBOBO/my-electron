@@ -162,7 +162,8 @@ export default {
       this.setCount('next')
     },
     async setCount (status = 'prev') {
-      let index = this.Music.currentIndex
+      let index = parseInt(this.Music.currentIndex);
+      index = index === '' ? 0 : index;
       let len = this.getCurrentPlaylist.length;
       if (this.getMode === 2) {
         index = this.getRandom();
@@ -245,6 +246,9 @@ export default {
       } else {
         this.initPlay(newV);
       }
+    },
+    'Music.playing' (newV) {
+      this.$electron.ipcRenderer.send('playStatus', newV);
     }
   }
 }

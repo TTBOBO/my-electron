@@ -4,7 +4,8 @@ import {
   ipcMain,
   Tray,
   Menu,
-  nativeImage
+  nativeImage,
+  globalShortcut
 } from 'electron'
 const path = require('path');
 const fs = require('fs');
@@ -14,10 +15,12 @@ class Base {
   }) {
     this.baseUrl = baseUrl;
     this.mainWindow = null;
+    this.lyricWindow = null;
     this.beowserWindows = {};
     this.downloadItems = {};
     this.tray = null;
     this.settingConfig = {};
+    this.thumbarBtns = [];
   }
 
   initApp(loadSuccess) {
@@ -45,8 +48,64 @@ class Base {
         this.initIpc();
         this.initTray();
         this.initSearchMusic();
+        this.resgisterCode();
+        this.setThumbarBtns();
       }
     })
+  }
+
+  creatLyricWindow() {
+    this.lyricWindow = this.createBrowserWindow({
+      minWidth: 500,
+      height: 150,
+      useContentSize: true,
+      width: 1200,
+      darkTheme: true,
+      frame: false,
+      isMain: true,
+      winURL: this.baseUrl,
+      bgColor: "#ff0000",
+      finishLoad: () => {
+        console.log("创建成功");
+      }
+    })
+  }
+
+  resgisterCode() {
+    globalShortcut.register('Alt+P', () => {
+      this.mainWindow.send('playPrev');
+    })
+    globalShortcut.register('Alt+N', () => {
+      this.mainWindow.send('playNext');
+    })
+    globalShortcut.register('Alt+S', () => {
+      this.mainWindow.send('togglePlay');
+    })
+  }
+
+  setThumbarBtns() {
+    this.thumbarBtns = [{
+        tooltip: '上一首',
+        icon: this.getNativeImg('/img/prev.png'),
+        click: () => {
+          this.mainWindow.send('playPrev');
+        }
+      },
+      {
+        tooltip: '播放',
+        icon: this.getNativeImg('/img/play.png'),
+        click: () => {
+          this.mainWindow.send('togglePlay');
+        }
+      }, {
+        tooltip: '下一首',
+        icon: this.getNativeImg('/img/next.png'),
+        click: () => {
+          this.mainWindow.send('playNext');
+        }
+      }
+    ];
+    this.mainWindow.setThumbarButtons(this.thumbarBtns);
   }
 
   initIpc() {
@@ -78,6 +137,15 @@ class Base {
           break;
       }
     })
+    ipcMain.on('playStatus', (e, status) => {
+      this.thumbarBtns[1].icon = this.getNativeImg(status ? '/img/stop.png' : '/img/play.png');
+      this.thumbarBtns[1].tooltip = status ? '暂停' : '播放';
+      this.mainWindow.setThumbarButtons(this.thumbarBtns);
+    })
+  }
+
+  getNativeImg(pathUrl) {
+    return nativeImage.createFromPath(path.join(__static, pathUrl))
   }
 
   initDownload() {
@@ -152,31 +220,28 @@ class Base {
     this.tray = new Tray(defaultIcon);
     let menuItems = [{
         label: '上一首',
-        icon: nativeImage.createFromPath(path.join(__static, '/img/prev.png')),
+        icon: this.getNativeImg('/img/prev.png'),
         click: () => {
           this.mainWindow.send('playPrev');
         }
       },
       {
         label: '播放/暂停',
-        icon: nativeImage.createFromPath(path.join(__static, '/img/stop.png')),
+        icon: this.getNativeImg('/img/stop.png'),
         click: () => {
-          // menuItems[1].icon = nativeImage.createFromPath(path.join(__static, '/img/play.png'));
-          // this.tray.setContextMenu(Menu.buildFromTemplate(menuItems));
           this.mainWindow.send('togglePlay');
         }
       }, {
         label: '下一首',
-        icon: nativeImage.createFromPath(path.join(__static, '/img/next.png')),
+        icon: this.getNativeImg('/img/next.png'),
         click: () => {
           this.mainWindow.send('playNext');
         }
       },
       {
         label: '退出',
-        icon: nativeImage.createFromPath(path.join(__static, '/img/close.png')),
+        icon: this.getNativeImg('/img/close.png'),
         click: () => {
-
           app.quit();
         }
       },
@@ -196,11 +261,6 @@ class Base {
     ];
     this.tray.setToolTip('This is my application.')
     this.tray.setContextMenu(Menu.buildFromTemplate(menuItems));
-    // setTimeout(() => {
-    //   console.log(111)
-    //   menuItems[1].icon = nativeImage.createFromPath(path.join(__static, '/img/play.png'));
-    //   this.tray.setContextMenu(Menu.buildFromTemplate(menuItems));
-    // }, 10000)
     this.tray.on('click', () => {
       this.mainWindow.restore();
     })

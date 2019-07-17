@@ -63,7 +63,9 @@ export default {
 
     if (localStorage.getItem('playList')) {
       this.SET_PLAY_LIST(JSON.parse(localStorage.getItem('playList')));
-      this.$EventBus.$emit('setCurrentIndex', 0, false)
+      console.log(localStorage.getItem('currentIndex'))
+      let index = localStorage.getItem('currentIndex') || 0
+      this.$EventBus.$emit('setCurrentIndex', index, false)
     }
     setTimeout(() => {
       if (localStorage.getItem('settingConfig')) {
