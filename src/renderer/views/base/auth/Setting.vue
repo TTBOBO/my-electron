@@ -32,11 +32,13 @@ export default {
     }
   },
   mounted () {
-
+    console.log('set')
+    // this.$EventBus.$on('changeDownloadDir', this.changeDownloadDir);
   },
   created () {
     if (localStorage.getItem('settingConfig')) {
       this.settingConfig = JSON.parse(localStorage.getItem('settingConfig'));
+      this.$electron.ipcRenderer.send('settingConf', JSON.parse(localStorage.getItem('settingConfig')));
     }
   }
 }

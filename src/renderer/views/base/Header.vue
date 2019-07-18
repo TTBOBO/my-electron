@@ -33,7 +33,6 @@
 
         </div>
       </div>
-      <span class="font">开通会员</span>
       <i class="el-icon-chat-line-round font"></i>
       <i class="el-icon-setting font"
          @click="showSetting"></i>

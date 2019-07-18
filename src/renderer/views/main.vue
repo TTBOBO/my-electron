@@ -37,6 +37,7 @@ export default {
 
 <style lang="scss">
 .container {
+  background: #fff;
   height: 100%;
   display: flex;
   justify-content: space-between;

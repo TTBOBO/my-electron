@@ -5,8 +5,13 @@ import {
   mapActions
 } from 'vuex';
 export default {
+  data() {
+    return {
+      musicItem: {}
+    }
+  },
   computed: {
-    ...mapGetters(['getUserInfo', 'getCurrentIndex', 'getCurrentPlaylist', 'getLikeIds', 'getCurrentPlayMusic']),
+    ...mapGetters(['getUserInfo', 'getCurrentIndex', 'getCurrentPlaylist', 'getLikeIds', 'getCurrentPlayMusic', 'getAudioEl']),
   },
   filters: {
     filterTime(val) {
@@ -29,7 +34,6 @@ export default {
       this.SET_LIKE_IDS(ids);
     },
     palyMusic(item) {
-      console.log(item);
       if (this.getCurrentIndex !== '' && this.getCurrentPlaylist[this.getCurrentIndex].name === item.name) {
         this.getAudioEl.currentTime = 0; //重新播放
         this.$EventBus.$emit('changePro', 0);
@@ -43,9 +47,39 @@ export default {
         }
       }
     },
+
+    playLocalMusic(item) {
+      this.musicItem = JSON.parse(JSON.stringify(item));
+      if (/^http/.test(this.musicItem.path)) { //网络链接
+        this.palyMusic(this.musicItem);
+      } else {
+        this.$electron.ipcRenderer.send('get_local_music', this.musicItem.dir || this.musicItem.path);
+      }
+    },
+    handlePlayer(item) {
+      this.$router.push({
+        path: '/playinfo',
+        query: {
+          id: item.id
+        }
+      });
+    },
     playAll(list) {
       this.SET_PLAY_LIST(list || this.playlist.tracks);
       this.$EventBus.$emit('setCurrentIndex', 0)
     },
+  },
+  mounted() {
+    this.$electron.ipcRenderer.on('local_music_cbk', (event, buffer) => {
+      const blob = new Blob([buffer], {
+        type: "application/mp3"
+      });
+      this.musicItem.path = URL.createObjectURL(blob);
+      this.palyMusic(this.musicItem);
+    })
+  },
+  destroyed() {
+    //因为当前在 mixin 里面 每个页面加载当前js 的时候 都会 从新监听一次 所以要销毁
+    this.$electron.ipcRenderer.removeAllListeners('local_music_cbk');
   }
 }

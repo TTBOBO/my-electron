@@ -28,6 +28,7 @@
               <span class="tag"
                     v-if="index === 0">{{item.trackIds[_index].ratio}}%</span>
               <span class="name pointer"
+                    :title="song.name"
                     @click="palyMusic(song)">{{song.name}}</span>
               <span class="singer">{{song.ar[0].name}}</span>
             </div>
@@ -56,7 +57,9 @@
 <script>
 import { mapMutations, mapGetters, mapState } from 'vuex';
 import HeaderLine from '@/components/headerLine';
+import base from '@/mixin/base'
 export default {
+  mixins: [base],
   data () {
     return {
       loading: true,
@@ -83,21 +86,6 @@ export default {
       this.toplist = toplist.list;
       this.loading = false;
     },
-    palyMusic (item) {
-      if (this.getCurrentIndex !== '' && this.getCurrentPlaylist[this.getCurrentIndex].name === item.name) {
-        this.getAudioEl.currentTime = 0;  //重新播放
-        this.$EventBus.$emit('changePro', 0);
-      } else {
-        let index = this.getCurrentPlaylist.findIndex(item => item.name === name);
-        if (index == -1) {  //如果当前音乐没有在播放列表里面直接添加进去再播放
-          this.PUSH_MUSIC_TO_LIST(item);
-          this.$EventBus.$emit('setCurrentIndex', this.getCurrentPlaylist.length - 1);
-        } else {
-          this.$EventBus.$emit('setCurrentIndex', index)
-        }
-      }
-
-    }
   },
   filters: {
     getNumber (val) {
