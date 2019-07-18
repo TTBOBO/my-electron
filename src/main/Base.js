@@ -184,9 +184,16 @@ class Base {
     })
 
     ipcMain.on('closeMusic', () => {
-      console.log(111)
-      // this.lyricWindow.hide();
       this.mainWindow.send('closeMusic');
+    })
+    ipcMain.on('play', () => {
+      this.mainWindow.send('togglePlay')
+    })
+    ipcMain.on('prev', () => {
+      this.mainWindow.send('togglePlay')
+    })
+    ipcMain.on('play', () => {
+      this.mainWindow.send('togglePlay')
     })
   }
 

@@ -225,6 +225,7 @@ export default {
   mounted () {
     this.$EventBus.$on('setCurrentIndex', this.setCurrentIndex);
     this.ipcEvent();
+    console.log(this.$electron)
   },
   destroyed () {
     this.$EventBus.$off('setCurrentIndex');

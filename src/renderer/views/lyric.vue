@@ -99,7 +99,9 @@ export default {
     // #00000080
   },
   mounted () {
-    console.log(this.getPlayStatus);
+    this.$electron.remote.ipcMain.on('playStatus', (e, data) => {
+      this.PlayStatus = data;
+    })
     setTimeout(() => {
       this.SET_AUDIO_PLAYING();
     }, 5000)
