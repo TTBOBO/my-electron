@@ -79,7 +79,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['getAudioEl', 'getMode', 'getCurrentPlaylist', 'getShowLyStatus', 'getCurrentPlayMusic']),
+    ...mapGetters(['getAudioEl', 'getMode', 'getCurrentPlaylist', 'getShowLyStatus', 'getCurrentPlayMusic', 'getPlayStatus']),
     ...mapState(['Music']),
     getAudioPlayStatus () {
       return this.$refs.audio && this.$refs.audio.paused
@@ -112,11 +112,11 @@ export default {
   },
   methods: {
     ...mapMutations(['INIT_AUDIO_EL', 'SET_AUDIO_PLAYING', 'SET_CURRENT_INDEX', 'SET_MODE', 'SET_SHOW_LY_STATUS']),
-    showLy (status) {
+    showLy () {
       if (this.Music.currentIndex !== '') {
         this.SET_SHOW_LY_STATUS();
       }
-      this.$electron.ipcRenderer.send('showLyric', !status);
+      this.$electron.ipcRenderer.send('showLyric', this.getShowLyStatus);
     },
     changeMode () {
       this.SET_MODE();
@@ -203,6 +203,10 @@ export default {
       this.$electron.ipcRenderer.on('togglePlay', () => {
         this.play();
       })
+      this.$electron.ipcRenderer.on('closeMusic', () => {
+        // console.log(111)
+        this.showLy();
+      })
 
     },
     initPlay (newV) {
@@ -250,6 +254,9 @@ export default {
     },
     'Music.playing' (newV) {
       this.$electron.ipcRenderer.send('playStatus', newV);
+    },
+    getPlayStatus (newV) {
+      console.log(newV)
     }
   }
 }

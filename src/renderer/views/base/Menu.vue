@@ -183,7 +183,7 @@ export default {
         this.activeName = newV.path === '/playList' ? newV.path + newV.query.id : newV.path;
       },
       immediate: true
-    }
+    },
   }
 }
 </script>

@@ -63,7 +63,6 @@ export default {
 
     if (localStorage.getItem('playList')) {
       this.SET_PLAY_LIST(JSON.parse(localStorage.getItem('playList')));
-      console.log(localStorage.getItem('currentIndex'))
       let index = localStorage.getItem('currentIndex') || 0
       this.$EventBus.$emit('setCurrentIndex', index, false)
     }
@@ -78,7 +77,7 @@ export default {
 
 <style>
 @import url("https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css");
-@import url("//at.alicdn.com/t/font_1254014_l9rpe4n7uz.css");
+@import url("//at.alicdn.com/t/font_1254014_h856r13t8l.css");
 html,
 body,
 #app {

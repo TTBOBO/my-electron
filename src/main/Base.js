@@ -24,7 +24,6 @@ class Base {
     this.tray = null
     this.settingConfig = {}
     this.thumbarBtns = []
-    this.musicPosition = {};
   }
 
   initApp(loadSuccess) {
@@ -63,27 +62,26 @@ class Base {
     const {
       width,
       height
-    } = screen.getPrimaryDisplay().workAreaSize
-    console.log(0)
+    } = screen.getPrimaryDisplay().workAreaSize;
     this.lyricWindow = this.createBrowserWindow({
-      // maxWidth: 800,
-      // minWidth: 800,
-      // // maxHeight: 150,
-      // minHeight: 150,
-      width: 800,
-      height: 500,
-      y: height - 650,
+      minWidth: 740,
+      // minWidth: 500,
+      // maxHeight: 150,
+      minHeight: 150,
+      width: 740,
+      height: 150,
+      y: (height - 150) / 2,
       x: (width - 500) / 2,
       useContentSize: true,
       darkTheme: true,
-      resizable: true,
+      resizable: false,
       frame: false,
       isMain: true,
       winURL: this.musicUrl,
       show: false,
       closable: false,
       // skipTaskbar: true,
-      alwaysOnTop: false,
+      alwaysOnTop: true,
       transparent: true,
       bgColor: "#00FFFFFF",
       isMain: false,
@@ -175,29 +173,20 @@ class Base {
       this.mainWindow.setThumbarButtons(this.thumbarBtns)
     })
     ipcMain.on('showLyric', (e, status) => {
-      this.lyricWindow[status ? 'show' : 'hide']()
-      if (status) {
-        const [x, y] = this.lyricWindow.getPosition();
-        this.musicPosition = {
-          x,
-          y
-        };
-      }
-      console.log();
+      this.lyricWindow[status ? 'show' : 'hide']();
     })
     ipcMain.on('drag', (e, {
       x,
       y
     }) => {
-      // const {
-      //   x,
-      //   y
-      // } = this.musicPosition
-      // console.log(`x1：${x1},x：${x}  ====   ${x1+x}`)
-      // console.log(`y1：${y1},y：${y}  ====   ${y1+y}`)
-      // console.log(this.musicPosition)
-      // console.log(x1, y1)
-      this.lyricWindow.setPosition(this.musicPosition.x + x, this.musicPosition.y + y)
+      const [x1, y1] = this.lyricWindow.getPosition();
+      this.lyricWindow.setPosition(x1 + x, y1 + y)
+    })
+
+    ipcMain.on('closeMusic', () => {
+      console.log(111)
+      // this.lyricWindow.hide();
+      this.mainWindow.send('closeMusic');
     })
   }
 
@@ -264,7 +253,6 @@ class Base {
     })
 
     ipcMain.on('get_local_music', (event, dir) => {
-      console.log(count++)
       let buffer = fs.readFileSync(dir)
       event.sender.send('local_music_cbk', buffer)
     })
