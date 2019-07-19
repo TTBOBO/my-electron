@@ -79,7 +79,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['getAudioEl', 'getMode', 'getCurrentPlaylist', 'getShowLyStatus', 'getCurrentPlayMusic', 'getPlayStatus']),
+    ...mapGetters(['getAudioEl', 'getMode', 'getCurrentPlaylist', 'getShowLyStatus', 'getCurrentPlayMusic', 'getPlayStatus', 'getShowSongLyStatus']),
     ...mapState(['Music']),
     getAudioPlayStatus () {
       return this.$refs.audio && this.$refs.audio.paused
@@ -131,7 +131,13 @@ export default {
       this.$EventBus.$emit('timeChange', this.currentTime); //告诉歌词那边当前播放时间
       if (!this.currentTime) {
         if (this.getMode === 1) {
-          this.$EventBus.$emit('loop');
+          if (this.getShowSongLyStatus) {
+            this.$EventBus.$emit('loop');
+          }
+          if (this.getShowLyStatus) {
+            this.$electron.ipcRenderer.send('loop');
+          }
+
         }
 
       }
@@ -191,7 +197,12 @@ export default {
     },
     changePro (val) {
       this.getAudioEl.currentTime = val;
-      this.$EventBus.$emit('changePro', val);
+      if (this.getShowSongLyStatus) {
+        this.$EventBus.$emit('changePro', val);
+      }
+      if (this.getShowLyStatus) {
+        this.$electron.ipcRenderer.send('changePro', val);
+      }
     },
     ipcEvent () {
       this.$electron.ipcRenderer.on('playPrev', () => {
@@ -204,7 +215,6 @@ export default {
         this.play();
       })
       this.$electron.ipcRenderer.on('closeMusic', () => {
-        // console.log(111)
         this.showLy();
       })
 
@@ -225,7 +235,7 @@ export default {
   mounted () {
     this.$EventBus.$on('setCurrentIndex', this.setCurrentIndex);
     this.ipcEvent();
-    console.log(this.$electron)
+
   },
   destroyed () {
     this.$EventBus.$off('setCurrentIndex');
@@ -239,7 +249,6 @@ export default {
     },
     async getMusicUrl (newV) {
       if (this.Music.currentIndex === '') return;
-      // console.log()
       let item = this.getCurrentPlaylist[this.Music.currentIndex];
       if (item.id) {
         try {
@@ -256,8 +265,25 @@ export default {
     'Music.playing' (newV) {
       this.$electron.ipcRenderer.send('playStatus', newV);
     },
-    getPlayStatus (newV) {
-      console.log(newV)
+    getShowLyStatus (newV) {
+      if (newV) {
+        this.$electron.ipcRenderer.send('showLy', {
+          getCurrentPlayMusic: this.getCurrentPlayMusic,
+          currentTime: this.$refs.audio.currentTime
+        });
+      }
+    },
+    getCurrentPlayMusic: {
+      handler (newV) {
+        if (newV.name) {
+          console.log(2222)
+          this.$electron.ipcRenderer.send('showLy', {
+            getCurrentPlayMusic: newV,
+            currentTime: 0
+          });
+        }
+      },
+      deep: true
     }
   }
 }
@@ -277,7 +303,8 @@ export default {
   .play-con {
     margin: 0 30px;
     height: 100%;
-    line-height: 50px;
+    display: flex;
+    align-items: center;
     .prev,
     .next {
       display: inline-block;

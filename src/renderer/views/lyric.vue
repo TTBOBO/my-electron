@@ -30,13 +30,34 @@
 
     </div>
     <div class="lyric-con">
-      <p class="current-lyric lyric active">上一句歌词展示</p>
-      <p class="next-lyric lyric">下一句歌词展示</p>
+      <div class="lyric no-lyric"
+           v-if="!this.currentLyric.lines">暂无歌词</div>
+      <p class="current-lyric lyric"
+         v-if="this.currentLyric.lines"
+         :class="{active:currentLineNum === 0}">{{lyricCode[0] || ''}}</p>
+      <p class="next-lyric lyric"
+         v-if="this.currentLyric.lines"
+         :class="{active:currentLineNum === 1}">{{lyricCode[1] || ''}}</p>
+      <!-- <marquee behavior="slide"
+               direction="left"
+               v-if="this.currentLyric.lines"
+               class="current-lyric lyric"
+               :class="{active:currentLineNum === 0}">
+        {{lyricCode[0] || ''}}
+      </marquee>
+      <marquee behavior="slide"
+               direction="left"
+               v-if="this.currentLyric.lines"
+               class="next-lyric lyric"
+               :class="{active:currentLineNum === 1}">
+        {{lyricCode[1] || ''}}
+      </marquee> -->
     </div>
   </div>
 </template>
 
 <script>
+import Lyric from 'lyric-parser';
 import { mapMutations, mapGetters, mapState } from 'vuex';
 export default {
   data () {
@@ -46,33 +67,18 @@ export default {
       position: {},
       count: 0,
       isLookUp: false,
-      PlayStatus: false
+      PlayStatus: false,
+      currentLyric: {},
+      currentLineNum: '',
+      getCurrentPlayMusic: {},
+      currentTime: 0,
+      lyricCode: ['', '']
     }
   },
   methods: {
     ...mapMutations(['SET_AUDIO_PLAYING']),
     handlerIcon (status) {
       this.$electron.ipcRenderer.send(status);
-      // switch (status) {
-      //   case 'showmain':
-      //     this.$electron.ipcRenderer.send('status');
-      //     break;
-      //   case showmain:
-      //     this.$electron.ipcRenderer.send('showmain');
-      //     break;
-      //   case showmain:
-      //     this.$electron.ipcRenderer.send('showmain');
-      //     break;
-      //   case showmain:
-      //     this.$electron.ipcRenderer.send('showmain');
-      //     break;
-      //   case showmain:
-      //     this.$electron.ipcRenderer.send('showmain');
-      //     break;
-
-      //   default:
-      //     break;
-      // }
     },
     setLookUp () {
       this.isLookUp = !this.isLookUp;
@@ -95,16 +101,74 @@ export default {
     },
     mouseup ({ x, y }) {
       this.flag = false;
-    }
-    // #00000080
+    },
+    loop (time) {
+      if (!this.currentLyric.lines) return;
+      this.currentLyric.seek(0 * 1000)
+    },
+    changePro (time) {
+      console.log(time);
+      if (!this.currentLyric.lines) return;
+      this.currentLyric.seek(time * 1000);
+      if (!this.PlayStatus) {  //关闭的时候就直接停止播放
+        this.currentLyric.togglePlay();
+      }
+    },
+    initPlay (lyric) {
+      this.currentLyric = new Lyric(lyric, (params) => {
+        const { lineNum, txt } = params;
+        const nextTxt = this.currentLyric.lines[lineNum + 1].txt;
+        this.lyricCode = lineNum % 2 === 0 ? [txt, nextTxt] : [nextTxt, txt];
+        this.currentLineNum = lineNum % 2 === 0 ? 0 : 1;
+        // if (lineNum % 2 === 0) {
+        //   this.lyricCode = [txt, this.currentLyric.line[lineNum + 1].txt];
+        //   this.currentLineNum = 0;
+        // } else {
+        //   this.lyricCode = [this.currentLyric.line[lineNum + 1].txt, txt];
+        //   this.currentLineNum = 1;
+        // }
+      });
+      this.lyricCode = [this.currentLyric.lines[0].txt, this.currentLyric.lines[1].txt];
+      this.$nextTick(() => {
+        this.currentLyric.seek(this.currentTime * 1000);  //seek会自动开启播放
+        if (!this.PlayStatus) {  //关闭的时候就直接停止播放
+          this.currentLyric.togglePlay();
+        }
+      })
+    },
+    async getMusicLyric () {
+      this.loading = true;
+      let res = await this.$ajaxGet('lyric', { id: this.getCurrentPlayMusic.id })
+      if (res.code === 200 && res.lrc) {
+        this.initPlay(res.lrc.lyric);
+      } else {
+        this.currentLyric = {};  //清空
+      }
+    },
   },
   mounted () {
     this.$electron.remote.ipcMain.on('playStatus', (e, data) => {
       this.PlayStatus = data;
+      if (!this.currentLyric.lines) return;
+      this.currentLyric.togglePlay();
     })
-    setTimeout(() => {
-      this.SET_AUDIO_PLAYING();
-    }, 5000)
+    this.$electron.remote.ipcMain.on('showLy', (e, { getCurrentPlayMusic, currentTime }) => {
+      this.getCurrentPlayMusic = getCurrentPlayMusic;
+      this.currentTime = currentTime;
+      if (this.currentLyric.lines) {
+        this.currentLyric.stop();  //停止歌词
+        this.currentLineNum = '';  //清除选中状态
+        this.currentLyric = {};
+      }
+      this.lyricCode = ['', ''];
+      this.currentLineNum = '';
+      this.getMusicLyric();
+    })
+
+    this.$electron.remote.ipcMain.on('changePro', (e, time) => {
+      this.changePro(time);
+    })
+    this.$electron.remote.ipcMain.on('loop', () => this.loop());
   }
 }
 </script>
@@ -114,6 +178,7 @@ export default {
   width: 100%;
   height: 100%;
   position: relative;
+  text-align: center;
   &:hover {
     .mask {
       background: #04040461 !important;
@@ -146,6 +211,7 @@ export default {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    overflow: hidden;
     .lyric-tool {
       margin: 0 auot;
       display: flex;
@@ -178,17 +244,33 @@ export default {
     display: flex;
     flex-flow: column;
     justify-content: space-around;
+    overflow: hidden;
     .lyric {
+      // background: -webkit-linear-gradient(
+      //     top,
+      //     rgba(255, 255, 255, 0.5) 0%,
+      //     rgba(255, 255, 255, 0) 100%
+      //   ),
+      //   -webkit-linear-gradient(left, #fff433 0%, #162df1 0%);
+      // -webkit-background-clip: text;
+      // -webkit-text-fill-color: transparent;
+      // /* -webkit-text-stroke: 1px #f00; */
+      // -webkit-filter: drop-shadow(0px 0px 1px #040cfdf2);
       background: -webkit-linear-gradient(
           top,
           rgba(255, 255, 255, 0.5) 0%,
           rgba(255, 255, 255, 0) 100%
         ),
-        -webkit-linear-gradient(left, #fff433 0%, #162df1 0%);
+        -webkit-linear-gradient(left, #fff433 0%, #fff7ccf2 0%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       /* -webkit-text-stroke: 1px #f00; */
       -webkit-filter: drop-shadow(0px 0px 1px #040cfdf2);
+      white-space: nowrap;
+      text-align: left;
+    }
+    .no-lyric {
+      text-align: center !important;
     }
     .current-lyric {
     }

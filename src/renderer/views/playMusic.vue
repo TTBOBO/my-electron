@@ -1,6 +1,8 @@
 <template>
   <div class="music-container"
        v-loading="loading">
+    <span @click="SET_SHOW_SONG_LY_STATUS"
+          class="shrink-icon iconfont icon-shrink_icon"></span>
     <img class="msk"
          :src="getCurrentPlayMusic.al? getCurrentPlayMusic.al.picUrl : getCurrentPlayMusic.album.picUrl" />
     <div class="msk2"></div>
@@ -40,15 +42,19 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['SET_AUDIO_PLAYING']),
+    ...mapMutations(['SET_SHOW_SONG_LY_STATUS']),
     loop (time) {
       if (!this.currentLyric.lines) return;
       this.$refs.lyricList.scrollTo(0, 0, 1000);
       this.currentLyric.seek(0 * 1000)
     },
     changePro (time) {
+      console.log(time);
       if (!this.currentLyric.lines) return;
-      this.currentLyric.seek(time * 1000)
+      this.currentLyric.seek(time * 1000);
+      if (!this.getPlayStatus) {  //关闭的时候就直接停止播放
+        this.currentLyric.togglePlay();
+      }
     },
     initPlay (lyric) {
       this.currentLyric = new Lyric(lyric, (params) => {
@@ -117,9 +123,6 @@ export default {
     Scroll
   },
   watch: {
-    // getCurrentIndex (newV) {
-    //   this.currentPlayMusic = this.getCurrentPlaylist[this.getCurrentIndex];
-    // },
     getCurrentIndex (newV) {
       if (this.currentLyric.lines) {
         this.currentLyric.stop();  //停止歌词
@@ -138,6 +141,23 @@ export default {
   height: 100%;
   position: relative;
   background: #fff;
+  overflow: hidden;
+  &:hover {
+    .shrink-icon {
+      display: block;
+    }
+  }
+  .shrink-icon {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    display: none;
+    font-size: 22px;
+    font-weight: 700;
+    color: #656464;
+    cursor: pointer;
+    z-index: 6;
+  }
   .msk {
     left: 0;
     right: 0;

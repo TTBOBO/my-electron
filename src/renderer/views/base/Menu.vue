@@ -21,12 +21,19 @@
     </div>
     <div class="music-con"
          v-if="getCurrentPlayMusic.name">
-      <img v-if="getCurrentPlayMusic.al || getCurrentPlayMusic.album"
-           :src="getCurrentPlayMusic.al? getCurrentPlayMusic.al.picUrl : getCurrentPlayMusic.album.picUrl+'?param=50y50'"
-           alt=""
-           class="music-pic">
-      <div v-else
-           class="music-pic no-pic"><span class="iconfont icon-zhuanji"></span></div>
+      <div class="music-pic-con">
+        <img v-if="getCurrentPlayMusic.al || getCurrentPlayMusic.album"
+             :src="getCurrentPlayMusic.al? getCurrentPlayMusic.al.picUrl : getCurrentPlayMusic.album.picUrl+'?param=50y50'"
+             alt=""
+             class="music-pic">
+        <div v-else
+             class="music-pic no-pic"><span class="iconfont icon-zhuanji"></span></div>
+        <div class="enlarge"
+             @click="SET_SHOW_SONG_LY_STATUS">
+          <span class="iconfont icon-iconset0441"></span>
+        </div>
+      </div>
+
       <div class="music-name">
         <p>{{getCurrentPlayMusic.name}}</p>
         <p v-if="getCurrentPlayMusic.al || getCurrentPlayMusic.album">{{getCurrentPlayMusic.al? getCurrentPlayMusic.al.name : getCurrentPlayMusic.album.name}}</p>
@@ -105,7 +112,7 @@ export default {
     ...mapState(['Music']),
   },
   methods: {
-    ...mapMutations(['SET_SHOW_LY_STATUS', 'SET_PLAYLIST', 'SET_LIKE_IDS']),
+    ...mapMutations(['SET_SHOW_LY_STATUS', 'SET_PLAYLIST', 'SET_LIKE_IDS', 'SET_SHOW_SONG_LY_STATUS']),
     ...mapActions(['getPlayListAction']),
     handler ({ path, name, id }, { label }) {
       this.activeName = path;
@@ -174,9 +181,6 @@ export default {
       if (!newV.userId) {
         this.menuConf = this.defaultData;
       }
-    },
-    getCurrentPlayMusic (val) {
-
     },
     "$route": {
       handler (newV) {
@@ -262,16 +266,43 @@ export default {
     flex-flow: row;
     justify-content: space-around;
     background: #fff;
-    .music-pic {
+    .music-pic-con {
       width: 50px;
       height: 50px;
       object-fit: cover;
       line-height: 50px;
       text-align: center;
-
       color: #dadad3;
+      position: relative;
+      &:hover {
+        .enlarge {
+          display: block;
+          background: rgba(0, 0, 0, 0.2);
+          .iconfont {
+            font-size: 22px !important;
+          }
+        }
+      }
       .iconfont {
         font-size: 18px;
+      }
+      .enlarge,
+      .music-pic {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        line-height: 50px;
+        text-align: center;
+
+        font-weight: 700;
+        cursor: pointer;
+        z-index: 4;
+      }
+      .enlarge {
+        display: none;
+        z-index: 5;
       }
     }
     .no-pic {
