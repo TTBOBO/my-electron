@@ -1,3 +1,7 @@
+import {
+  stat
+} from "fs-extra-p";
+
 const state = {
   audioEl: null, // 播放器
   mode: 0, // 0默认循环  1 单曲循环  2随机
@@ -7,7 +11,8 @@ const state = {
   currentIndex: '', //当前播放的下标
   currentLyric: null,
   currentPlayMusic: {}, //当前播放的音乐
-  showLyStatus: false, //歌词显示状态
+  showLyStatus: false, //桌面歌词显示状态
+  showSongLtStatus: false,
   likeIds: [], //喜欢的id
   downloadList: {
     downloadingList: [], //正在下载
@@ -55,6 +60,9 @@ const mutations = {
   },
   SET_SHOW_LY_STATUS(state) {
     state.showLyStatus = !state.showLyStatus;
+  },
+  SET_SHOW_SONG_LY_STATUS(state) {
+    state.showSongLtStatus = !state.showSongLtStatus;
   },
   CLEAR_HISTORY_LIST(state) {
     state.historyList = [];
@@ -120,6 +128,7 @@ const getters = {
     return (state.currentIndex !== '' && state.playList.length) ? state.playList[state.currentIndex] : {};
   },
   getShowLyStatus: state => state.showLyStatus,
+  getShowSongLyStatus: state => state.showSongLtStatus,
   getHistoryList: state => state.historyList,
   getLikeIds: state => state.likeIds,
   getDownload: state => state.downloadList

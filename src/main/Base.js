@@ -46,6 +46,7 @@ class Base {
       frame: false,
       isMain: true,
       winURL: this.baseUrl,
+      devTools: false,
       finishLoad: () => {
         this.creatLyricWindow() //创建歌词窗口
         this.loadSuccess()
@@ -64,11 +65,11 @@ class Base {
       height
     } = screen.getPrimaryDisplay().workAreaSize;
     this.lyricWindow = this.createBrowserWindow({
-      minWidth: 740,
+      minWidth: 500,
       // minWidth: 500,
       // maxHeight: 150,
       minHeight: 150,
-      width: 740,
+      width: 500,
       height: 150,
       y: (height - 150) / 2,
       x: (width - 500) / 2,
@@ -136,11 +137,12 @@ class Base {
       this.initDownload()
     })
     ipcMain.on('miniSize', () => {
-      console.log(2222)
       this.mainWindow.minimize()
     })
+    ipcMain.on('showmain', () => {
+      this.mainWindow.show()
+    })
     ipcMain.on('maxSize', () => {
-      console.log(1111)
       this.mainWindow[
         this.mainWindow.isMaximized() ? 'unmaximize' : 'maximize'
       ]()
@@ -190,10 +192,10 @@ class Base {
       this.mainWindow.send('togglePlay')
     })
     ipcMain.on('prev', () => {
-      this.mainWindow.send('togglePlay')
+      this.mainWindow.send('playPrev')
     })
-    ipcMain.on('play', () => {
-      this.mainWindow.send('togglePlay')
+    ipcMain.on('next', () => {
+      this.mainWindow.send('playNext')
     })
   }
 
@@ -359,7 +361,8 @@ class Base {
     show,
     frame,
     transparent,
-    skipTaskbar
+    skipTaskbar,
+    devTools = true
   }) {
     let newWindow = new BrowserWindow({
       backgroundColor: bgColor,
@@ -383,7 +386,8 @@ class Base {
       // autoHideMenuBar: true,
       webPreferences: {
         nodeIntegration: true,
-        webSecurity: process.env.NODE_ENV === 'development' ? false : true
+        webSecurity: process.env.NODE_ENV === 'development' ? false : true,
+        devTools: devTools || true
       }
     })
     newWindow.loadURL(winURL || this.baseUrl)
