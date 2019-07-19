@@ -170,7 +170,7 @@ export default {
     object-fit: cover;
     width: 100%;
     transform: scale(5);
-    filter: blur(5px);
+    filter: blur(3px);
   }
   .msk2 {
     left: 0;
