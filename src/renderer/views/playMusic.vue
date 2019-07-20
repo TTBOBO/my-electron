@@ -29,9 +29,9 @@
 </template>
 
 <script>
-import Lyric from 'lyric-parser';
-import Scroll from '@/components/Scroll.vue';
-import { mapMutations, mapGetters, mapState } from 'vuex'
+import Lyric from 'lyric-parser'
+import Scroll from '@/components/Scroll.vue'
+import { mapMutations, mapGetters } from 'vuex'
 export default {
   data () {
     return {
@@ -44,21 +44,21 @@ export default {
   methods: {
     ...mapMutations(['SET_SHOW_SONG_LY_STATUS']),
     loop (time) {
-      if (!this.currentLyric.lines) return;
-      this.$refs.lyricList.scrollTo(0, 0, 1000);
+      if (!this.currentLyric.lines) return
+      this.$refs.lyricList.scrollTo(0, 0, 1000)
       this.currentLyric.seek(0 * 1000)
     },
     changePro (time) {
-      console.log(time);
-      if (!this.currentLyric.lines) return;
-      this.currentLyric.seek(time * 1000);
-      if (!this.getPlayStatus) {  //关闭的时候就直接停止播放
-        this.currentLyric.togglePlay();
+      console.log(time)
+      if (!this.currentLyric.lines) return
+      this.currentLyric.seek(time * 1000)
+      if (!this.getPlayStatus) { // 关闭的时候就直接停止播放
+        this.currentLyric.togglePlay()
       }
     },
     initPlay (lyric) {
       this.currentLyric = new Lyric(lyric, (params) => {
-        const { lineNum, txt } = params;
+        const { lineNum, txt } = params
         this.currentLineNum = lineNum
         if (lineNum > 5) {
           this.$nextTick(() => {
@@ -67,25 +67,24 @@ export default {
           })
         }
         this.playingLyric = txt
-      });
+      })
       this.$nextTick(() => {
-        this.currentLyric.seek(this.getAudioEl.currentTime * 1000);  //seek会自动开启播放
-        if (!this.getPlayStatus) {  //关闭的时候就直接停止播放
-          this.currentLyric.togglePlay();
+        this.currentLyric.seek(this.getAudioEl.currentTime * 1000) // seek会自动开启播放
+        if (!this.getPlayStatus) { // 关闭的时候就直接停止播放
+          this.currentLyric.togglePlay()
         }
       })
-
     },
     async getMusicLyric () {
-      this.loading = true;
+      this.loading = true
       let res = await this.$ajaxGet('lyric', { id: this.getCurrentPlayMusic.id })
       if (res.code === 200 && res.lrc) {
-        this.initPlay(res.lrc.lyric);
+        this.initPlay(res.lrc.lyric)
       } else {
-        this.currentLyric = {};  //清空
+        this.currentLyric = {} // 清空
       }
-      this.loading = false;
-    },
+      this.loading = false
+    }
   },
   props: {},
   computed: {
@@ -100,20 +99,20 @@ export default {
 
   async mounted () {
     this.$nextTick(async () => {
-      await this.getMusicLyric();
-      this.$EventBus.$on('loop', this.loop);
-      this.$EventBus.$on('changePro', this.changePro);  //设置歌曲进度
+      await this.getMusicLyric()
+      this.$EventBus.$on('loop', this.loop)
+      this.$EventBus.$on('changePro', this.changePro) // 设置歌曲进度
       this.$EventBus.$on('play', () => {
-        if (!this.currentLyric.lines) return;
-        this.currentLyric.togglePlay();  //播放暂停歌词
-      });
+        if (!this.currentLyric.lines) return
+        this.currentLyric.togglePlay() // 播放暂停歌词
+      })
     })
   },
   destroyed () {
     if (this.currentLyric.stop) {
-      this.currentLyric.stop();  //停止歌词
+      this.currentLyric.stop() // 停止歌词
     }
-    this.currentLyric = {};
+    this.currentLyric = {}
     this.$EventBus.$off('loop')
     this.$EventBus.$off('changePro')
   },
@@ -125,11 +124,11 @@ export default {
   watch: {
     getCurrentIndex (newV) {
       if (this.currentLyric.lines) {
-        this.currentLyric.stop();  //停止歌词
-        this.currentLineNum = '';  //清除选中状态
-        this.currentLyric = {};
+        this.currentLyric.stop() // 停止歌词
+        this.currentLineNum = '' // 清除选中状态
+        this.currentLyric = {}
       }
-      this.getMusicLyric();
+      this.getMusicLyric()
     }
   }
 }

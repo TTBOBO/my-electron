@@ -17,7 +17,7 @@ export default {
   data () {
     return {
       settingConfig: {
-        downloadDir: ""
+        downloadDir: ''
       }
 
     }
@@ -25,8 +25,8 @@ export default {
   methods: {
     changeDownloadDir () {
       this.$electron.remote.dialog.showOpenDialog({ properties: ['openDirectory'] }, (file) => {
-        this.settingConfig.downloadDir = file[0];
-        this.$electron.ipcRenderer.send('settingConf', this.settingConfig);
+        this.settingConfig.downloadDir = file[0]
+        this.$electron.ipcRenderer.send('settingConf', this.settingConfig)
         localStorage.setItem('settingConfig', JSON.stringify(this.settingConfig))
       })
     }
@@ -37,8 +37,8 @@ export default {
   },
   created () {
     if (localStorage.getItem('settingConfig')) {
-      this.settingConfig = JSON.parse(localStorage.getItem('settingConfig'));
-      this.$electron.ipcRenderer.send('settingConf', JSON.parse(localStorage.getItem('settingConfig')));
+      this.settingConfig = JSON.parse(localStorage.getItem('settingConfig'))
+      this.$electron.ipcRenderer.send('settingConf', JSON.parse(localStorage.getItem('settingConfig')))
     }
   }
 }

@@ -94,7 +94,7 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters, mapState, mapActions } from 'vuex';
+import { mapMutations, mapGetters, mapState, mapActions } from 'vuex'
 import util from '@/assets/js/util'
 import PlayMusic from '../PlayMusic'
 import Subscribe from './Subscribe'
@@ -103,25 +103,25 @@ export default {
     return {
       currentPlayList: {},
       playlist: {},
-      activeName: "歌曲列表",
-      currentPlayMusic: {}, //当前播放的音乐
+      activeName: '歌曲列表',
+      currentPlayMusic: {}, // 当前播放的音乐
       currentId: this.$route.query.id,
       settingConfig: {
-        downloadDir: ""
+        downloadDir: ''
       }
     }
   },
   computed: {
     ...mapGetters(['getPlayList', 'getUserInfo', 'getCurrentIndex', 'getCurrentPlaylist', 'getAudioEl', 'getShowLyStatus', 'getLikeLists', 'getLikeIds', 'getCurrentPlayMusic']),
     getTitle () {
-      if (!this.currentPlayList.name) return '';
+      if (!this.currentPlayList.name) return ''
       return this.currentPlayList.name.replace(this.getUserInfo.nickname, '我')
-    },
+    }
   },
   filters: {
     time (val) {
-      if (!val) return '';
-      return util.time.getNowTime(parseInt(val / 1000));
+      if (!val) return ''
+      return util.time.getNowTime(parseInt(val / 1000))
     }
   },
   methods: {
@@ -129,60 +129,59 @@ export default {
     ...mapActions(['getPlayListAction', 'set_download_list']),
     download (item) {
       if (this.getConfigStatus()) {
-        this.set_download_list(JSON.parse(JSON.stringify({ ...item, percentage: 10, downloadUrl: `https://music.163.com/song/media/outer/url?id=${item.id}.mp3` })));
-        this.$EventBus.$emit('download');
+        this.set_download_list(JSON.parse(JSON.stringify({ ...item, percentage: 10, downloadUrl: `https://music.163.com/song/media/outer/url?id=${item.id}.mp3` })))
+        this.$EventBus.$emit('download')
       }
       // localStorage.setItem('download', JSON.stringify({ ...item, percentage: 10, downloadUrl: `https://music.163.com/song/media/outer/url?id=${item.id}.mp3` }));
-
     },
     downloadAll () {
       if (this.getConfigStatus()) {
         this.PUSH_DOWNLOAD_ITEM(this.playlist.tracks.map((item, index) => {
           return JSON.parse(JSON.stringify({ ...item, percentage: 10, downloadUrl: `https://music.163.com/song/media/outer/url?id=${item.id}.mp3` }))
-        }));
-        this.$EventBus.$emit('download');
+        }))
+        this.$EventBus.$emit('download')
       }
     },
     getConfigStatus () {
       if (!localStorage.getItem('settingConfig')) {
         this.$electron.remote.dialog.showOpenDialog({ properties: ['openDirectory'] }, (file) => {
-          this.settingConfig.downloadDir = file[0];
-          this.$electron.ipcRenderer.send('settingConf', this.settingConfig);
+          this.settingConfig.downloadDir = file[0]
+          this.$electron.ipcRenderer.send('settingConf', this.settingConfig)
           localStorage.setItem('settingConfig', JSON.stringify(this.settingConfig))
         })
-        return;
+        return
       }
-      return true;
+      return true
     },
     async initPlaylistDetail () {
-      this.likelist();
-      const { id, type } = this.$route.query;
+      this.likelist()
+      const { id, type } = this.$route.query
 
-      let data = await this.$ajaxGet('playlistDetail', { id, timestamp: new Date().getTime() });
+      let data = await this.$ajaxGet('playlistDetail', { id, timestamp: new Date().getTime() })
 
-      let { playlist, code, privileges } = data;
-      this.loading.close(data);
+      let { playlist, code, privileges } = data
+      this.loading.close(data)
       if (code == 200) {
-        this.currentPlayList = playlist;
-        this.playlist = playlist;
+        this.currentPlayList = playlist
+        this.playlist = playlist
       }
     },
     async likelist () {
-      let { ids } = await this.$ajaxGet('likelist', { uid: this.getUserInfo.userId, timestamp: new Date().getTime() });
-      this.SET_LIKE_IDS(ids);
+      let { ids } = await this.$ajaxGet('likelist', { uid: this.getUserInfo.userId, timestamp: new Date().getTime() })
+      this.SET_LIKE_IDS(ids)
     },
     playAll () {
-      this.SET_PLAY_LIST(this.playlist.tracks);
+      this.SET_PLAY_LIST(this.playlist.tracks)
       this.$EventBus.$emit('setCurrentIndex', 0)
     },
     palyMusic (item) {
       if (this.getCurrentIndex !== '' && this.getCurrentPlaylist[this.getCurrentIndex].name === item.name) {
-        this.getAudioEl.currentTime = 0;  //重新播放
-        this.$EventBus.$emit('changePro', 0);
+        this.getAudioEl.currentTime = 0  //重新播放
+        this.$EventBus.$emit('changePro', 0)
       } else {
-        let index = this.getCurrentPlaylist.findIndex(_item => _item.name === item.name);
-        if (index == -1) {  //如果当前音乐没有在播放列表里面直接添加进去再播放
-          this.PUSH_MUSIC_TO_LIST(item);
+        let index = this.getCurrentPlaylist.findIndex(_item => _item.name === item.name)
+        if (index == -1) { // 如果当前音乐没有在播放列表里面直接添加进去再播放
+          this.PUSH_MUSIC_TO_LIST(item)
           this.$EventBus.$emit('setCurrentIndex', this.getCurrentPlaylist.length - 1)
         } else {
           this.$EventBus.$emit('setCurrentIndex', index)
@@ -193,49 +192,48 @@ export default {
       this.$router.push({
         path: '/playinfo',
         query: { id: item.id }
-      });
+      })
     },
     async like ({ id }, index) {
-      let status = this.getLikeIds.indexOf(id) !== -1 ? false : true;
-      let res = await this.$ajaxGet('like', { id, like: status, timestamp: new Date().getTime() });
+      let status = this.getLikeIds.indexOf(id) === -1;
+      let res = await this.$ajaxGet('like', { id, like: status, timestamp: new Date().getTime() })
       if (!status) {
-        let ids = JSON.parse(JSON.stringify(this.getLikeIds));
-        ids.splice(ids.indexOf(id), 1);
-        this.SET_LIKE_IDS(ids);
+        let ids = JSON.parse(JSON.stringify(this.getLikeIds))
+        ids.splice(ids.indexOf(id), 1)
+        this.SET_LIKE_IDS(ids)
         if (this.currentPlayList.name === `${this.getUserInfo.nickname}喜欢的音乐`) {
-          this.playlist.tracks.splice(index, 1);
+          this.playlist.tracks.splice(index, 1)
         }
       } else {
-        this.likelist();
+        this.likelist()
       }
     },
     createLoading () {
       this.loading = this.$Loading.service({
-        background: "#fff",
+        background: '#fff'
       })
     },
     async subscribe () {
-      const { creator: { userId }, subscribed, id } = this.currentPlayList;
+      const { creator: { userId }, subscribed, id } = this.currentPlayList
       if (userId != this.getUserInfo.userId) {
-        let data = await this.$ajaxGet('subscribe', { t: subscribed ? 2 : 1, id, timestamp: new Date().getTime() });
-        this.$message.success(`${subscribed ? '取消' : ''}收藏成功`);
-        this.getPlayListAction();
-        this.currentPlayList.subscribed = !this.currentPlayList.subscribed;
+        let data = await this.$ajaxGet('subscribe', { t: subscribed ? 2 : 1, id, timestamp: new Date().getTime() })
+        this.$message.success(`${subscribed ? '取消' : ''}收藏成功`)
+        this.getPlayListAction()
+        this.currentPlayList.subscribed = !this.currentPlayList.subscribed
       }
-
     }
   },
   mounted () {
-    this.initPlaylistDetail();//初始化页面数据
-    this.$EventBus.$on('showLy', this.showLy);
-    this.$EventBus.$on('palyMusic', this.palyMusic);
+    this.initPlaylistDetail()//初始化页面数据
+    this.$EventBus.$on('showLy', this.showLy)
+    this.$EventBus.$on('palyMusic', this.palyMusic)
   },
   destroyed () {
-    this.$EventBus.$off('showLy');
-    this.$EventBus.$off('palyMusic');
+    this.$EventBus.$off('showLy')
+    this.$EventBus.$off('palyMusic')
   },
   created () {
-    this.createLoading();
+    this.createLoading()
   },
   components: {
     PlayMusic,
@@ -243,9 +241,9 @@ export default {
   },
   watch: {
     $route (newV) {
-      this.createLoading();
-      this.initPlaylistDetail();
-    },
+      this.createLoading()
+      this.initPlaylistDetail()
+    }
     // getCurrentIndex (newV, oldV) {
     //   this.currentPlayList = this.getCurrentPlaylist[newV] || {};
     // }

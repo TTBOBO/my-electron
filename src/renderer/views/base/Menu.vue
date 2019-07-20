@@ -63,24 +63,24 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters, mapState, mapActions } from 'vuex';
+import { mapMutations, mapGetters, mapState, mapActions } from 'vuex'
 export default {
   data () {
     return {
-      activeName: "发现音乐",
+      activeName: '发现音乐',
       menuConf: [{
         label: '推荐',
         group: [{
           name: '发现音乐',
-          path: "/findMusic"
-        },
+          path: '/findMusic'
+        }
           // {
           //   name: '私人FM'
           // }, {
           //   name: 'LOOK直播'
           // }, {
           //   name: '视频'
-          // }, 
+          // },
           // {
           //   name: '朋友'
           // }
@@ -89,7 +89,7 @@ export default {
         label: '我的音乐',
         group: [{
           name: '本地音乐',
-          path: "/scnn"
+          path: '/scnn'
         },
         {
           name: '下载管理',
@@ -104,65 +104,65 @@ export default {
         group: []
       }],
       showDialog: false,
-      playlistName: ""
+      playlistName: ''
     }
   },
   computed: {
     ...mapGetters(['getPlayList', 'getCurrentPlaylist', 'getCurrentPlayMusic', 'getUserInfo', 'getShowLyStatus', 'getLikeIds']),
-    ...mapState(['Music']),
+    ...mapState(['Music'])
   },
   methods: {
     ...mapMutations(['SET_SHOW_LY_STATUS', 'SET_PLAYLIST', 'SET_LIKE_IDS', 'SET_SHOW_SONG_LY_STATUS']),
     ...mapActions(['getPlayListAction']),
     handler ({ path, name, id }, { label }) {
-      this.activeName = path;
+      this.activeName = path
       if (path) {
         this.$router.push({ path })
       }
       switch (label) {
         case '创建的歌单':
-          this.hiddenLy();
-          this.$router.push({ path: "playList", query: { id, type: 1 } });  //1  自己创建的歌单  2 收藏的歌单
+          this.hiddenLy()
+          this.$router.push({ path: 'playList', query: { id, type: 1 } })  //1  自己创建的歌单  2 收藏的歌单
           break;
         case '收藏的歌单':
-          this.hiddenLy();
-          this.$router.push({ path: "playList", query: { id, type: 2 } });  //1  自己创建的歌单  2 收藏的歌单
+          this.hiddenLy()
+          this.$router.push({ path: 'playList', query: { id, type: 2 } })  //1  自己创建的歌单  2 收藏的歌单
           break;
         default:
-          break;
+          break
       }
     },
     async like () {
-      let id = this.getCurrentPlayMusic.id;
-      let status = this.getLikeIds.indexOf(id) !== -1 ? false : true;
-      let res = await this.$ajaxGet('like', { id, like: status, timestamp: new Date().getTime() });
+      let id = this.getCurrentPlayMusic.id
+      let status = this.getLikeIds.indexOf(id) === -1;
+      let res = await this.$ajaxGet('like', { id, like: status, timestamp: new Date().getTime() })
       if (!status) {
-        let ids = JSON.parse(JSON.stringify(this.getLikeIds));
-        ids.splice(ids.indexOf(id), 1);
-        this.SET_LIKE_IDS(ids);
+        let ids = JSON.parse(JSON.stringify(this.getLikeIds))
+        ids.splice(ids.indexOf(id), 1)
+        this.SET_LIKE_IDS(ids)
       } else {
-        let { ids } = await this.$ajaxGet('likelist', { uid: this.getUserInfo.userId, timestamp: new Date().getTime() });
-        this.SET_LIKE_IDS(ids);
+        let { ids } = await this.$ajaxGet('likelist', { uid: this.getUserInfo.userId, timestamp: new Date().getTime() })
+        this.SET_LIKE_IDS(ids)
       }
     },
     createPlay () {
-      this.showDialog = true;
+      this.showDialog = true
     },
     async addPlaylist () {
       if (!this.playlistName) {
-        this.$message.warning('歌单名称不能为空');
-        return false;
+        this.$message.warning('歌单名称不能为空')
+        return false
       }
-      let data = await this.$ajaxPost('createPlayList', { name: this.playlistName });
-      this.getPlayListAction();
-      this.showDialog = false;
-      this.$message.success('添加成功');
+      let data = await this.$ajaxPost('createPlayList', { name: this.playlistName })
+      this.getPlayListAction()
+      this.showDialog = false
+      this.$message.success('添加成功')
     },
     hiddenLy () {
       if (this.getShowLyStatus) {
-        this.SET_SHOW_LY_STATUS();
+        this.SET_SHOW_LY_STATUS()
       }
-    },
+    }
   },
   created () {
     this.defaultData = JSON.parse(JSON.stringify(this.menuConf))
@@ -170,24 +170,24 @@ export default {
   watch: {
     getPlayList: {
       handler (newV) {
-        this.menuConf[2].group = [];
-        this.menuConf[3].group = [];
-        this.menuConf[2].group.push(...newV.creatPlayList.map((item, index) => { return { ...item, path: "/playList" + item.id } }));
-        this.menuConf[3].group.push(...newV.collecPlayLit.map((item, index) => { return { ...item, path: "/playList" + item.id } }));
+        this.menuConf[2].group = []
+        this.menuConf[3].group = []
+        this.menuConf[2].group.push(...newV.creatPlayList.map((item, index) => { return { ...item, path: '/playList' + item.id } }))
+        this.menuConf[3].group.push(...newV.collecPlayLit.map((item, index) => { return { ...item, path: '/playList' + item.id } }))
       },
       immediate: true
     },
     getUserInfo (newV) {
       if (!newV.userId) {
-        this.menuConf = this.defaultData;
+        this.menuConf = this.defaultData
       }
     },
-    "$route": {
+    '$route': {
       handler (newV) {
-        this.activeName = newV.path === '/playList' ? newV.path + newV.query.id : newV.path;
+        this.activeName = newV.path === '/playList' ? newV.path + newV.query.id : newV.path
       },
       immediate: true
-    },
+    }
   }
 }
 </script>

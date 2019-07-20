@@ -26,7 +26,7 @@ class Base {
     this.thumbarBtns = []
   }
 
-  initApp(loadSuccess) {
+  initApp (loadSuccess) {
     this.loadSuccess = loadSuccess
     app.on('ready', this.createWindow.bind(this))
     app.on('window-all-closed', () => {
@@ -36,7 +36,7 @@ class Base {
     })
   }
 
-  createWindow() {
+  createWindow () {
     this.createBrowserWindow({
       minWidth: 1200,
       height: 563,
@@ -59,7 +59,7 @@ class Base {
     })
   }
 
-  creatLyricWindow() {
+  creatLyricWindow () {
     const {
       width,
       height
@@ -93,7 +93,7 @@ class Base {
 
   }
 
-  resgisterCode() {
+  resgisterCode () {
     globalShortcut.register('Alt+P', () => {
       this.mainWindow.send('playPrev')
     })
@@ -105,33 +105,33 @@ class Base {
     })
   }
 
-  setThumbarBtns() {
+  setThumbarBtns () {
     this.thumbarBtns = [{
-        tooltip: '上一首',
-        icon: this.getNativeImg('/img/prev.png'),
-        click: () => {
-          this.mainWindow.send('playPrev')
-        }
-      },
-      {
-        tooltip: '播放',
-        icon: this.getNativeImg('/img/play.png'),
-        click: () => {
-          this.mainWindow.send('togglePlay')
-        }
-      },
-      {
-        tooltip: '下一首',
-        icon: this.getNativeImg('/img/next.png'),
-        click: () => {
-          this.mainWindow.send('playNext')
-        }
+      tooltip: '上一首',
+      icon: this.getNativeImg('/img/prev.png'),
+      click: () => {
+        this.mainWindow.send('playPrev')
       }
+    },
+    {
+      tooltip: '播放',
+      icon: this.getNativeImg('/img/play.png'),
+      click: () => {
+        this.mainWindow.send('togglePlay')
+      }
+    },
+    {
+      tooltip: '下一首',
+      icon: this.getNativeImg('/img/next.png'),
+      click: () => {
+        this.mainWindow.send('playNext')
+      }
+    }
     ]
     this.mainWindow.setThumbarButtons(this.thumbarBtns)
   }
 
-  initIpc() {
+  initIpc () {
     ipcMain.on('settingConf', (e, conf) => {
       this.settingConfig = conf
       this.initDownload()
@@ -199,11 +199,11 @@ class Base {
     })
   }
 
-  getNativeImg(pathUrl) {
+  getNativeImg (pathUrl) {
     return nativeImage.createFromPath(path.join(__static, pathUrl))
   }
 
-  initDownload() {
+  initDownload () {
     this.mainWindow.webContents.session.removeAllListeners('will-download')
     this.mainWindow.webContents.session.on(
       'will-download',
@@ -211,7 +211,7 @@ class Base {
     )
   }
 
-  doDownLoad(event, item, webContents) {
+  doDownLoad (event, item, webContents) {
     const {
       downloadDir
     } = this.settingConfig
@@ -239,7 +239,7 @@ class Base {
     })
   }
 
-  initSearchMusic() {
+  initSearchMusic () {
     let count = 0
     ipcMain.on('scnn', (event, arg) => {
       let musicArr = []
@@ -258,7 +258,7 @@ class Base {
           }
         })
       })
-      event.sender.send('playMusic', musicArr)
+      event.sender.send("playMusic", musicArr);
     })
 
     ipcMain.on('get_local_music', (event, dir) => {
@@ -267,39 +267,39 @@ class Base {
     })
   }
 
-  initTray() {
+  initTray () {
     let defaultIcon = path.join(__static, '/img/icon.ico')
     let changeIcon = path.join(__static, '/img/prev.png')
 
     this.tray = new Tray(defaultIcon)
     let menuItems = [{
-        label: '上一首',
-        icon: this.getNativeImg('/img/prev.png'),
-        click: () => {
-          this.mainWindow.send('playPrev')
-        }
-      },
-      {
-        label: '播放/暂停',
-        icon: this.getNativeImg('/img/stop.png'),
-        click: () => {
-          this.mainWindow.send('togglePlay')
-        }
-      },
-      {
-        label: '下一首',
-        icon: this.getNativeImg('/img/next.png'),
-        click: () => {
-          this.mainWindow.send('playNext')
-        }
-      },
-      {
-        label: '退出',
-        icon: this.getNativeImg('/img/close.png'),
-        click: () => {
-          app.quit()
-        }
+      label: '上一首',
+      icon: this.getNativeImg('/img/prev.png'),
+      click: () => {
+        this.mainWindow.send('playPrev')
       }
+    },
+    {
+      label: '播放/暂停',
+      icon: this.getNativeImg('/img/stop.png'),
+      click: () => {
+        this.mainWindow.send('togglePlay')
+      }
+    },
+    {
+      label: '下一首',
+      icon: this.getNativeImg('/img/next.png'),
+      click: () => {
+        this.mainWindow.send('playNext')
+      }
+    },
+    {
+      label: '退出',
+      icon: this.getNativeImg('/img/close.png'),
+      click: () => {
+        app.quit()
+      }
+    }
       // {
       //   label: "图标闪烁",
       //   click: () => {
@@ -321,7 +321,7 @@ class Base {
     })
   }
 
-  FileObject(item, state) {
+  FileObject (item, state) {
     return {
       music_id: new Date().getTime(),
       url: item.getURLChain(),
@@ -339,7 +339,7 @@ class Base {
     }
   }
 
-  createBrowserWindow({
+  createBrowserWindow ({
     width,
     height,
     x,

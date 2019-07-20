@@ -33,14 +33,14 @@ export default {
         offset: this.offset
       })
       if (!data.subscribers.length) {
-        this.noMore = true;
-        return;
+        this.noMore = true
+        return
       }
-      this.subscriveArr.push(...data.subscribers);
+      this.subscriveArr.push(...data.subscribers)
     }
   },
   mounted () {
-    this.initSubscribeData();
+    this.initSubscribeData()
   }
 }
 </script>

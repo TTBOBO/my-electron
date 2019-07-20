@@ -25,7 +25,7 @@ export default {
     musicData: {
       type: Array,
       default: function () {
-        return [];
+        return []
       }
     },
     listenScroll: {
@@ -39,7 +39,7 @@ export default {
   },
   methods: {
     initScroll () {
-      if (!this.$refs.wrapper) return;
+      if (!this.$refs.wrapper) return
       this.scroll = new BScroll(this.$refs.wrapper, {
         click: this.click,
         probeType: this.probeType,
@@ -56,20 +56,19 @@ export default {
           console.log(pos)
         })
       }
-
     },
     scrollToElement (el, time) {
-      this.scroll.scrollToElement(el, time);
+      this.scroll.scrollToElement(el, time)
     },
     refresh () {
-      this.scroll.refresh();
+      this.scroll.refresh()
     },
     scrollTo (x, y, time) {
-      this.scroll.scrollTo(x, y, time);
+      this.scroll.scrollTo(x, y, time)
     }
   },
   mounted () {
-    this.initScroll();
+    this.initScroll()
   },
   watch: {
     musicData () {

@@ -80,19 +80,19 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters, mapState } from 'vuex';
-import HeaderLine from '@/components/headerLine';
+import { mapMutations, mapGetters, mapState } from 'vuex'
+import HeaderLine from '@/components/headerLine'
 import base from '@/mixin/base'
 export default {
   mixins: [base],
   data () {
     return {
       currentActive: 0,
-      titleArr: [{ name: "全部", id: "0" }, { name: "华语", id: "7" }, { name: "欧美", id: "96" }, { name: "日本", id: "8" }, { name: "韩国", id: "16" }],
+      titleArr: [{ name: '全部', id: '0' }, { name: '华语', id: '7' }, { name: '欧美', id: '96' }, { name: '日本', id: '8' }, { name: '韩国', id: '16' }],
       topSongsDatas: [],
       albumData: [],
       offset: 0,
-      currentIndex: 0,  //id
+      currentIndex: 0, // id
       currentPlayMusic: {},
       loading: true,
       noMore: false
@@ -107,55 +107,55 @@ export default {
   methods: {
     ...mapMutations(['PUSH_MUSIC_TO_LIST', 'SET_PLAY_LIST']),
     handerType (num) {
-      this.currentActive = num;
-      this.currentIndex = 0;
-      this.loading = true;
-      this.getMusic();
+      this.currentActive = num
+      this.currentIndex = 0
+      this.loading = true
+      this.getMusic()
     },
     changeType (item) {
-      this.currentIndex = item.id;
-      this.loading = true;
-      this.getMusic();
+      this.currentIndex = item.id
+      this.loading = true
+      this.getMusic()
     },
     async getMusic () {
-      let url, params;
+      let url, params
       if (this.currentActive == 0) {
-        url = 'topSongs';
+        url = 'topSongs'
         params = {
           type: this.currentIndex
         }
       } else {
-        url = 'album';
+        url = 'album'
         params = {
           id: this.currentIndex,
           offset: this.offset,
           limit: 30
         }
       }
-      let data = await this.$ajaxGet(url, params);
-      this.loading = false;
+      let data = await this.$ajaxGet(url, params)
+      this.loading = false
       if (this.currentActive == 0) {
-        this.topSongsDatas = data.data;
+        this.topSongsDatas = data.data
       } else {
         if (!data.albums.length) {
-          this.noMore = true;
-          return false;
+          this.noMore = true
+          return false
         }
-        this.albumData.push(...data.albums);
+        this.albumData.push(...data.albums)
       }
     },
     load () {
-      this.loading = true;
-      this.offset++;
-      this.getMusic();
+      this.loading = true
+      this.offset++
+      this.getMusic()
     },
     playAll () {
-      this.SET_PLAY_LIST(this.topSongsDatas);
+      this.SET_PLAY_LIST(this.topSongsDatas)
       this.$EventBus.$emit('setCurrentIndex', 0)
     }
   },
   created () {
-    this.getMusic();
+    this.getMusic()
   },
   components: {
     HeaderLine

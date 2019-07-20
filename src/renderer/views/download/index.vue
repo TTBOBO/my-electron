@@ -107,7 +107,7 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters, mapState, mapActions } from 'vuex';
+import { mapMutations, mapGetters, mapState, mapActions } from 'vuex'
 import base from '@/mixin/base'
 export default {
   mixins: [base],
@@ -115,8 +115,8 @@ export default {
     return {
       currentActive: 0,
       DownloadList: {
-        downloadingList: [], //正在下载
-        downloaded: [] //已下载
+        downloadingList: [], // 正在下载
+        downloaded: [] // 已下载
       },
       isDownload: {
 
@@ -125,13 +125,13 @@ export default {
   },
   filters: {
     FileSize (bytes) {
-      if (!bytes) return 0;
-      bytes = parseFloat(bytes);
-      if (bytes === 0) return '0B';
+      if (!bytes) return 0
+      bytes = parseFloat(bytes)
+      if (bytes === 0) return '0B'
       let k = 1024,
         sizes = ['B', 'KB', 'MB', 'GB', 'TB'],
-        i = Math.floor(Math.log(bytes) / Math.log(k));
-      return (bytes / Math.pow(k, i)).toPrecision(3) + sizes[i];
+        i = Math.floor(Math.log(bytes) / Math.log(k))
+      return (bytes / Math.pow(k, i)).toPrecision(3) + sizes[i]
     }
   },
   computed: {
@@ -143,27 +143,27 @@ export default {
       this.$router.push({
         path: '/playinfo',
         query: { id: item.id }
-      });
+      })
     },
     handerType (num) {
-      this.currentActive = num;
+      this.currentActive = num
     },
     changeStatus (item, status) {
-      this.$electron.ipcRenderer.send('download', item.taskId, item.state === 'progressing' ? 'pause' : 'resume');
+      this.$electron.ipcRenderer.send('download', item.taskId, item.state === 'progressing' ? 'pause' : 'resume')
     },
     copy (item) {
       this.$electron.clipboard.writeText(` https://music.163.com/#/song?id=${item.id}`)
     },
     progressCount (item) {
-      if (!item.size) return 0;
-      return parseInt((item.chunk / item.size) * 100);
+      if (!item.size) return 0
+      return parseInt((item.chunk / item.size) * 100)
     },
     cancel (item, index) {
-      this.CANCEL_DOWNLOAD_ITEM(index);
-      this.$electron.ipcRenderer.send('download', item.taskId, 'cancel');
+      this.CANCEL_DOWNLOAD_ITEM(index)
+      this.$electron.ipcRenderer.send('download', item.taskId, 'cancel')
     },
     openDir (item) {
-      this.$electron.shell.showItemInFolder(item.path);
+      this.$electron.shell.showItemInFolder(item.path)
     },
     startDown () {
     }

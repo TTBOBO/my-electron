@@ -51,12 +51,12 @@
 export default {
   data () {
     return {
-      catlists: [], //歌单分类
+      catlists: [], // 歌单分类
       hotList: [],
       highquality: [],
       category: '全部歌单',
       loading: true,
-      noMore: false,
+      noMore: false
     }
   },
   computed: {
@@ -66,57 +66,56 @@ export default {
   },
   filters: {
     getNumber (val) {
-      return parseInt(val / 10000) + "万"
+      return parseInt(val / 10000) + '万'
     }
   },
   methods: {
     handlerPlay (item) {
-      this.$router.push({ path: "playList", query: { id: item.id } });
+      this.$router.push({ path: 'playList', query: { id: item.id } })
     },
     async hotPlayList () {
-      let hotList = await this.$ajaxGet('hotPlayList');
-      let catlists = await this.$ajaxGet('catlist');
-      this.hotList = hotList.tags;
-      this.catlists.push(catlists.all, ...catlists.sub);
-
+      let hotList = await this.$ajaxGet('hotPlayList')
+      let catlists = await this.$ajaxGet('catlist')
+      this.hotList = hotList.tags
+      this.catlists.push(catlists.all, ...catlists.sub)
     },
     changeType (value) {
-      this.highquality = [];
-      this.noMore = false;
-      this.category = value;
-      this.getPlayLists(true);
+      this.highquality = []
+      this.noMore = false
+      this.category = value
+      this.getPlayLists(true)
     },
     async getPlayLists (status = false) {
       let params = {
         limit: 20,
         order: 'new',
-        cat: this.category,
+        cat: this.category
       }
-      let len = this.highquality.length;
+      let len = this.highquality.length
       if (len > 0) {
-        params.before = this.highquality[len - 1].updateTime;
+        params.before = this.highquality[len - 1].updateTime
       }
-      let data = await this.$ajaxGet('highquality', params);
+      let data = await this.$ajaxGet('highquality', params)
       setTimeout(() => {
-        this.loading = false;
+        this.loading = false
         if (data.playlists.length == 0) {
-          this.noMore = true;
+          this.noMore = true
         }
         if (status) {
-          this.highquality = data.playlists;
+          this.highquality = data.playlists
         } else {
-          this.highquality.push(...data.playlists);
+          this.highquality.push(...data.playlists)
         }
       }, 500)
     },
     load () {
-      this.loading = true;
-      this.getPlayLists();
+      this.loading = true
+      this.getPlayLists()
     }
   },
   async created () {
-    await this.hotPlayList();
-    await this.getPlayLists();
+    await this.hotPlayList()
+    await this.getPlayLists()
   }
 }
 </script>

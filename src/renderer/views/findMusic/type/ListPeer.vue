@@ -55,48 +55,48 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters, mapState } from 'vuex';
-import HeaderLine from '@/components/headerLine';
+import { mapMutations, mapGetters, mapState } from 'vuex'
+import HeaderLine from '@/components/headerLine'
 import base from '@/mixin/base'
 export default {
   mixins: [base],
   data () {
     return {
       loading: true,
-      listData: [], //排行榜数据
-      toplist: [], //全球榜单
+      listData: [], // 排行榜数据
+      toplist: [], // 全球榜单
       currentPlayMusic: {}
     }
   },
   computed: {
-    ...mapGetters(['getCurrentPlaylist', 'getAudioEl', 'getCurrentIndex']),
+    ...mapGetters(['getCurrentPlaylist', 'getAudioEl', 'getCurrentIndex'])
   },
   methods: {
     ...mapMutations(['PUSH_MUSIC_TO_LIST']),
     async init () {
       let data = await Promise.all([this.$ajaxGet('topList', { idx: 3 }), this.$ajaxGet('topList', { idx: 0 }), this.$ajaxGet('topList', { idx: 2 }),
-      this.$ajaxGet('topList', { idx: 1 }), this.$ajaxGet('topList', { idx: 4 }), this.$ajaxGet('topList', { idx: 17 })]);
+        this.$ajaxGet('topList', { idx: 1 }), this.$ajaxGet('topList', { idx: 4 }), this.$ajaxGet('topList', { idx: 17 })])
       data.forEach((item, index) => {
         if (item.code == 200) {
-          this.listData.push(item.playlist);
+          this.listData.push(item.playlist)
           // this.listData.push(index != 4 ? item.playlist : item.list);
         }
       })
-      let toplist = await this.$ajaxGet('toplist');
-      this.toplist = toplist.list;
-      this.loading = false;
-    },
+      let toplist = await this.$ajaxGet('toplist')
+      this.toplist = toplist.list
+      this.loading = false
+    }
   },
   filters: {
     getNumber (val) {
-      return parseInt(val / 10000) + "万"
+      return parseInt(val / 10000) + '万'
     }
   },
   components: {
     HeaderLine
   },
   created () {
-    this.init();
+    this.init()
   }
 }
 </script>

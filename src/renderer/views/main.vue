@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters } from 'vuex'
 import Header from './base/Header'
 import Play from './base/Play'
 import Menu from './base/Menu'

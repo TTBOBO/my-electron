@@ -29,16 +29,16 @@ export default {
   },
   methods: {
     handerTitle (index, id) {
-      this.currentId = id;
-      this.$emit('changeType', this.titleArr[index]);
+      this.currentId = id
+      this.$emit('changeType', this.titleArr[index])
     }
   },
   mounted () {
-    this.currentId = this.currentIndex;
+    this.currentId = this.currentIndex
   },
   watch: {
     currentIndex (newV) {
-      this.currentId = this.currentIndex;
+      this.currentId = this.currentIndex
     }
   }
 }

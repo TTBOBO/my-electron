@@ -57,8 +57,8 @@
 </template>
 
 <script>
-import Lyric from 'lyric-parser';
-import { mapMutations, mapGetters, mapState } from 'vuex';
+import Lyric from 'lyric-parser'
+import { mapMutations, mapGetters, mapState } from 'vuex'
 export default {
   data () {
     return {
@@ -78,48 +78,47 @@ export default {
   methods: {
     ...mapMutations(['SET_AUDIO_PLAYING']),
     handlerIcon (status) {
-      this.$electron.ipcRenderer.send(status);
+      this.$electron.ipcRenderer.send(status)
     },
     setLookUp () {
-      this.isLookUp = !this.isLookUp;
+      this.isLookUp = !this.isLookUp
     },
     mousedown ({ x, y }) {
-      this.flag = true;
-      this.position = { x, y };
+      this.flag = true
+      this.position = { x, y }
     },
     mousemove ({ x, y }) {
       if (!this.isLookUp && this.flag) {
-        let moveX = x - this.position.x;
-        let moveY = y - this.position.y;
+        let moveX = x - this.position.x
+        let moveY = y - this.position.y
         this.$electron.ipcRenderer.send('drag', { x: moveX, y: moveY })
-        this.position = { x: x - moveX, y: y - moveY }  //以为移动后窗口位置变了，当前一定position应该变回原来的position
+        this.position = { x: x - moveX, y: y - moveY } // 以为移动后窗口位置变了，当前一定position应该变回原来的position
       }
-
     },
     mouseout () {
-      this.flag = false;
+      this.flag = false
     },
     mouseup ({ x, y }) {
-      this.flag = false;
+      this.flag = false
     },
     loop (time) {
-      if (!this.currentLyric.lines) return;
+      if (!this.currentLyric.lines) return
       this.currentLyric.seek(0 * 1000)
     },
     changePro (time) {
-      console.log(time);
-      if (!this.currentLyric.lines) return;
-      this.currentLyric.seek(time * 1000);
-      if (!this.PlayStatus) {  //关闭的时候就直接停止播放
-        this.currentLyric.togglePlay();
+      console.log(time)
+      if (!this.currentLyric.lines) return
+      this.currentLyric.seek(time * 1000)
+      if (!this.PlayStatus) { // 关闭的时候就直接停止播放
+        this.currentLyric.togglePlay()
       }
     },
     initPlay (lyric) {
       this.currentLyric = new Lyric(lyric, (params) => {
-        const { lineNum, txt } = params;
-        const nextTxt = this.currentLyric.lines[lineNum + 1].txt;
-        this.lyricCode = lineNum % 2 === 0 ? [txt, nextTxt] : [nextTxt, txt];
-        this.currentLineNum = lineNum % 2 === 0 ? 0 : 1;
+        const { lineNum, txt } = params
+        const nextTxt = this.currentLyric.lines[lineNum + 1].txt
+        this.lyricCode = lineNum % 2 === 0 ? [txt, nextTxt] : [nextTxt, txt]
+        this.currentLineNum = lineNum % 2 === 0 ? 0 : 1
         // if (lineNum % 2 === 0) {
         //   this.lyricCode = [txt, this.currentLyric.line[lineNum + 1].txt];
         //   this.currentLineNum = 0;
@@ -127,48 +126,48 @@ export default {
         //   this.lyricCode = [this.currentLyric.line[lineNum + 1].txt, txt];
         //   this.currentLineNum = 1;
         // }
-      });
-      this.lyricCode = [this.currentLyric.lines[0].txt, this.currentLyric.lines[1].txt];
+      })
+      this.lyricCode = [this.currentLyric.lines[0].txt, this.currentLyric.lines[1].txt]
       this.$nextTick(() => {
-        this.currentLyric.seek(this.currentTime * 1000);  //seek会自动开启播放
-        if (!this.PlayStatus) {  //关闭的时候就直接停止播放
-          this.currentLyric.togglePlay();
+        this.currentLyric.seek(this.currentTime * 1000)  //seek会自动开启播放
+        if (!this.PlayStatus) { // 关闭的时候就直接停止播放
+          this.currentLyric.togglePlay()
         }
       })
     },
     async getMusicLyric () {
-      this.loading = true;
+      this.loading = true
       let res = await this.$ajaxGet('lyric', { id: this.getCurrentPlayMusic.id })
       if (res.code === 200 && res.lrc) {
-        this.initPlay(res.lrc.lyric);
+        this.initPlay(res.lrc.lyric)
       } else {
-        this.currentLyric = {};  //清空
+        this.currentLyric = {}  //清空
       }
-    },
+    }
   },
   mounted () {
     this.$electron.remote.ipcMain.on('playStatus', (e, data) => {
-      this.PlayStatus = data;
-      if (!this.currentLyric.lines) return;
-      this.currentLyric.togglePlay();
+      this.PlayStatus = data
+      if (!this.currentLyric.lines) return
+      this.currentLyric.togglePlay()
     })
     this.$electron.remote.ipcMain.on('showLy', (e, { getCurrentPlayMusic, currentTime }) => {
-      this.getCurrentPlayMusic = getCurrentPlayMusic;
-      this.currentTime = currentTime;
+      this.getCurrentPlayMusic = getCurrentPlayMusic
+      this.currentTime = currentTime
       if (this.currentLyric.lines) {
-        this.currentLyric.stop();  //停止歌词
-        this.currentLineNum = '';  //清除选中状态
-        this.currentLyric = {};
+        this.currentLyric.stop()  //停止歌词
+        this.currentLineNum = ''  //清除选中状态
+        this.currentLyric = {}
       }
-      this.lyricCode = ['', ''];
-      this.currentLineNum = '';
-      this.getMusicLyric();
+      this.lyricCode = ['', '']
+      this.currentLineNum = ''
+      this.getMusicLyric()
     })
 
     this.$electron.remote.ipcMain.on('changePro', (e, time) => {
-      this.changePro(time);
+      this.changePro(time)
     })
-    this.$electron.remote.ipcMain.on('loop', () => this.loop());
+    this.$electron.remote.ipcMain.on('loop', () => this.loop())
   }
 }
 </script>

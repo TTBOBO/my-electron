@@ -105,7 +105,7 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters, mapState, mapActions } from 'vuex';
+import { mapMutations, mapGetters, mapState, mapActions } from 'vuex'
 import base from '@/mixin/base'
 export default {
   mixins: [
@@ -113,7 +113,7 @@ export default {
   ],
   data () {
     return {
-      activeName: "歌曲列表",
+      activeName: '歌曲列表',
       showAllStatus: false,
       songs: [],
       query: {},
@@ -122,88 +122,87 @@ export default {
         hotSongs: []
       },
       descData: {},
-      artists: [],//相似歌手
+      artists: [] // 相似歌手
     }
   },
   computed: {
     getAlias () {
       if (this.artistData.artist.alias) {
-        return this.artistData.artist.alias.join(';');
+        return this.artistData.artist.alias.join(';')
       }
     }
   },
   methods: {
     async intiPlayInfo () {
-      this.artistData = await this.$ajaxGet('artists', { id: this.$route.query.id });
-      this.songs = this.artistData.hotSongs.slice(0, 10);
+      this.artistData = await this.$ajaxGet('artists', { id: this.$route.query.id })
+      this.songs = this.artistData.hotSongs.slice(0, 10)
     },
     getStr (str) {
       return str.replace(/\n/g, '<br/>')
     },
     showAll () {
-      this.songs = this.artistData.hotSongs;
-      this.showAllStatus = true;
+      this.songs = this.artistData.hotSongs
+      this.showAllStatus = true
     },
     async like ({ id }) {
-      let status = this.getLikeIds.indexOf(id) !== -1 ? false : true;
-      let res = await this.$ajaxGet('like', { id, like: status, timestamp: new Date().getTime() });
+      let status = this.getLikeIds.indexOf(id) === -1;
+      let res = await this.$ajaxGet('like', { id, like: status, timestamp: new Date().getTime() })
       if (!status) {
-        let ids = JSON.parse(JSON.stringify(this.getLikeIds));
-        ids.splice(ids.indexOf(id), 1);
-        this.SET_LIKE_IDS(ids);
+        let ids = JSON.parse(JSON.stringify(this.getLikeIds))
+        ids.splice(ids.indexOf(id), 1)
+        this.SET_LIKE_IDS(ids)
       } else {
-        this.likelist();
+        this.likelist()
       }
     },
     async simiArtist () {
-      let res = await this.$ajaxGet('simiArtist', { id: this.$route.query.id });
-      this.artists = res.artists;
+      let res = await this.$ajaxGet('simiArtist', { id: this.$route.query.id })
+      this.artists = res.artists
 
     },
     async artistDesc () {
-      let res = await this.$ajaxGet('artistDesc', { id: this.$route.query.id, timestamp: new Date().getTime() });
+      let res = await this.$ajaxGet('artistDesc', { id: this.$route.query.id, timestamp: new Date().getTime() })
       res.introduction.forEach(item => {
-        item.txt = this.getStr(item.txt);
+        item.txt = this.getStr(item.txt)
       })
-      this.descData = res;
+      this.descData = res
     },
     async artistMv () {
-      let res = await this.$ajaxGet('artistMv', { id: this.$route.query.id });
+      let res = await this.$ajaxGet('artistMv', { id: this.$route.query.id })
     },
     tabClick () {
       switch (this.activeName) {
         case '歌曲列表':
-          this.intiPlayInfo();
+          this.intiPlayInfo()
           break;
         case 'MV':
-          this.artistMv();
+          this.artistMv()
           break;
         case '歌手详情':
-          this.artistDesc();
+          this.artistDesc()
           break;
         case '相似歌手':
-          this.simiArtist();
+          this.simiArtist()
           break;
         default:
-          break;
+          break
       }
     },
     handerPlayer (item) {
-
       this.$router.push({
         path: '/playinfo',
         query: { id: item.id }
-      });
+      })
     }
   },
   mounted () {
-    this.intiPlayInfo();
+    this.intiPlayInfo()
   },
   watch: {
     $route (newV) {
-      this.intiPlayInfo();
+      this.intiPlayInfo()
       this.activeName = '歌曲列表'
-    },
+    }
   }
 }
 </script>

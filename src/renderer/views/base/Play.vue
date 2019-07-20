@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters, mapState } from 'vuex';
+import { mapMutations, mapGetters, mapState } from 'vuex'
 import PlayView from './auth/PlayView'
 export default {
   data () {
@@ -75,7 +75,7 @@ export default {
       duration: 0,
       currentTime: 0,
       showLyStatus: false,
-      visible: false,
+      visible: false
     }
   },
   computed: {
@@ -92,73 +92,69 @@ export default {
       }
     },
     getMusicUrl () {
-      if (this.Music.currentIndex === '' || !this.getCurrentPlaylist[this.Music.currentIndex]) return "";
+      if (this.Music.currentIndex === '' || !this.getCurrentPlaylist[this.Music.currentIndex]) return ''
       if (this.getCurrentPlaylist[this.Music.currentIndex].id) {
-        return `https://music.163.com/song/media/outer/url?id=${this.getCurrentPlaylist[this.Music.currentIndex].id}.mp3`;
+        return `https://music.163.com/song/media/outer/url?id=${this.getCurrentPlaylist[this.Music.currentIndex].id}.mp3`
       } else {
-        return this.getCurrentPlaylist[this.Music.currentIndex].path;
+        return this.getCurrentPlaylist[this.Music.currentIndex].path
       }
-
     }
   },
   filters: {
     filterTime (val) {
-      if (!val) return '00:00';
-      val = Math.ceil(val);
-      let minute = Math.floor(val / 60);
+      if (!val) return '00:00'
+      val = Math.ceil(val)
+      let minute = Math.floor(val / 60)
       let second = Math.floor(val % 60)
-      return `${minute < 10 ? '0' + minute : minute}:${second < 10 ? '0' + second : second}`;
-    },
+      return `${minute < 10 ? '0' + minute : minute}:${second < 10 ? '0' + second : second}`
+    }
   },
   methods: {
     ...mapMutations(['INIT_AUDIO_EL', 'SET_AUDIO_PLAYING', 'SET_CURRENT_INDEX', 'SET_MODE', 'SET_SHOW_LY_STATUS']),
     showLy () {
       if (this.Music.currentIndex !== '') {
-        this.SET_SHOW_LY_STATUS();
+        this.SET_SHOW_LY_STATUS()
       }
-      this.$electron.ipcRenderer.send('showLyric', this.getShowLyStatus);
+      this.$electron.ipcRenderer.send('showLyric', this.getShowLyStatus)
     },
     changeMode () {
-      this.SET_MODE();
+      this.SET_MODE()
     },
     initMusicInfo () {
-      this.duration = this.getAudioEl.duration;
-      this.currentTime = this.getAudioEl.currentTime;
+      this.duration = this.getAudioEl.duration
+      this.currentTime = this.getAudioEl.currentTime
       this.getAudioEl.ontimeupdate = this.timeChange
     },
     timeChange () {
-      this.currentTime = this.getAudioEl.currentTime;
-      this.$EventBus.$emit('timeChange', this.currentTime); //告诉歌词那边当前播放时间
+      this.currentTime = this.getAudioEl.currentTime
+      this.$EventBus.$emit('timeChange', this.currentTime) // 告诉歌词那边当前播放时间
       if (!this.currentTime) {
         if (this.getMode === 1) {
           if (this.getShowSongLyStatus) {
-            this.$EventBus.$emit('loop');
+            this.$EventBus.$emit('loop')
           }
           if (this.getShowLyStatus) {
-            this.$electron.ipcRenderer.send('loop');
+            this.$electron.ipcRenderer.send('loop')
           }
-
         }
-
       }
-      this.progressVal = this.currentTime;
+      this.progressVal = this.currentTime
       if (this.progressVal == this.duration) {
-        this.SET_AUDIO_PLAYING();
-        this.getMode === 2 ? this.setCurrentIndex(this.getRandom()) : this.next();
+        this.SET_AUDIO_PLAYING()
+        this.getMode === 2 ? this.setCurrentIndex(this.getRandom()) : this.next()
       }
-
     },
     getRandom () {
-      let res = Math.ceil(Math.random() * (this.getCurrentPlaylist.length - 1));
+      let res = Math.ceil(Math.random() * (this.getCurrentPlaylist.length - 1))
       if (res === this.Music.currentIndex) {
         return this.getRandom()
       }
-      return res;
+      return res
     },
     play () {
       this.$nextTick(() => {
         this.SET_AUDIO_PLAYING()
-        this.$EventBus.$emit('play');
+        this.$EventBus.$emit('play')
         this.$refs.audio[this.$refs.audio.paused ? 'play' : 'pause']()
       })
     },
@@ -169,20 +165,20 @@ export default {
       this.setCount('next')
     },
     async setCount (status = 'prev') {
-      let index = parseInt(this.Music.currentIndex);
-      index = index === '' ? 0 : index;
-      let len = this.getCurrentPlaylist.length;
+      let index = parseInt(this.Music.currentIndex)
+      index = index === '' ? 0 : index
+      let len = this.getCurrentPlaylist.length
       if (this.getMode === 2) {
-        index = this.getRandom();
+        index = this.getRandom()
       } else {
-        index = status === 'prev' ? index -= 1 : index += 1;
+        index = status === 'prev' ? index -= 1 : index += 1
         if (index < 0) {
           index = len - 1
         } else if (index > len - 1) {
           index = 0
         }
       }
-      this.setCurrentIndex(index);
+      this.setCurrentIndex(index)
     },
     setCurrentIndex (index, playStatus = true) {
       this.SET_CURRENT_INDEX(index)
@@ -196,81 +192,79 @@ export default {
       }
     },
     changePro (val) {
-      this.getAudioEl.currentTime = val;
+      this.getAudioEl.currentTime = val
       if (this.getShowSongLyStatus) {
-        this.$EventBus.$emit('changePro', val);
+        this.$EventBus.$emit('changePro', val)
       }
       if (this.getShowLyStatus) {
-        this.$electron.ipcRenderer.send('changePro', val);
+        this.$electron.ipcRenderer.send('changePro', val)
       }
     },
     ipcEvent () {
       this.$electron.ipcRenderer.on('playPrev', () => {
-        this.prev();
+        this.prev()
       })
       this.$electron.ipcRenderer.on('playNext', () => {
-        this.next();
+        this.next()
       })
       this.$electron.ipcRenderer.on('togglePlay', () => {
-        this.play();
+        this.play()
       })
       this.$electron.ipcRenderer.on('closeMusic', () => {
-        this.showLy();
+        this.showLy()
       })
-
     },
     initPlay (newV) {
       if (newV) {
         if (!this.getAudioEl) {
-          this.INIT_AUDIO_EL(this.$refs.audio);//第一次的时候 初始化 播放器
+          this.INIT_AUDIO_EL(this.$refs.audio)// 第一次的时候 初始化 播放器
         }
         this.$nextTick(() => {
           this.getAudioEl.oncanplay = this.initMusicInfo
         })
 
-        this.getAudioEl.volume = this.volumeVal / 100;  //设置音量大小
+        this.getAudioEl.volume = this.volumeVal / 100 // 设置音量大小
       }
     }
   },
   mounted () {
-    this.$EventBus.$on('setCurrentIndex', this.setCurrentIndex);
-    this.ipcEvent();
-
+    this.$EventBus.$on('setCurrentIndex', this.setCurrentIndex)
+    this.ipcEvent()
   },
   destroyed () {
-    this.$EventBus.$off('setCurrentIndex');
+    this.$EventBus.$off('setCurrentIndex')
   },
   components: {
     PlayView
   },
   watch: {
     volumeVal (newV) {
-      this.getAudioEl && (this.getAudioEl.volume = newV / 100);
+      this.getAudioEl && (this.getAudioEl.volume = newV / 100)
     },
     async getMusicUrl (newV) {
-      if (this.Music.currentIndex === '') return;
-      let item = this.getCurrentPlaylist[this.Music.currentIndex];
+      if (this.Music.currentIndex === '') return
+      let item = this.getCurrentPlaylist[this.Music.currentIndex]
       if (item.id) {
         try {
-          let data = await this.$ajaxGet("checkMusic", { id: item.id });
-          this.initPlay(newV);
+          let data = await this.$ajaxGet('checkMusic', { id: item.id })
+          this.initPlay(newV)
         } catch (error) {
           this.$message.error(error.message)
-          this.next();  //播放下一首歌
+          this.next() // 播放下一首歌
         }
       } else {
-        this.initPlay(newV);
+        this.initPlay(newV)
       }
     },
     'Music.playing' (newV) {
-      this.$electron.ipcRenderer.send('playStatus', newV);
+      this.$electron.ipcRenderer.send('playStatus', newV)
     },
     getShowLyStatus (newV) {
       if (newV) {
         this.$electron.ipcRenderer.send('showLy', {
           getCurrentPlayMusic: this.getCurrentPlayMusic,
           currentTime: this.$refs.audio.currentTime
-        });
+        })
       }
     },
     getCurrentPlayMusic: {
@@ -280,7 +274,7 @@ export default {
           this.$electron.ipcRenderer.send('showLy', {
             getCurrentPlayMusic: newV,
             currentTime: 0
-          });
+          })
         }
       },
       deep: true

@@ -46,35 +46,35 @@
 </template>
 
 <script>
-import HeaderLine from '@/components/headerLine';
+import HeaderLine from '@/components/headerLine'
 export default {
   data () {
     return {
       banners: [],
       recommend: [],
-      newSongs: [],
+      newSongs: []
     }
   },
   filters: {
     getNumber (val) {
-      return parseInt(val / 10000) + "万"
+      return parseInt(val / 10000) + '万'
     }
   },
   methods: {
     async init () {
-      let newBanner = await this.$ajaxGet('banner');
-      this.banners = newBanner.banners;
-      let resource = await this.$ajaxGet('resource');
-      this.recommend = resource.recommend.slice(0, 10);
-      let newSongs = await this.$ajaxGet('newsong', { type: 0 });
-      this.newSongs = newSongs.result;
+      let newBanner = await this.$ajaxGet('banner')
+      this.banners = newBanner.banners
+      let resource = await this.$ajaxGet('resource')
+      this.recommend = resource.recommend.slice(0, 10)
+      let newSongs = await this.$ajaxGet('newsong', { type: 0 })
+      this.newSongs = newSongs.result
     }
   },
   components: {
-    HeaderLine,
+    HeaderLine
   },
   mounted () {
-    this.init();
+    this.init()
   }
 }
 </script>

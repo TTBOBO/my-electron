@@ -85,76 +85,76 @@
 </template>
 
 <script>
-import util from '../../assets/js/util';
+import util from '../../assets/js/util'
 import { mapMutations, mapGetters, mapState, mapActions } from 'vuex'
-import UserInfo from './auth/UserInfo';
-import Setting from './auth/Setting';
+import UserInfo from './auth/UserInfo'
+import Setting from './auth/Setting'
 export default {
   data () {
     return {
       loginStatus: false,
       showSettingStatus: false,
       ruleForm: {
-        phone: "13698006449",
-        password: "tab822520"
+        phone: '13698006449',
+        password: 'tab822520'
       },
       loading: false,
       avatarUrl: require('@/assets/logo.jpg'),
       isFull: false
-    };
+    }
   },
   computed: {
-    ...mapGetters(['getUserInfo']),
+    ...mapGetters(['getUserInfo'])
   },
   methods: {
     ...mapMutations(['INIT_ACCOUNT', 'INIT_PROFILE', 'SET_PLAYLIST']),
     ...mapActions(['getPlayListAction']),
     showSetting () {
-      this.showSettingStatus = !this.showSettingStatus;
+      this.showSettingStatus = !this.showSettingStatus
     },
     handerRouter (type) {
-      this.$router[type == 'left' ? 'back' : 'forward']();
+      this.$router[type == 'left' ? 'back' : 'forward']()
     },
     sendStatus (type) {
       if (type === 'maxSize') {
-        this.isFull = !this.isFull;
+        this.isFull = !this.isFull
       }
-      this.$electron.ipcRenderer.send(type || 'miniSize');
+      this.$electron.ipcRenderer.send(type || 'miniSize')
       // this.$electron.remote.shell.openExternal('https://github.com/Molunerfinn/PicGo')
     },
     showLogin () {
-      this.loginStatus = true;
+      this.loginStatus = true
     },
     async submitForm () {
-      let valid = await this.$refs['ruleForm'].validate();
-      if (!valid) return;
-      this.loading = true;
+      let valid = await this.$refs['ruleForm'].validate()
+      if (!valid) return
+      this.loading = true
       try {
-        let res = await this.$ajaxPost('login', this.ruleForm);
+        let res = await this.$ajaxPost('login', this.ruleForm)
         // let { ids } = await this.$ajaxGet('likelist');
         // this.SET_LIKE_LIST(ids);
-        let { account, profile } = res;
+        let { account, profile } = res
 
-        this.INIT_ACCOUNT(account);
-        this.INIT_PROFILE(profile);
-        util.setLocalStorage('account', JSON.stringify(account));
-        util.setLocalStorage('profile', JSON.stringify(profile));
-        this.loading = false;
-        this.loginStatus = false;
-        this.getSubcount();
+        this.INIT_ACCOUNT(account)
+        this.INIT_PROFILE(profile)
+        util.setLocalStorage('account', JSON.stringify(account))
+        util.setLocalStorage('profile', JSON.stringify(profile))
+        this.loading = false
+        this.loginStatus = false
+        this.getSubcount()
         this.getPlayListAction()
       } catch (error) {
         console.log(error)
         this.$message({
           message: error.message,
           type: 'error'
-        });
-        this.loading = false;
+        })
+        this.loading = false
       }
     },
     async getSubcount () {
-      let subcountData = await this.$ajaxPost('subcount');
-      console.log(subcountData);
+      let subcountData = await this.$ajaxPost('subcount')
+      console.log(subcountData)
     }
   },
   components: {
@@ -163,15 +163,15 @@ export default {
   },
   mounted () {
     if (util.getLocalStorage('account')) {
-      this.INIT_ACCOUNT(JSON.parse(util.getLocalStorage('account')));
-      this.INIT_PROFILE(JSON.parse(util.getLocalStorage('profile')));
+      this.INIT_ACCOUNT(JSON.parse(util.getLocalStorage('account')))
+      this.INIT_PROFILE(JSON.parse(util.getLocalStorage('profile')))
     }
-    this.getPlayListAction();
+    this.getPlayListAction()
 
     // this.getSubcount();
     // this.getPlayList()
   }
-};
+}
 </script>
 
 <style lang="scss">

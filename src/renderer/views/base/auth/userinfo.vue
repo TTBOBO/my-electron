@@ -56,8 +56,8 @@
   </el-popover>
 </template> 
  
-<script> 
-import util from '../../../assets/js/util';
+<script>
+import util from '../../../assets/js/util'
 import { mapMutations, mapGetters, mapState } from 'vuex'
 export default {
   data () {
@@ -68,36 +68,36 @@ export default {
         profile: {}
       },
       tags: [{
-        key: "djStatus",
-        name: "动态"
+        key: 'djStatus',
+        name: '动态'
       }, {
-        key: "follows",
-        name: "关注"
+        key: 'follows',
+        name: '关注'
       }, {
-        key: "followeds",
-        name: "粉丝"
+        key: 'followeds',
+        name: '粉丝'
       }],
       userList: [[{
-        icon: "",
-        name: "会员中心",
-        key: "vipType"
+        icon: '',
+        name: '会员中心',
+        key: 'vipType'
       }, {
-        icon: "",
-        name: "等级",
-        key: "level"
+        icon: '',
+        name: '等级',
+        key: 'level'
       }, {
-        icon: "",
-        name: "商城",
+        icon: '',
+        name: '商城'
       }], [{
-        icon: "",
-        name: "个人信息设置",
+        icon: '',
+        name: '个人信息设置'
       }, {
-        icon: "",
-        name: "绑定社交账号",
+        icon: '',
+        name: '绑定社交账号'
       }], [{
-        icon: "",
-        name: "退出登录"
-      }]],
+        icon: '',
+        name: '退出登录'
+      }]]
     }
   },
   props: {
@@ -105,40 +105,40 @@ export default {
   },
   methods: {
     ...mapMutations(['LOGINOUT']),
-    async signin () { //签到 
+    async signin () { // 签到
       if (!this.userinfo.pcSign) {
-        let res = await this.$ajaxPost('signin', { signin: 1, timestamp: new Date().getTime() });
+        let res = await this.$ajaxPost('signin', { signin: 1, timestamp: new Date().getTime() })
         if (res.code === 200) {
           this.$message({
-            message: "签到成功",
+            message: '签到成功',
             type: 'success'
-          });
+          })
         }
       }
     },
     async handle (name) {
       switch (name) {
-        case "退出登录":
-          await this.loginOut();
+        case '退出登录':
+          await this.loginOut()
           this.$router.replace('/findMusic')
-          break;
+          break
 
         default:
-          break;
+          break
       }
     },
     async loginOut () {
-      let res = await this.$ajaxPost('loginOut');
+      let res = await this.$ajaxPost('loginOut')
       if (res.code === 200) {
         this.$message({
-          message: "退出成功",
+          message: '退出成功',
           type: 'success',
           duration: 1000
-        });
-        util.clearLocalStorage();
-        this.LOGINOUT();
+        })
+        util.clearLocalStorage()
+        this.LOGINOUT()
       }
-    },
+    }
   },
   async created () {
 
@@ -148,14 +148,14 @@ export default {
       if (newV) {
         let res = await this.$ajaxGet('userDetail', { uid: this.userId })
         setTimeout(() => {
-          this.loading = false;
-        }, 500);
-        this.userinfo = res;
-        console.log(res);
+          this.loading = false
+        }, 500)
+        this.userinfo = res
+        console.log(res)
       }
     }
   }
-} 
+}
 </script> 
  
 <style lang='scss'>

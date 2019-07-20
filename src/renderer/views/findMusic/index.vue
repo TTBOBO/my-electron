@@ -30,27 +30,26 @@
 
 <script>
 
-import ListPeer from './type/ListPeer';
-import NewMusic from './type/NewMusic';
-import Player from './type/Player';
-import SongSheet from './type/SongSheet';
-import Recommend from './type/Recommend';
+import ListPeer from './type/ListPeer'
+import NewMusic from './type/NewMusic'
+import Player from './type/Player'
+import SongSheet from './type/SongSheet'
+import Recommend from './type/Recommend'
 export default {
   data () {
     return {
-      activeName: "个性推荐"
+      activeName: '个性推荐'
     }
   },
   filters: {
     getNumber (val) {
-      return parseInt(val / 10000) + "万"
+      return parseInt(val / 10000) + '万'
     }
   },
   methods: {
 
   },
   mounted () {
-
 
   },
   components: {

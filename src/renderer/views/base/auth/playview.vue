@@ -77,14 +77,14 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters, mapState } from 'vuex';
+import { mapMutations, mapGetters, mapState } from 'vuex'
 import base from '@/mixin/base'
 export default {
   mixins: [base],
   data () {
     return {
       currentActive: 0,
-      currentIndex: 0,  //id
+      currentIndex: 0, // id
       currentPlayMusic: {}
     }
   },
@@ -97,14 +97,14 @@ export default {
   methods: {
     ...mapMutations(['PUSH_MUSIC_TO_LIST', 'SET_PLAY_LIST', 'CLEAR_HISTORY_LIST', 'CLEAR_PLAY_LIST']),
     handerType (num) {
-      this.currentActive = num;
-      this.currentIndex = 0;
+      this.currentActive = num
+      this.currentIndex = 0
     },
     clearHis () {
-      this.CLEAR_HISTORY_LIST();
+      this.CLEAR_HISTORY_LIST()
     },
     clearPlayList () {
-      this.CLEAR_PLAY_LIST();
+      this.CLEAR_PLAY_LIST()
     },
     copy (item) {
       // https://music.163.com/song/media/outer/url?id=${item.id}.mp3
@@ -114,7 +114,7 @@ export default {
       this.$router.push({
         path: '/playinfo',
         query: { id: item.id }
-      });
+      })
     }
   },
   created () { }

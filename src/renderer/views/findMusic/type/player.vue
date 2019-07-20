@@ -66,27 +66,27 @@ export default {
       playerType: ['全部', '男歌手', '女歌手', '组合乐队'],
       screens: ['热门'],
       category: {
-        "入驻歌手": 5001,
-        "华语男歌手": 1001,
-        "华语女歌手": 1002,
-        "华语组合乐队": 1003,
-        "欧美男歌手": 2001,
-        "欧美女歌手": 2002,
-        "欧美组合乐队": 2003,
-        "日本男歌手": 6001,
-        "日本女歌手": 6002,
-        "日本组合乐队 ": 6003,
-        "韩国男歌手": 7001,
-        "韩国女歌手": 7002,
-        "韩国组合乐队": 7003,
-        "其他男歌手": 4001,
-        "其他女歌手": 4002,
-        "其他组合乐队": 4003,
+        '入驻歌手': 5001,
+        '华语男歌手': 1001,
+        '华语女歌手': 1002,
+        '华语组合乐队': 1003,
+        '欧美男歌手': 2001,
+        '欧美女歌手': 2002,
+        '欧美组合乐队': 2003,
+        '日本男歌手': 6001,
+        '日本女歌手': 6002,
+        '日本组合乐队 ': 6003,
+        '韩国男歌手': 7001,
+        '韩国女歌手': 7002,
+        '韩国组合乐队': 7003,
+        '其他男歌手': 4001,
+        '其他女歌手': 4002,
+        '其他组合乐队': 4003
       },
       active: {
-        language: "全部",
-        type: "全部",
-        screen: "热门"
+        language: '全部',
+        type: '全部',
+        screen: '热门'
       },
       offset: 0,
       loading: true,
@@ -106,50 +106,50 @@ export default {
       }
     },
     handerClick (type, data) {
-      this.active[type] = data;
-      this.offset = 0;
-      this.getPlayers(true);
+      this.active[type] = data
+      this.offset = 0
+      this.getPlayers(true)
     },
     async getPlayers (status = false) {
       let params = {
         offset: this.offset
-      };
-      let { language, type, screen } = this.active;
-      params.cat = this.category[language + type] || 5001;
-      if (screen != '热门') {
-        params.initial = screen.toLowerCase();
       }
-      let data = await this.$ajaxGet('artistList', params);
+      let { language, type, screen } = this.active
+      params.cat = this.category[language + type] || 5001
+      if (screen != '热门') {
+        params.initial = screen.toLowerCase()
+      }
+      let data = await this.$ajaxGet('artistList', params)
       setTimeout(() => {
-        this.loading = false;
+        this.loading = false
         if (data.artists.length == 0) {
-          this.noMore = true;
+          this.noMore = true
         }
         if (status) {
-          this.artists = data.artists;
+          this.artists = data.artists
         } else {
-          this.artists.push(...data.artists);
+          this.artists.push(...data.artists)
         }
       }, 500)
     },
     load () {
-      this.loading = true;
-      this.offset++;
-      this.getPlayers();
+      this.loading = true
+      this.offset++
+      this.getPlayers()
     },
     handerPlayer (item) {
-      console.log(item);
+      console.log(item)
       this.$router.push({
         path: '/playinfo',
         query: { id: item.id }
-      });
+      })
     }
   },
   mounted () {
-    this.getPlayers();
+    this.getPlayers()
   },
   created () {
-    this.initScreen();
+    this.initScreen()
   }
 }
 </script>
