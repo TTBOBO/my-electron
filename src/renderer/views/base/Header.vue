@@ -95,8 +95,8 @@ export default {
       loginStatus: false,
       showSettingStatus: false,
       ruleForm: {
-        phone: '13698006449',
-        password: 'tab822520'
+        phone: '',
+        password: ''
       },
       loading: false,
       avatarUrl: require('@/assets/logo.jpg'),
