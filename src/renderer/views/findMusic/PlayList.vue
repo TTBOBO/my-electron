@@ -84,12 +84,6 @@
         </el-tab-pane>
       </el-tabs>
     </div>
-    <!-- -->
-    <div class="music-ly animated"
-         :class="{tada:getShowLyStatus,fadeInDown:!getShowLyStatus}"
-         v-if="getShowLyStatus">
-      <PlayMusic v-if="getShowLyStatus"></PlayMusic>
-    </div>
   </div>
 </template>
 
@@ -112,7 +106,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['getPlayList', 'getUserInfo', 'getCurrentIndex', 'getCurrentPlaylist', 'getAudioEl', 'getShowLyStatus', 'getLikeLists', 'getLikeIds', 'getCurrentPlayMusic']),
+    ...mapGetters(['getPlayList', 'getUserInfo', 'getCurrentIndex', 'getCurrentPlaylist', 'getAudioEl', 'getLikeLists', 'getLikeIds', 'getCurrentPlayMusic']),
     getTitle () {
       if (!this.currentPlayList.name) return ''
       return this.currentPlayList.name.replace(this.getUserInfo.nickname, '我')

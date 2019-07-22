@@ -260,18 +260,16 @@ export default {
           rgba(255, 255, 255, 0.5) 0%,
           rgba(255, 255, 255, 0) 100%
         ),
-        -webkit-linear-gradient(left, #fff433 0%, #fff7ccf2 0%);
+        -webkit-linear-gradient(left, #fff433 0%, #fff7cc 0%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       /* -webkit-text-stroke: 1px #f00; */
-      -webkit-filter: drop-shadow(0px 0px 1px #040cfdf2);
+      -webkit-filter: drop-shadow(0px 0px 1px #040cfd);
       white-space: nowrap;
       text-align: left;
     }
     .no-lyric {
       text-align: center !important;
-    }
-    .current-lyric {
     }
     .next-lyric {
       text-align: right;

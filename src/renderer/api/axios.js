@@ -27,10 +27,17 @@ axios.interceptors.response.use(
     if (response.data.code === 400) {
       // Vue.$Message.error('操作失败')
       return response.data
-    } else if (response.data.code === 301) { } else { return response.data }
+    } else if (response.data.code === 301) {} else {
+      return response.data
+    }
   },
   async (err) => {
-    // console.log(err.message)
+    if (err.response.data.code === 301) {
+      console.log(err.response.data)
+      // let res = await ajaxGet('refreshStatus')
+      // console.log(res)
+    }
+
     // if (err.message.indexOf('code 301') != -1) {
     //   let res = await ajaxGet('refreshStatus');
     // }

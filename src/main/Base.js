@@ -38,15 +38,14 @@ class Base {
 
   createWindow () {
     this.createBrowserWindow({
-      minWidth: 1200,
-      height: 563,
+      minWidth: 1700,
+      height: 763,
       useContentSize: true,
-      width: 1200,
+      width: 1700,
       darkTheme: true,
       frame: false,
       isMain: true,
       winURL: this.baseUrl,
-      devTools: false,
       finishLoad: () => {
         this.creatLyricWindow() // 创建歌词窗口
         this.loadSuccess()
@@ -141,7 +140,10 @@ class Base {
       this.mainWindow.show()
     })
     ipcMain.on('maxSize', () => {
+      // maxSize
+      console.log(this.mainWindow.isMaximized())
       this.mainWindow[this.mainWindow.isMaximized() ? 'unmaximize' : 'maximize']()
+      console.log(this.mainWindow.isMaximized())
     })
     ipcMain.on('close', () => this.mainWindow.minimize())
     ipcMain.on('download', (e, data, status) => {
@@ -351,7 +353,7 @@ class Base {
     isMain,
     finishLoad,
     windowName,
-    modal,
+    modal = false,
     show,
     frame,
     transparent,
@@ -397,7 +399,6 @@ class Base {
       finishLoad && typeof finishLoad === 'function' && finishLoad()
     })
     isMain && (this.mainWindow = newWindow)
-    this.beowserWindows[windowName || 'mainWindow'] = newWindow
     return newWindow
   }
 }

@@ -64,7 +64,7 @@ export default {
     async init () {
       let newBanner = await this.$ajaxGet('banner')
       this.banners = newBanner.banners
-      let resource = await this.$ajaxGet('resource')
+      let resource = await this.$ajaxGet('resource', { timestamp: new Date().getTime() })
       this.recommend = resource.recommend.slice(0, 10)
       let newSongs = await this.$ajaxGet('newsong', { type: 0 })
       this.newSongs = newSongs.result

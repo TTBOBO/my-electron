@@ -3,28 +3,58 @@
        v-loading="loading">
     <span @click="SET_SHOW_SONG_LY_STATUS"
           class="shrink-icon iconfont icon-shrink_icon"></span>
-    <img class="msk"
+    <img v-if="getCurrentPlayMusic.al || getCurrentPlayMusic.album"
+         class="msk"
          :src="getCurrentPlayMusic.al? getCurrentPlayMusic.al.picUrl : getCurrentPlayMusic.album.picUrl" />
+    <img v-else
+         class="msk"
+         :src="avatarUrl" />
+    <!-- <img class="msk" v-else
+         :src="" /> -->
     <div class="msk2"></div>
-    <Scroll ref="lyricList"
-            v-if="currentLyric.lines">
-      <div class="lyric">
-        <template>
-          <p ref="lyricLine"
-             v-for="(line,index) in currentLyric.lines"
-             :class="{active:currentLineNum === index}"
-             :key="index">
-            {{line.txt}}
-            <!-- <br /> {{line.txt}} -->
-          </p>
-        </template>
-
+    <div class="lyric-container">
+      <div class="lyric-play animated fadeInLeft delay-1s faster">
+        <div v-if="!loading"
+             class="round"
+             :class="{paly:palyStatus}">
+          <img v-if="getCurrentPlayMusic.al || getCurrentPlayMusic.album"
+               :src="getCurrentPlayMusic.al? getCurrentPlayMusic.al.picUrl : getCurrentPlayMusic.album.picUrl" />
+          <img v-else
+               :src="avatarUrl" />
+        </div>
       </div>
-    </Scroll>
-    <div class="no-lyric"
-         v-else>
-      暂无歌词
+      <div class="lyric-right">
+        <div class="lyric-info">
+          <p class="title">{{getCurrentPlayMusic.name}}</p>
+          <div class="tag-list">
+            <span class="tag">专辑：<span v-if="getCurrentPlayMusic.ar">{{getCurrentPlayMusic.ar[0].name}}</span><span v-else>未知</span></span>
+            <span class="tag">歌手：<span v-if="getCurrentPlayMusic.al || getCurrentPlayMusic.album">{{getCurrentPlayMusic.al? getCurrentPlayMusic.al.name : getCurrentPlayMusic.album.name}}</span><span v-else>未知</span></span>
+            <span class="tag">来源：{{getCurrentPlayMusic.path ? '本地' : '网易云'}}</span>
+          </div>
+        </div>
+        <Scroll ref="lyricList"
+                v-if="currentLyric.lines"
+                class="animated fadeInRight delay-1s faster">
+          <div class="lyric">
+            <template>
+              <p ref="lyricLine"
+                 v-for="(line,index) in currentLyric.lines"
+                 :class="{active:currentLineNum === index}"
+                 :key="index">
+                {{line.txt}}
+                <!-- <br /> {{line.txt}} -->
+              </p>
+            </template>
+
+          </div>
+        </Scroll>
+        <div class="no-lyric"
+             v-else>
+          暂无歌词
+        </div>
+      </div>
     </div>
+
   </div>
 </template>
 
@@ -38,7 +68,9 @@ export default {
       musicStr: [],
       currentLineNum: '',
       currentLyric: {},
-      loading: false
+      loading: false,
+      palyStatus: false,
+      avatarUrl: require('@/assets/logo.jpg')
     }
   },
   methods: {
@@ -49,7 +81,6 @@ export default {
       this.currentLyric.seek(0 * 1000)
     },
     changePro (time) {
-      console.log(time)
       if (!this.currentLyric.lines) return
       this.currentLyric.seek(time * 1000)
       if (!this.getPlayStatus) { // 关闭的时候就直接停止播放
@@ -76,6 +107,7 @@ export default {
       })
     },
     async getMusicLyric () {
+      if (!this.getCurrentPlayMusic.id) return
       this.loading = true
       let res = await this.$ajaxGet('lyric', { id: this.getCurrentPlayMusic.id })
       if (res.code === 200 && res.lrc) {
@@ -103,6 +135,7 @@ export default {
       this.$EventBus.$on('loop', this.loop)
       this.$EventBus.$on('changePro', this.changePro) // 设置歌曲进度
       this.$EventBus.$on('play', () => {
+        this.palyStatus = !this.palyStatus
         if (!this.currentLyric.lines) return
         this.currentLyric.togglePlay() // 播放暂停歌词
       })
@@ -128,6 +161,7 @@ export default {
         this.currentLineNum = '' // 清除选中状态
         this.currentLyric = {}
       }
+      this.palyStatus = !this.palyStatus
       this.getMusicLyric()
     }
   }
@@ -181,33 +215,99 @@ export default {
     background: #121212;
     opacity: 0.01;
   }
-  .lyric {
-    margin: 0 auto;
-    text-align: center;
-    width: 420px;
-    // height: 100%;
-
-    p {
-      color: #fff;
-      word-wrap: break-word;
-      text-align: center;
-      line-height: 32px;
-      height: auto !important;
-      height: 32px;
-      min-height: 32px;
-      transition: color 0.3s linear;
-    }
-    .active {
-      color: $base-color;
-      font-size: 14px;
-      transition: color 0.3s linear;
-    }
-  }
-  .no-lyric {
-    height: 100%;
+  .lyric-container {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-wrap: nowrap;
+    flex-flow: row;
+    .lyric-play {
+      width: 700px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .round {
+        width: 250px;
+        height: 250px;
+        border: 10px solid #ea5c5c;
+        border-radius: 50%;
+        overflow: hidden;
+
+        animation: run 5s linear 0s infinite normal;
+        transform-origin: center;
+        animation-play-state: paused;
+        @keyframes run {
+          0% {
+            transform: rotate(0deg);
+          }
+          25% {
+            transform: rotate(99deg);
+          }
+          50% {
+            transform: rotate(180deg);
+          }
+          75% {
+            transform: rotate(270deg);
+          }
+          100% {
+            transform: rotate(360deg);
+          }
+        }
+        img {
+          width: 100%;
+          height: 100%;
+        }
+      }
+      .paly {
+        animation-play-state: running !important;
+      }
+    }
+    .lyric-right {
+      flex: 1;
+      .lyric-info {
+        margin: 0 auto;
+        height: 100px;
+        padding: 45px 0 25px 0;
+        .title {
+          font-size: 18px;
+          line-height: 24px;
+          font-weight: 700;
+        }
+        .tag-list {
+          font-size: 12px;
+          line-height: 50px;
+          display: flex;
+          justify-content: space-around;
+        }
+      }
+      .lyric {
+        margin: 0 auto;
+        text-align: center;
+        width: 420px;
+        // height: 100%;
+
+        p {
+          color: #fff;
+          word-wrap: break-word;
+          text-align: center;
+          line-height: 32px;
+          height: auto !important;
+          height: 32px;
+          min-height: 32px;
+          transition: color 0.3s linear;
+        }
+        .active {
+          color: $base-color;
+          font-size: 14px;
+          transition: color 0.3s linear;
+        }
+      }
+      .no-lyric {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
   }
 }
 </style>

@@ -115,6 +115,7 @@ export default {
       if (this.Music.currentIndex !== '') {
         this.SET_SHOW_LY_STATUS()
       }
+      console.log(111)
       this.$electron.ipcRenderer.send('showLyric', this.getShowLyStatus)
     },
     changeMode () {
@@ -270,7 +271,6 @@ export default {
     getCurrentPlayMusic: {
       handler (newV) {
         if (newV.name) {
-          console.log(2222)
           this.$electron.ipcRenderer.send('showLy', {
             getCurrentPlayMusic: newV,
             currentTime: 0
