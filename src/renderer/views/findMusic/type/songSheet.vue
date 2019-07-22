@@ -98,7 +98,7 @@ export default {
       let data = await this.$ajaxGet('highquality', params)
       setTimeout(() => {
         this.loading = false
-        if (data.playlists.length == 0) {
+        if (data.playlists.length === 0) {
           this.noMore = true
         }
         if (status) {

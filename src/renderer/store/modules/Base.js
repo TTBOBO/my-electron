@@ -26,7 +26,7 @@ const mutations = {
     state.collecPlayLit = []
     state.creatPlayList = []
     list.forEach((item) => {
-      if (item.userId != state.profile.userId) {
+      if (item.userId !== state.profile.userId) {
         state.collecPlayLit.push(item)
       } else {
         state.creatPlayList.push(item)

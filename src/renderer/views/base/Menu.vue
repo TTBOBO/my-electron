@@ -122,20 +122,20 @@ export default {
       switch (label) {
         case '创建的歌单':
           this.hiddenLy()
-          this.$router.push({ path: 'playList', query: { id, type: 1 } })  //1  自己创建的歌单  2 收藏的歌单
-          break;
+          this.$router.push({ path: 'playList', query: { id, type: 1 } }) // 1  自己创建的歌单  2 收藏的歌单
+          break
         case '收藏的歌单':
           this.hiddenLy()
-          this.$router.push({ path: 'playList', query: { id, type: 2 } })  //1  自己创建的歌单  2 收藏的歌单
-          break;
+          this.$router.push({ path: 'playList', query: { id, type: 2 } }) // 1  自己创建的歌单  2 收藏的歌单
+          break
         default:
           break
       }
     },
     async like () {
       let id = this.getCurrentPlayMusic.id
-      let status = this.getLikeIds.indexOf(id) === -1;
-      let res = await this.$ajaxGet('like', { id, like: status, timestamp: new Date().getTime() })
+      let status = this.getLikeIds.indexOf(id) === -1
+      await this.$ajaxGet('like', { id, like: status, timestamp: new Date().getTime() })
       if (!status) {
         let ids = JSON.parse(JSON.stringify(this.getLikeIds))
         ids.splice(ids.indexOf(id), 1)
@@ -153,7 +153,7 @@ export default {
         this.$message.warning('歌单名称不能为空')
         return false
       }
-      let data = await this.$ajaxPost('createPlayList', { name: this.playlistName })
+      await this.$ajaxPost('createPlayList', { name: this.playlistName })
       this.getPlayListAction()
       this.showDialog = false
       this.$message.success('添加成功')

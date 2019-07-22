@@ -9,14 +9,14 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters, mapState, mapActions } from 'vuex';
+import { mapMutations, mapGetters } from 'vuex'
 export default {
   name: 'my-electron',
   data () {
     return {
       DownloadList: {
-        downloadingList: [], //正在下载
-        downloaded: [] //已下载
+        downloadingList: [], // 正在下载
+        downloaded: [] // 已下载
       },
       isDownload: {
 
@@ -27,14 +27,13 @@ export default {
     ...mapMutations(['SET_DOWNLOAD', 'SET_DOWNLOAD_CURRENT_DATA', 'SPLICE_DOWNLOAD_MUSIC', 'SET_PLAY_LIST']),
     initDownload () {
       this.getDownload.downloadingList.forEach((item, index) => {
-        if (!item.size && item.downloadUrl) { //没有被下载即可下载  反之不下载
-          this.$electron.remote.getCurrentWebContents().downloadURL(item.downloadUrl);
+        if (!item.size && item.downloadUrl) { // 没有被下载即可下载  反之不下载
+          this.$electron.remote.getCurrentWebContents().downloadURL(item.downloadUrl)
         }
-
-      });
+      })
       this.$electron.ipcRenderer.on('download', (e, data) => {
         for (var i = 0; i < this.getDownload.downloadingList.length; i++) {
-          const id = this.getDownload.downloadingList[i].id;
+          const id = this.getDownload.downloadingList[i].id
           if (data.url[0] === (`https://music.163.com/song/media/outer/url?id=${id}.mp3`)) {
             this.SET_DOWNLOAD_CURRENT_DATA({
               data: data,
@@ -44,9 +43,9 @@ export default {
               setTimeout(() => {
                 this.SPLICE_DOWNLOAD_MUSIC(id)
               }, 600)
-              this.isDownload[id] = true;
+              this.isDownload[id] = true
             }
-            break;
+            break
           }
         }
       })
@@ -56,19 +55,19 @@ export default {
     ...mapGetters(['getDownload'])
   },
   mounted () {
-    this.$EventBus.$on('download', this.initDownload);
+    this.$EventBus.$on('download', this.initDownload)
     if (localStorage.getItem('download')) {
-      this.SET_DOWNLOAD(JSON.parse(localStorage.getItem('download')));
+      this.SET_DOWNLOAD(JSON.parse(localStorage.getItem('download')))
     }
 
     if (localStorage.getItem('playList')) {
-      this.SET_PLAY_LIST(JSON.parse(localStorage.getItem('playList')));
+      this.SET_PLAY_LIST(JSON.parse(localStorage.getItem('playList')))
       let index = localStorage.getItem('currentIndex') || 0
       this.$EventBus.$emit('setCurrentIndex', index, false)
     }
     setTimeout(() => {
       if (localStorage.getItem('settingConfig')) {
-        this.$electron.ipcRenderer.send('settingConf', JSON.parse(localStorage.getItem('settingConfig')));
+        this.$electron.ipcRenderer.send('settingConf', JSON.parse(localStorage.getItem('settingConfig')))
       }
     }, 500)
   }

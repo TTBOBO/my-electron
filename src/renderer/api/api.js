@@ -5,7 +5,6 @@ const REQUEST = {
   likelist: '/likelist', // 喜欢的列表
   like: '/like', // 喜欢音乐
   loginOut: '/logout', // 退出登录
-  loginOut: '/logout', // 退出登录
   userDetail: '/user/detail', // 用户信息
   signin: '/daily_signin', // 签到
   subcount: '/user/subcount', // 获取用户信息 , 歌单，收藏，mv, dj 数量
@@ -18,7 +17,7 @@ const REQUEST = {
   songs: '/recommend/songs', // 推荐音乐
   topSongs: '/top/song', // 新歌速递
   album: '/top/album', // 新碟上架
-  artists: '/top/artists', // 热门歌手
+  // artists: '/top/artists', // 热门歌手
   topList: '/top/list', // 排行榜
   artist: '/toplist/artist', // 歌手排行榜
   toplist: '/toplist', // 所有榜单

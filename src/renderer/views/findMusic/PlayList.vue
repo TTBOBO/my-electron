@@ -94,7 +94,7 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters, mapState, mapActions } from 'vuex'
+import { mapMutations, mapGetters, mapActions } from 'vuex'
 import util from '@/assets/js/util'
 import PlayMusic from '../PlayMusic'
 import Subscribe from './Subscribe'
@@ -155,13 +155,13 @@ export default {
     },
     async initPlaylistDetail () {
       this.likelist()
-      const { id, type } = this.$route.query
+      const { id } = this.$route.query
 
       let data = await this.$ajaxGet('playlistDetail', { id, timestamp: new Date().getTime() })
 
-      let { playlist, code, privileges } = data
+      let { playlist, code } = data
       this.loading.close(data)
-      if (code == 200) {
+      if (code === 200) {
         this.currentPlayList = playlist
         this.playlist = playlist
       }
@@ -176,11 +176,11 @@ export default {
     },
     palyMusic (item) {
       if (this.getCurrentIndex !== '' && this.getCurrentPlaylist[this.getCurrentIndex].name === item.name) {
-        this.getAudioEl.currentTime = 0  //重新播放
+        this.getAudioEl.currentTime = 0 // 重新播放
         this.$EventBus.$emit('changePro', 0)
       } else {
         let index = this.getCurrentPlaylist.findIndex(_item => _item.name === item.name)
-        if (index == -1) { // 如果当前音乐没有在播放列表里面直接添加进去再播放
+        if (index === -1) { // 如果当前音乐没有在播放列表里面直接添加进去再播放
           this.PUSH_MUSIC_TO_LIST(item)
           this.$EventBus.$emit('setCurrentIndex', this.getCurrentPlaylist.length - 1)
         } else {
@@ -195,8 +195,8 @@ export default {
       })
     },
     async like ({ id }, index) {
-      let status = this.getLikeIds.indexOf(id) === -1;
-      let res = await this.$ajaxGet('like', { id, like: status, timestamp: new Date().getTime() })
+      let status = this.getLikeIds.indexOf(id) === -1
+      await this.$ajaxGet('like', { id, like: status, timestamp: new Date().getTime() })
       if (!status) {
         let ids = JSON.parse(JSON.stringify(this.getLikeIds))
         ids.splice(ids.indexOf(id), 1)
@@ -215,8 +215,8 @@ export default {
     },
     async subscribe () {
       const { creator: { userId }, subscribed, id } = this.currentPlayList
-      if (userId != this.getUserInfo.userId) {
-        let data = await this.$ajaxGet('subscribe', { t: subscribed ? 2 : 1, id, timestamp: new Date().getTime() })
+      if (userId !== this.getUserInfo.userId) {
+        await this.$ajaxGet('subscribe', { t: subscribed ? 2 : 1, id, timestamp: new Date().getTime() })
         this.$message.success(`${subscribed ? '取消' : ''}收藏成功`)
         this.getPlayListAction()
         this.currentPlayList.subscribed = !this.currentPlayList.subscribed
@@ -224,7 +224,7 @@ export default {
     }
   },
   mounted () {
-    this.initPlaylistDetail()//初始化页面数据
+    this.initPlaylistDetail()// 初始化页面数据
     this.$EventBus.$on('showLy', this.showLy)
     this.$EventBus.$on('palyMusic', this.palyMusic)
   },

@@ -58,7 +58,7 @@
 
 <script>
 import Lyric from 'lyric-parser'
-import { mapMutations, mapGetters, mapState } from 'vuex'
+import { mapMutations } from 'vuex'
 export default {
   data () {
     return {
@@ -129,7 +129,7 @@ export default {
       })
       this.lyricCode = [this.currentLyric.lines[0].txt, this.currentLyric.lines[1].txt]
       this.$nextTick(() => {
-        this.currentLyric.seek(this.currentTime * 1000)  //seek会自动开启播放
+        this.currentLyric.seek(this.currentTime * 1000) // seek会自动开启播放
         if (!this.PlayStatus) { // 关闭的时候就直接停止播放
           this.currentLyric.togglePlay()
         }
@@ -141,7 +141,7 @@ export default {
       if (res.code === 200 && res.lrc) {
         this.initPlay(res.lrc.lyric)
       } else {
-        this.currentLyric = {}  //清空
+        this.currentLyric = {} // 清空
       }
     }
   },
@@ -155,8 +155,8 @@ export default {
       this.getCurrentPlayMusic = getCurrentPlayMusic
       this.currentTime = currentTime
       if (this.currentLyric.lines) {
-        this.currentLyric.stop()  //停止歌词
-        this.currentLineNum = ''  //清除选中状态
+        this.currentLyric.stop() // 停止歌词
+        this.currentLineNum = '' // 清除选中状态
         this.currentLyric = {}
       }
       this.lyricCode = ['', '']

@@ -105,7 +105,6 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters, mapState, mapActions } from 'vuex'
 import base from '@/mixin/base'
 export default {
   mixins: [
@@ -145,8 +144,8 @@ export default {
       this.showAllStatus = true
     },
     async like ({ id }) {
-      let status = this.getLikeIds.indexOf(id) === -1;
-      let res = await this.$ajaxGet('like', { id, like: status, timestamp: new Date().getTime() })
+      let status = this.getLikeIds.indexOf(id) === -1
+      await this.$ajaxGet('like', { id, like: status, timestamp: new Date().getTime() })
       if (!status) {
         let ids = JSON.parse(JSON.stringify(this.getLikeIds))
         ids.splice(ids.indexOf(id), 1)
@@ -158,7 +157,6 @@ export default {
     async simiArtist () {
       let res = await this.$ajaxGet('simiArtist', { id: this.$route.query.id })
       this.artists = res.artists
-
     },
     async artistDesc () {
       let res = await this.$ajaxGet('artistDesc', { id: this.$route.query.id, timestamp: new Date().getTime() })
@@ -168,22 +166,22 @@ export default {
       this.descData = res
     },
     async artistMv () {
-      let res = await this.$ajaxGet('artistMv', { id: this.$route.query.id })
+      await this.$ajaxGet('artistMv', { id: this.$route.query.id })
     },
     tabClick () {
       switch (this.activeName) {
         case '歌曲列表':
           this.intiPlayInfo()
-          break;
+          break
         case 'MV':
           this.artistMv()
-          break;
+          break
         case '歌手详情':
           this.artistDesc()
-          break;
+          break
         case '相似歌手':
           this.simiArtist()
-          break;
+          break
         default:
           break
       }

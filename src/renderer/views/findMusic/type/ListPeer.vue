@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters, mapState } from 'vuex'
+import { mapMutations, mapGetters } from 'vuex'
 import HeaderLine from '@/components/headerLine'
 import base from '@/mixin/base'
 export default {
@@ -77,7 +77,7 @@ export default {
       let data = await Promise.all([this.$ajaxGet('topList', { idx: 3 }), this.$ajaxGet('topList', { idx: 0 }), this.$ajaxGet('topList', { idx: 2 }),
         this.$ajaxGet('topList', { idx: 1 }), this.$ajaxGet('topList', { idx: 4 }), this.$ajaxGet('topList', { idx: 17 })])
       data.forEach((item, index) => {
-        if (item.code == 200) {
+        if (item.code === 200) {
           this.listData.push(item.playlist)
           // this.listData.push(index != 4 ? item.playlist : item.list);
         }

@@ -116,13 +116,13 @@ export default {
       }
       let { language, type, screen } = this.active
       params.cat = this.category[language + type] || 5001
-      if (screen != '热门') {
+      if (screen !== '热门') {
         params.initial = screen.toLowerCase()
       }
       let data = await this.$ajaxGet('artistList', params)
       setTimeout(() => {
         this.loading = false
-        if (data.artists.length == 0) {
+        if (data.artists.length === 0) {
           this.noMore = true
         }
         if (status) {

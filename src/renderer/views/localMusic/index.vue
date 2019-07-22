@@ -65,7 +65,6 @@
 
 <script>
 import base from '@/mixin/base'
-import util from '../../assets/js/util';
 
 export default {
   mixins: [base],
@@ -75,7 +74,7 @@ export default {
       showShell: false,
       checkDirOptions: [],
       checkDir: [],
-      search: false,
+      search: false
     }
   },
   methods: {
@@ -86,48 +85,48 @@ export default {
       })
     },
     getMusic () {
-      this.search = true;
-      if (!this.checkDir.length) return;
-      this.$electron.ipcRenderer.send('scnn', this.checkDir);
+      this.search = true
+      if (!this.checkDir.length) return
+      this.$electron.ipcRenderer.send('scnn', this.checkDir)
     },
 
     getMusicUrl (data) {
-      let audioCtx = new AudioContext();
+      let audioCtx = new AudioContext()
       data.forEach(async (item, index) => {
         const blob = new Blob([item.path], {
-          type: "application/" + item.type
-        });
-        let arrBuff = new Uint8Array(item.path).buffer;
+          type: 'application/' + item.type
+        })
+        let arrBuff = new Uint8Array(item.path).buffer
         let { duration } = await audioCtx.decodeAudioData(arrBuff)
-        item.duration = duration;
-        item.path = URL.createObjectURL(blob);
-        this.$set(this.musicUrl, index, item);
+        item.duration = duration
+        item.path = URL.createObjectURL(blob)
+        this.$set(this.musicUrl, index, item)
       })
-      this.musicUrl = JSON.parse(JSON.stringify(data));
-      console.log(this.musicUrl);
-      data.forEach(item => { //因为 buffer数据占用空间大  执行删除操作
+      this.musicUrl = JSON.parse(JSON.stringify(data))
+      console.log(this.musicUrl)
+      data.forEach(item => { // 因为 buffer数据占用空间大  执行删除操作
         delete item.path
       })
-      localStorage.setItem('localMusic', JSON.stringify(data));//存储本地音乐数据
+      localStorage.setItem('localMusic', JSON.stringify(data))// 存储本地音乐数据
     },
     showDialog () {
-      this.showShell = true;
+      this.showShell = true
     }
   },
 
   mounted () {
     this.$electron.ipcRenderer.on('playMusic', (event, arg) => {
-      this.search = false;
-      this.showShell = false;
-      this.getMusicUrl(arg);
+      this.search = false
+      this.showShell = false
+      this.getMusicUrl(arg)
     })
     if (localStorage.getItem('checkDirOptions')) {
-      this.checkDirOptions = JSON.parse(localStorage.getItem('checkDirOptions'));
+      this.checkDirOptions = JSON.parse(localStorage.getItem('checkDirOptions'))
     }
   },
   created () {
     if (localStorage.getItem('localMusic')) {
-      this.musicUrl = JSON.parse(localStorage.getItem('localMusic'));
+      this.musicUrl = JSON.parse(localStorage.getItem('localMusic'))
     }
   }
 }

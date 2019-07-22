@@ -11,7 +11,7 @@ import {
 const path = require('path')
 const fs = require('fs')
 class Base {
-  constructor({
+  constructor ({
     baseUrl,
     musicUrl
   }) {
@@ -48,7 +48,7 @@ class Base {
       winURL: this.baseUrl,
       devTools: false,
       finishLoad: () => {
-        this.creatLyricWindow() //创建歌词窗口
+        this.creatLyricWindow() // 创建歌词窗口
         this.loadSuccess()
         this.initIpc()
         this.initTray()
@@ -63,7 +63,7 @@ class Base {
     const {
       width,
       height
-    } = screen.getPrimaryDisplay().workAreaSize;
+    } = screen.getPrimaryDisplay().workAreaSize
     this.lyricWindow = this.createBrowserWindow({
       minWidth: 500,
       // minWidth: 500,
@@ -77,20 +77,18 @@ class Base {
       darkTheme: true,
       resizable: false,
       frame: false,
-      isMain: true,
       winURL: this.musicUrl,
       show: false,
       closable: false,
       // skipTaskbar: true,
       alwaysOnTop: true,
       transparent: true,
-      bgColor: "#00FFFFFF",
+      bgColor: '#00FFFFFF',
       isMain: false,
       finishLoad: () => {
         console.log('创建成功')
       }
     })
-
   }
 
   resgisterCode () {
@@ -143,9 +141,7 @@ class Base {
       this.mainWindow.show()
     })
     ipcMain.on('maxSize', () => {
-      this.mainWindow[
-        this.mainWindow.isMaximized() ? 'unmaximize' : 'maximize'
-      ]()
+      this.mainWindow[this.mainWindow.isMaximized() ? 'unmaximize' : 'maximize']()
     })
     ipcMain.on('close', () => this.mainWindow.minimize())
     ipcMain.on('download', (e, data, status) => {
@@ -175,18 +171,18 @@ class Base {
       this.mainWindow.setThumbarButtons(this.thumbarBtns)
     })
     ipcMain.on('showLyric', (e, status) => {
-      this.lyricWindow[status ? 'show' : 'hide']();
+      this.lyricWindow[status ? 'show' : 'hide']()
     })
     ipcMain.on('drag', (e, {
       x,
       y
     }) => {
-      const [x1, y1] = this.lyricWindow.getPosition();
+      const [x1, y1] = this.lyricWindow.getPosition()
       this.lyricWindow.setPosition(x1 + x, y1 + y)
     })
 
     ipcMain.on('closeMusic', () => {
-      this.mainWindow.send('closeMusic');
+      this.mainWindow.send('closeMusic')
     })
     ipcMain.on('play', () => {
       this.mainWindow.send('togglePlay')
@@ -240,7 +236,6 @@ class Base {
   }
 
   initSearchMusic () {
-    let count = 0
     ipcMain.on('scnn', (event, arg) => {
       let musicArr = []
       arg.forEach((dir, _index) => {
@@ -258,7 +253,7 @@ class Base {
           }
         })
       })
-      event.sender.send("playMusic", musicArr);
+      event.sender.send('playMusic', musicArr)
     })
 
     ipcMain.on('get_local_music', (event, dir) => {
@@ -269,7 +264,6 @@ class Base {
 
   initTray () {
     let defaultIcon = path.join(__static, '/img/icon.ico')
-    let changeIcon = path.join(__static, '/img/prev.png')
 
     this.tray = new Tray(defaultIcon)
     let menuItems = [{
@@ -386,7 +380,7 @@ class Base {
       // autoHideMenuBar: true,
       webPreferences: {
         nodeIntegration: true,
-        webSecurity: process.env.NODE_ENV === 'development' ? false : true,
+        webSecurity: process.env.NODE_ENV !== 'development',
         devTools: devTools || true
       }
     })

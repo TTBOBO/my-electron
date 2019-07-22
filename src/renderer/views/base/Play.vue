@@ -139,7 +139,7 @@ export default {
         }
       }
       this.progressVal = this.currentTime
-      if (this.progressVal == this.duration) {
+      if (this.progressVal === this.duration) {
         this.SET_AUDIO_PLAYING()
         this.getMode === 2 ? this.setCurrentIndex(this.getRandom()) : this.next()
       }
@@ -246,7 +246,7 @@ export default {
       let item = this.getCurrentPlaylist[this.Music.currentIndex]
       if (item.id) {
         try {
-          let data = await this.$ajaxGet('checkMusic', { id: item.id })
+          await this.$ajaxGet('checkMusic', { id: item.id })
           this.initPlay(newV)
         } catch (error) {
           this.$message.error(error.message)

@@ -58,7 +58,7 @@
  
 <script>
 import util from '../../../assets/js/util'
-import { mapMutations, mapGetters, mapState } from 'vuex'
+import { mapMutations } from 'vuex'
 export default {
   data () {
     return {

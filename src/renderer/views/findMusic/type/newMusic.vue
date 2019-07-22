@@ -80,7 +80,7 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters, mapState } from 'vuex'
+import { mapMutations, mapGetters } from 'vuex'
 import HeaderLine from '@/components/headerLine'
 import base from '@/mixin/base'
 export default {
@@ -119,7 +119,7 @@ export default {
     },
     async getMusic () {
       let url, params
-      if (this.currentActive == 0) {
+      if (this.currentActive === 0) {
         url = 'topSongs'
         params = {
           type: this.currentIndex
@@ -134,7 +134,7 @@ export default {
       }
       let data = await this.$ajaxGet(url, params)
       this.loading = false
-      if (this.currentActive == 0) {
+      if (this.currentActive === 0) {
         this.topSongsDatas = data.data
       } else {
         if (!data.albums.length) {

@@ -86,7 +86,7 @@
 
 <script>
 import util from '../../assets/js/util'
-import { mapMutations, mapGetters, mapState, mapActions } from 'vuex'
+import { mapMutations, mapGetters, mapActions } from 'vuex'
 import UserInfo from './auth/UserInfo'
 import Setting from './auth/Setting'
 export default {
@@ -113,7 +113,7 @@ export default {
       this.showSettingStatus = !this.showSettingStatus
     },
     handerRouter (type) {
-      this.$router[type == 'left' ? 'back' : 'forward']()
+      this.$router[type === 'left' ? 'back' : 'forward']()
     },
     sendStatus (type) {
       if (type === 'maxSize') {

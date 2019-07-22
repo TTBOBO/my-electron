@@ -16,7 +16,6 @@ base.initApp(() => {
   // 初始化成功回调
 })
 
-
 function getUrl (path) {
   return process.env.NODE_ENV === 'development'
     ? `http://localhost:9080#/` + (path || '')

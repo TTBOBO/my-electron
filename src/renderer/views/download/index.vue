@@ -107,7 +107,7 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters, mapState, mapActions } from 'vuex'
+import { mapMutations, mapGetters } from 'vuex'
 import base from '@/mixin/base'
 export default {
   mixins: [base],
@@ -128,9 +128,9 @@ export default {
       if (!bytes) return 0
       bytes = parseFloat(bytes)
       if (bytes === 0) return '0B'
-      let k = 1024,
-        sizes = ['B', 'KB', 'MB', 'GB', 'TB'],
-        i = Math.floor(Math.log(bytes) / Math.log(k))
+      let k = 1024
+      let sizes = ['B', 'KB', 'MB', 'GB', 'TB']
+      let i = Math.floor(Math.log(bytes) / Math.log(k))
       return (bytes / Math.pow(k, i)).toPrecision(3) + sizes[i]
     }
   },

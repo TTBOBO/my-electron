@@ -77,7 +77,7 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters, mapState } from 'vuex'
+import { mapMutations, mapGetters } from 'vuex'
 import base from '@/mixin/base'
 export default {
   mixins: [base],
