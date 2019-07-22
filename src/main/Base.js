@@ -37,7 +37,7 @@ class Base {
   }
 
   createWindow () {
-    this.createBrowserWindow({
+    this.mainWindow = this.createBrowserWindow({
       minWidth: 1700,
       height: 763,
       useContentSize: true,
@@ -139,11 +139,9 @@ class Base {
     ipcMain.on('showmain', () => {
       this.mainWindow.show()
     })
-    ipcMain.on('maxSize', () => {
+    ipcMain.on('maxSize', (e, status) => {
       // maxSize
-      console.log(this.mainWindow.isMaximized())
-      this.mainWindow[this.mainWindow.isMaximized() ? 'unmaximize' : 'maximize']()
-      console.log(this.mainWindow.isMaximized())
+      this.mainWindow[!status ? 'unmaximize' : 'maximize']()
     })
     ipcMain.on('close', () => this.mainWindow.minimize())
     ipcMain.on('download', (e, data, status) => {
@@ -398,7 +396,7 @@ class Base {
     newWindow.webContents.on('did-finish-load', () => {
       finishLoad && typeof finishLoad === 'function' && finishLoad()
     })
-    isMain && (this.mainWindow = newWindow)
+    // isMain && (this.mainWindow = newWindow)
     return newWindow
   }
 }

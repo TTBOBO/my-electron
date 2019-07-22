@@ -41,7 +41,7 @@
         <i class="el-icon-minus font"
            @click="sendStatus('miniSize')"></i>
         <i class="font iconfont"
-           :class="{'el-icon-full-screen':!isFull,'icon-suoxiao':'isFull'}"
+           :class="{'el-icon-full-screen':!isFull,'icon-suoxiao':isFull}"
            @click="sendStatus('maxSize')"></i>
         <i class="el-icon-close font"
            @click="sendStatus('close')"></i>
@@ -119,7 +119,7 @@ export default {
       if (type === 'maxSize') {
         this.isFull = !this.isFull
       }
-      this.$electron.ipcRenderer.send(type || 'miniSize')
+      this.$electron.ipcRenderer.send(type || 'miniSize', this.isFull)
       // this.$electron.remote.shell.openExternal('https://github.com/Molunerfinn/PicGo')
     },
     showLogin () {
