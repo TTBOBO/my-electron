@@ -8,5 +8,4 @@ node_modules/
 npm-debug.log
 npm-debug.log.*
 thumbs.db
-src/renderer/views/base/Header.vue
 !.gitkeep

@@ -103,7 +103,6 @@ export default {
         this.$set(this.musicUrl, index, item)
       })
       this.musicUrl = JSON.parse(JSON.stringify(data))
-      console.log(this.musicUrl)
       data.forEach(item => { // 因为 buffer数据占用空间大  执行删除操作
         delete item.path
       })
